@@ -16,9 +16,12 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'Please provide a valid email']
   },
   photo: String,
+  facebook: String,
+  twitter: String,
+  instagram: String,
   role: {
     type: String,
-    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    enum: ['user', 'support', 'admin'],
     default: 'user'
   },
   password: {
@@ -45,9 +48,14 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
     select: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now()
   }
 });
 
+// Pre save middleware to hash password incase it was changed
 userSchema.pre('save', async function(next) {
   // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
@@ -60,6 +68,7 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+//Pre Save middleware if password was changed
 userSchema.pre('save', function(next) {
   if (!this.isModified('password') || this.isNew) return next();
 
@@ -67,7 +76,7 @@ userSchema.pre('save', function(next) {
   next();
 });
 
-//dont show inactive (deleted) accounts
+//dont show inactive (deactivated) accounts
 
 userSchema.pre(/^find/, function(next) {
   // this points to the current query
@@ -75,6 +84,7 @@ userSchema.pre(/^find/, function(next) {
   next();
 });
 
+// Validate confirm password - returns boolean
 userSchema.methods.correctPassword = async function(
   candidatePassword,
   userPassword
@@ -82,6 +92,7 @@ userSchema.methods.correctPassword = async function(
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
+//Boolean method to check if password changed since token created
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
@@ -96,6 +107,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   return false;
 };
 
+//Create a token
 userSchema.methods.createPasswordResetToken = function() {
   //create a token
   const resetToken = crypto.randomBytes(32).toString('hex');
