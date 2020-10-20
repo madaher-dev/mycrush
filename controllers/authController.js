@@ -20,7 +20,7 @@ const createSendToken = (user, statusCode, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -67,13 +67,17 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
+  let token = null;
+  if (req.headers.cookie) {
+    token = req.headers.cookie.split('=')[1];
   }
+
+  // if (
+  //   req.headers.authorization &&
+  //   req.headers.authorization.startsWith('Bearer')
+  // ) {
+  //   token = req.headers.authorization.split(' ')[1];
+  // }
 
   if (!token) {
     return next(
@@ -88,10 +92,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
-      new AppError(
-        'The user belonging to this token does no longer exist.',
-        401
-      )
+      new AppError('The user belonging to this token no longer exist.', 401)
     );
   }
 
@@ -208,4 +209,23 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // 4) Log user in, send JWT
   createSendToken(user, 200, res);
+});
+
+exports.deleteCookie = catchAsync(async (req, res, next) => {
+  console.log('test');
+  const token = '';
+  const cookieOptions = {
+    expires: new Date(Date.now() + 1),
+    httpOnly: true
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
+
+  res.cookie('jwt', token, cookieOptions);
+  res.status(200).json({
+    status: 'success',
+
+    data: {
+      token
+    }
+  });
 });

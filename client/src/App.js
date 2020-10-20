@@ -5,7 +5,11 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import Navbar from './components/layout/Navbar';
 import Home from './components/pages/Home';
+import Register from './components/auth/Register';
+import Login from './components/auth/Login';
 import Footer from './components/layout/Footer';
+import Welcome from './components/pages/Welcome';
+import Alerts from './components/layout/Alerts';
 
 const theme = createMuiTheme({
   palette: {
@@ -34,10 +38,14 @@ const App = () => {
         <MuiThemeProvider theme={theme}>
           <Router>
             <Fragment>
+              <Alerts />
               <Navbar />
               {/* <Alerts /> */}
               <Switch>
                 <Route exact path="/" component={Home} />
+                <Route exact path="/welcome" component={Welcome} />
+                <Route exact path="/register" component={Register} />
+                <Route exact path="/login" component={Login} />
                 {/* <Route exact path='/about' component={About} />
                 <Route exact path='/donate/:channel' component={Donate} /> */}
               </Switch>

@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
-import navReducer from './navReducer';
+import userReducer from './userReducer';
+import crushReducer from './crushReducer';
+import alertReducer from './alertReducer';
 
 export default combineReducers({
-  //volunteer: volunteerReducer,
-  nav: navReducer
-  // user: userReducer,
+  users: userReducer,
+  crushes: crushReducer,
+  alerts: alertReducer
 });

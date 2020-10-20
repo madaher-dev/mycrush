@@ -26,7 +26,11 @@ const HoverMenu = () => (
     {popupState => (
       <ClickAwayListener onClickAway={popupState.close}>
         <div>
-          <IconButton edge="start" {...bindToggle(popupState)}>
+          <IconButton
+            edge="start"
+            {...bindToggle(popupState)}
+            style={{ color: 'white' }}
+          >
             <MenuIcon />
           </IconButton>
 

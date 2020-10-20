@@ -12,26 +12,31 @@ router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
+router.get('/deleteCookie', authController.deleteCookie);
 
 //Protect all routes after this middleware
 router.use(authController.protect);
 
 router.patch(
   '/updateMyPassword',
-  authController.protect,
+
   authController.updatePassword
 );
 
-router.patch('/updateMe', userController.updateMe);
-router.delete('/deleteMe', userController.deleteMe); //actually patching
+router.get('/me', userController.getMe, userController.getUser);
+router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
+  userController.updateMe
+);
+router.delete('/deleteMe', userController.deleteMe);
 
 //Restrict all the middleware after this point to admin
 router.use(authController.restrictTo('admin'));
 
-router
-  .route('/')
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
+router.route('/').get(userController.getAllUsers);
+
 router
   .route('/:id')
   .get(userController.getUser)
