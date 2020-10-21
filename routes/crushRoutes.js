@@ -1,24 +1,24 @@
 const express = require('express');
 const router = express.Router();
 
-const resourceController = require('../controllers/resourceController');
-const reviewRouter = require('./../routes/reviewRoutes');
-const authController = require('./../controllers/authController');
+const crushController = require('../controllers/crushController');
+const reviewRouter = require('./reviewRoutes');
+const authController = require('../controllers/authController');
 
 // A Middleware that runs only when there is a parameter
 
-router.param('id', resourceController.checkID);
+router.param('id', crushController.checkID);
 
 //Reviews middleware -mounting router not controller
-router.use('/:tourId/reviews', reviewRouter);
+// router.use('/:tourId/reviews', reviewRouter);
 
 // Top 5 implementing Aliasing
 router
   .route('/top-5')
-  .get(resourceController.aliasTop, resourceController.getAllResources);
+  .get(crushController.aliasTop, crushController.getAllCrushes);
 
 // Stats implementing aggregate
-router.route('/stats').get(resourceController.resourceStats);
+router.route('/stats').get(crushController.crushStats);
 
 // Monthly Plan implementing aggregate Unwinding and Projecting
 
@@ -27,27 +27,27 @@ router
   .get(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
-    resourceController.resourcePlan
+    crushController.crushPlan
   );
 
 router
   .route('/')
-  .get(resourceController.getAllResources)
+  .get(crushController.getAllCrushes)
   .post(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide', 'guide'),
-    resourceController.validateBody,
-    resourceController.createResource
+    crushController.validateBody,
+    crushController.createCrush
   );
 
 router
   .route('/:id/:optional?')
-  .get(resourceController.getResource)
+  .get(crushController.getCrush)
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
-    resourceController.updateResource
+    crushController.updateCrush
   )
-  .delete(resourceController.deleteResource);
+  .delete(crushController.deleteCrush);
 
 module.exports = router;

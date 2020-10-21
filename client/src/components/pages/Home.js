@@ -1,35 +1,30 @@
-import React, { useEffect, Fragment } from 'react';
-
-import { makeStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { loadUser2 } from '../../actions/userActions';
+
 import { Redirect } from 'react-router-dom';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
-const Home = ({ loadUser, isAuthenticated }) => {
-  useEffect(() => {
-    loadUser2();
-
-    // eslint-disable-next-line
-  }, [isAuthenticated]);
-
-  return isAuthenticated ? (
-    <Redirect to="/welcome" />
-  ) : (
-    <Redirect to="/register" />
-  );
+const Home = ({ checkUser, isAuthenticated, loading }) => {
+  if (loading) {
+    return <LinearProgress color="secondary" />;
+  } else {
+    return isAuthenticated ? (
+      <Redirect to="/welcome" />
+    ) : (
+      <Redirect to="/register" />
+    );
+  }
 };
 
 Home.propTypes = {
-  loadUser2: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool
+  isAuthenticated: PropTypes.bool,
+  loading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.users.isAuthenticated
+  isAuthenticated: state.users.isAuthenticated,
+  loading: state.users.loading
 });
 
-export default connect(mapStateToProps, {
-  loadUser2
-})(Home);
+export default connect(mapStateToProps, {})(Home);

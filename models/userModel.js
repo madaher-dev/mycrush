@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now()
+  },
+  points: {
+    type: Number,
+    default: 3
   }
 });
 
@@ -90,6 +94,13 @@ userSchema.methods.correctPassword = async function(
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+// Parent Referencing Virtual populate for Crushes
+userSchema.virtual('crushes', {
+  ref: 'Crush',
+  foreignField: 'sourceID', //name of reference field in Crushes model
+  localField: '_id' //name of reference in local Model
+});
 
 //Boolean method to check if password changed since token created
 userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {

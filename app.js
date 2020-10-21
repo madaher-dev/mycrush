@@ -10,9 +10,8 @@ const hpp = require('hpp');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
-const resourceRouter = require('./routes/resourceRoutes');
+const crushRouter = require('./routes/crushRoutes');
 const userRouter = require('./routes/userRoutes');
-const reviewRouter = require('./routes/reviewRoutes');
 
 // 1- Global Middleware
 
@@ -62,9 +61,9 @@ app.use((req, res, next) => {
 
 // 2-Routes
 
-app.use('/api/v1/resource', resourceRouter);
+app.use('/api/v1/crush', crushRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/reviews', reviewRouter);
+// app.use('/api/v1/reviews', reviewRouter);
 
 // Error Handling
 

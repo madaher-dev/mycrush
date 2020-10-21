@@ -1,77 +1,77 @@
 const AppError = require('../utils/appError');
-const Resource = require('./../models/resourceModel');
-const APIFeatures = require('./../utils/APIFeatures');
-const catchAsync = require('./../utils/catchAsync');
+const Crush = require('./../models/crushModel');
+const APIFeatures = require('../utils/APIFeatures');
+const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 //CRUD
 
-exports.getAllResources = catchAsync(async (req, res, next) => {
-  //127.0.0.1:8000/api/v1/resource?sort=price,-duration&duration[gte]=5&difficulty=easy
+exports.getAllCrushes = catchAsync(async (req, res, next) => {
+  //127.0.0.1:8000/api/v1/crushes?sort=price,-duration&duration[gte]=5&difficulty=easy
   //-price for desending
   //,duration as a second sorting operator in case of tie
 
-  const features = new APIFeatures(Resource.find(), req.query)
+  const features = new APIFeatures(Crush.find(), req.query)
     .filter()
     .sort()
     .limitFields()
     .paginate();
 
-  const filteredResources = await features.query; //7ikmet rabina
+  const filteredCrushes = await features.query; //7ikmet rabina
 
   // Send responce
   res.status(200).json({
     status: 'success',
     data: {
-      resources: filteredResources
+      crushes: filteredCrushes
     }
   });
 });
 
-exports.createResource = catchAsync(async (req, res, next) => {
-  const newResource = await Resource.create(req.body);
+exports.createCrush = catchAsync(async (req, res, next) => {
+  const newCrush = await Crush.create(req.body);
   res.status(201).json({
     status: 'success',
     timestamp: req.requestTime,
     data: {
-      resource: newResource
+      crush: newCrush
     }
   });
 });
 
-exports.getAllResources = factory.getAll(Resource);
-exports.getResource = factory.getOne(Resource, { path: 'reviews' }); //reviews is populate option
-exports.createResource = factory.createOne(Resource);
-exports.updateResource = factory.updateOne(Resource);
-exports.deleteResource = factory.deleteOne(Resource);
+exports.getAllCrushes = factory.getAll(Crush);
+exports.getCrush = factory.getOne(Crush, { path: 'reviews' }); //reviews is populate option
+exports.createCrush = factory.createOne(Crush);
+exports.updateCrush = factory.updateOne(Crush);
+exports.deleteCrush = factory.deleteOne(Crush);
 
-exports.updateResource = catchAsync(async (req, res, next) => {
-  const resource = await Resource.findByIdAndUpdate(req.params.id, req.body, {
+exports.updateCrush = catchAsync(async (req, res, next) => {
+  const Crush = await Crush.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
   });
 
-  if (!resource) {
+  if (!crush) {
     return next(new AppError('No tour found with that ID!', 404));
   }
 
   res.status(200).json({
     status: 'success',
     data: {
-      resource
+      crush
     }
   });
 });
 
-exports.deleteResource = catchAsync(async (req, res, next) => {
-  const resource = await Resource.findByIdAndDelete(req.params.id);
+exports.deleteCrush = catchAsync(async (req, res, next) => {
+  const crush = await Crush.findByIdAndDelete(req.params.id);
 
-  if (!resource) {
+  if (!crush) {
     return next(new AppError('No tour found with that ID!', 404));
   }
 
   res.status(200).json({
     status: 'success',
-    message: 'Resource Deleted'
+    message: 'Crush Deleted'
   });
 });
 
@@ -87,14 +87,14 @@ exports.aliasTop = (req, res, next) => {
 
 // Check ID
 
-const resourceArray = [1, 2, 3, 4, 5, 6, 7];
+const crushArray = [1, 2, 3, 4, 5, 6, 7];
 exports.checkID = (req, res, next, val) => {
-  console.log(`Resource ID is ${val}`);
+  console.log(`Crush ID is ${val}`);
 
-  if (req.params.id * 1 > resourceArray.length) {
+  if (req.params.id * 1 > crushArray.length) {
     return res.status(404).json({
       status: 'fail',
-      message: 'Invalid resource ID'
+      message: 'Invalid crush ID'
     });
   }
   next();
@@ -113,16 +113,16 @@ exports.validateBody = (req, res, next) => {
 };
 
 //Aggregation Pipeline - ex: Statistics
-exports.resourceStats = catchAsync(async (req, res, next) => {
-  const stats = await Resource.aggregate([
-    //get all resources with rating above 4.3 and calculate the mathematical operations - can add multiple stages - can repeat stages
+exports.crushStats = catchAsync(async (req, res, next) => {
+  const stats = await Crush.aggregate([
+    //get all crushes with rating above 4.3 and calculate the mathematical operations - can add multiple stages - can repeat stages
     {
       $match: { rating: { $gte: 4.3 } }
     },
     {
       $group: {
         _id: { $toUpper: '$name' }, //Grouping , use null to disable
-        numResources: { $sum: 1 }, //calculate total results
+        numCrushes: { $sum: 1 }, //calculate total results
         numRatings: { $sum: '$ratingsQuantity' },
         avgRating: { $avg: '$rating' },
         avgPrice: { $avg: '$price' },
@@ -145,9 +145,9 @@ exports.resourceStats = catchAsync(async (req, res, next) => {
 // Aggregation pipeline Unwinding and Projecting
 // How many tours there are in each month in a given year
 
-exports.resourcePlan = catchAsync(async (req, res, next) => {
+exports.crushPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
-  const plan = await Resource.aggregate([
+  const plan = await Crush.aggregate([
     {
       $unwind: '$startDates' //deconstruct an array field from the input document then output one document per array
     },

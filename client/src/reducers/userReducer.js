@@ -6,7 +6,8 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   LOGOUT,
-  CLEAR_ERRORS
+  CLEAR_ERRORS,
+  LOADING_FAILED
 } from '../actions/Types';
 
 const initialState = {
@@ -46,6 +47,14 @@ export default (state = initialState, action) => {
         loading: false,
         user: null,
         error: action.payload
+      };
+    case LOADING_FAILED:
+      return {
+        ...state,
+        token: null,
+        isAuthenticated: false,
+        loading: false,
+        user: null
       };
     case CLEAR_ERRORS:
       return {

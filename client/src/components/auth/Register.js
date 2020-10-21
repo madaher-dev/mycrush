@@ -1,11 +1,11 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect } from 'react';
 import { setAlert } from '../../actions/alertActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   registerUser,
   clearErrors,
-  loadUser2
+  checkUser
 } from '../../actions/userActions';
 import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
@@ -31,7 +31,7 @@ const Register = ({
   error,
   clearErrors,
   setAlert,
-  loadUser2,
+  checkUser,
   loading
 }) => {
   const classes = useStyles();
@@ -43,10 +43,11 @@ const Register = ({
   }, [error, setAlert, clearErrors]);
 
   useEffect(() => {
-    loadUser2();
+    checkUser();
 
     // eslint-disable-next-line
   }, [isAuthenticated]);
+
   if (loading) {
     return <LinearProgress color="secondary" />;
   } else {
@@ -84,7 +85,7 @@ const Register = ({
                   passwordConfirm: ''
                 }}
                 validate={values => {
-                  const errors: Partial<Values> = {};
+                  const errors = {};
                   if (!values.name) {
                     errors.name = 'Please enter your name';
                   }
@@ -184,7 +185,7 @@ Register.propTypes = {
   isAuthenticated: PropTypes.bool,
   error: PropTypes.string,
   setAlert: PropTypes.func.isRequired,
-  loadUser2: PropTypes.func.isRequired,
+  checkUser: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
@@ -198,5 +199,5 @@ export default connect(mapStateToProps, {
   registerUser,
   clearErrors,
   setAlert,
-  loadUser2
+  checkUser
 })(Register);

@@ -1,8 +1,8 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect } from 'react';
 import { setAlert } from '../../actions/alertActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { loginUser, clearErrors, loadUser2 } from '../../actions/userActions';
+import { loginUser, clearErrors, checkUser } from '../../actions/userActions';
 import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 
@@ -27,7 +27,7 @@ const Login = ({
   error,
   clearErrors,
   setAlert,
-  loadUser2,
+  checkUser,
   loading
 }) => {
   const classes = useStyles();
@@ -40,7 +40,7 @@ const Login = ({
   }, [error, setAlert, clearErrors]);
 
   useEffect(() => {
-    loadUser2();
+    checkUser();
 
     // eslint-disable-next-line
   }, [isAuthenticated]);
@@ -79,7 +79,7 @@ const Login = ({
                   password: ''
                 }}
                 validate={values => {
-                  const errors: Partial<Values> = {};
+                  const errors = {};
 
                   if (!values.email) {
                     errors.email = 'Please enter a valid email';
@@ -155,7 +155,7 @@ Login.propTypes = {
   isAuthenticated: PropTypes.bool,
   error: PropTypes.string,
   setAlert: PropTypes.func.isRequired,
-  loadUser2: PropTypes.func.isRequired,
+  checkUser: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
@@ -169,5 +169,5 @@ export default connect(mapStateToProps, {
   loginUser,
   clearErrors,
   setAlert,
-  loadUser2
+  checkUser
 })(Login);

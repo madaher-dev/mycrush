@@ -6,7 +6,8 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   LOGOUT,
-  CLEAR_ERRORS
+  CLEAR_ERRORS,
+  LOADING_FAILED
 } from './Types';
 import axios from 'axios';
 
@@ -77,24 +78,29 @@ export const loadUser = () => async dispatch => {
   }
 };
 
-export const loadUser2 = () => async dispatch => {
+//Similar to loadUser but does not return error on fail
+export const checkUser = () => async dispatch => {
   try {
     const res = await axios.get('/api/v1/users/me');
     dispatch({
       type: USER_LOADED,
       payload: res.data
     });
-  } catch (err) {}
+  } catch (err) {
+    dispatch({
+      type: LOADING_FAILED
+    });
+  }
 };
 
 // Logout
 
-export const logout = () => async dispatch => (
+export const logout = () => async dispatch => {
   dispatch({
     type: LOGOUT
-  }),
-  dispatch(deleteCookie())
-);
+  });
+  dispatch(deleteCookie());
+};
 
 // Clear Errors
 export const clearErrors = () => ({ type: CLEAR_ERRORS });
@@ -102,7 +108,7 @@ export const clearErrors = () => ({ type: CLEAR_ERRORS });
 // Delete Cookie
 export const deleteCookie = () => async dispatch => {
   try {
-    const res = await axios.get('/api/v1/users/deleteCookie');
+    await axios.get('/api/v1/users/deleteCookie');
   } catch (err) {
     console.log(err);
   }

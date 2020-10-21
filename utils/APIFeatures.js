@@ -37,7 +37,7 @@ class APIFeatures {
       this.query = this.query.select(fields); //sort by
     } else {
       this.query = this.query.select('-__v'); //remove the __v field in case no fields queried (all except __v)
-      this.query = this.query.select('-secretResource');
+      this.query = this.query.select('-secretCrush');
     }
     return this;
   }

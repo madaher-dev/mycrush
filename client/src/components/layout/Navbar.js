@@ -1,33 +1,39 @@
-import React from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuList from '@material-ui/core/MenuList';
-import { Link } from 'react-router-dom';
-import HoverMenu from './HoverMenu';
+import Menu from '@material-ui/core/Menu';
+import MenuIcon from '@material-ui/icons/Menu';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import MoreIcon from '@material-ui/icons/MoreVert';
 import LoyaltyIcon from '@material-ui/icons/Loyalty';
+import MainMenu from './MainMenu';
+import { checkUser, logout } from '../../actions/userActions';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import RedeemIcon from '@material-ui/icons/Redeem';
+import Avatar from '@material-ui/core/Avatar';
+import { Link } from 'react-router-dom';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex'
-  },
-  paper: {
-    marginRight: theme.spacing(2)
-  },
   grow: {
     flexGrow: 1
   },
   menuButton: {
     marginRight: theme.spacing(2),
-    color: 'white'
+    display: 'block',
+    [theme.breakpoints.up('sm')]: {
+      display: 'none'
+    }
+  },
+  logo: {
+    marginRight: theme.spacing(1)
   },
   title: {
     display: 'block',
@@ -35,9 +41,14 @@ const useStyles = makeStyles(theme => ({
       display: 'block'
     }
   },
-  menu: {
+  mainMenu: {
+    position: 'relative',
+    marginRight: theme.spacing(6),
+    marginLeft: 0,
+    width: 'auto',
     display: 'none',
     [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(3),
       display: 'block'
     }
   },
@@ -53,142 +64,207 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up('md')]: {
       display: 'none'
     }
-  },
-
-  drop: {
-    zIndex: theme.zIndex.drawer + 1
   }
 }));
 
-export default function Navbar() {
+const Navbar = ({ checkUser, isAuthenticated, user, logout }) => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
 
-  const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen);
+  useEffect(() => {
+    checkUser();
+    // eslint-disable-next-line
+  }, []);
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
+  const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const handleProfileMenuOpen = event => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = event => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setOpen(false);
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
   };
 
-  function handleListKeyDown(event) {
-    if (event.key === 'Tab') {
-      event.preventDefault();
-      setOpen(false);
-    }
-  }
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+  };
 
-  // return focus to the button when we transitioned from !open -> open
-  const prevOpen = React.useRef(open);
-  React.useEffect(() => {
-    if (prevOpen.current === true && open === false) {
-      anchorRef.current.focus();
-    }
+  const handleMobileMenuOpen = event => {
+    setMobileMoreAnchorEl(event.currentTarget);
+  };
 
-    prevOpen.current = open;
-  }, [open]);
+  const onLogout = () => {
+    logout();
+    handleMobileMenuClose();
+  };
 
-  // const large = require('../../images/logo_header.png');
+  const menuId = 'primary-search-account-menu';
+  const renderMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+    </Menu>
+  );
+
+  let points = 0;
+  if (user) points = user.points;
+  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem>
+        <IconButton aria-label="show points" color="inherit">
+          <Badge badgeContent={points} color="secondary">
+            <RedeemIcon />
+          </Badge>
+        </IconButton>
+        <p>Points</p>
+      </MenuItem>
+      <MenuItem>
+        <IconButton aria-label="show notifications" color="inherit">
+          <Badge badgeContent={0} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Notifications</p>
+      </MenuItem>
+      <MenuItem>
+        <IconButton color="inherit">
+          <AccountCircle />
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+      <MenuItem onClick={onLogout} to="/" component={Link}>
+        <IconButton color="inherit">
+          <ExitToAppIcon />
+        </IconButton>
+        <p>Logout</p>
+      </MenuItem>
+    </Menu>
+  );
 
   return (
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
-          <div className={classes.sectionMobile}>
-            <HoverMenu />
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="open drawer"
+            aria-controls={menuId}
+            aria-haspopup="true"
+            onClick={handleProfileMenuOpen}
+          >
+            <MenuIcon />
+          </IconButton>
+          <LoyaltyIcon className={classes.logo} />
+          <Typography className={classes.title} variant="h6" noWrap>
+            My Crush
+          </Typography>
+          <div className={classes.grow} />
+          <div className={classes.mainMenu}>
+            <MainMenu />
           </div>
 
-          <Grid item container xs={12}>
-            <Grid item container xs={12} sm={6}>
-              <Grid item xs={12}>
-                <Typography className={classes.title} variant="h6" noWrap>
-                  <LoyaltyIcon /> My Crush
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid item container xs={false} sm={6} className={classes.menu}>
-              <Button to="/" component={Link} color="inherit">
-                Home
-              </Button>
-              <Button to="/about" component={Link} color="inherit">
-                About
-              </Button>
-              <Button
-                ref={anchorRef}
-                aria-controls={open ? 'menu-list-grow' : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-                color="inherit"
-              >
-                Contribute
-              </Button>
-              <ClickAwayListener onClickAway={handleClose}>
-                <Popper
-                  open={open}
-                  anchorEl={anchorRef.current}
-                  role={undefined}
-                  transition
-                  disablePortal
-                  onMouseLeave={handleClose}
-                  className={classes.drop}
+          {isAuthenticated ? (
+            <Fragment>
+              <div className={classes.sectionDesktop}>
+                <IconButton aria-label="show points web" color="inherit">
+                  <Badge badgeContent={points} color="secondary">
+                    <RedeemIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  aria-label="show 17 new notifications"
                   color="inherit"
                 >
-                  {({ TransitionProps, placement }) => (
-                    <Grow
-                      {...TransitionProps}
-                      style={{
-                        transformOrigin:
-                          placement === 'bottom'
-                            ? 'center top'
-                            : 'center bottom'
-                      }}
-                    >
-                      <Paper>
-                        <ClickAwayListener onClickAway={handleClose}>
-                          <MenuList
-                            autoFocusItem={open}
-                            id="menu-list-grow"
-                            onKeyDown={handleListKeyDown}
-                          >
-                            <MenuItem
-                              onClick={handleClose}
-                              to="/donate/Direct"
-                              component={Link}
-                            >
-                              To Samidoun
-                            </MenuItem>
-                            <MenuItem onClick={handleClose}>
-                              To Benificiary
-                            </MenuItem>
-                            <MenuItem
-                              onClick={handleClose}
-                              to="/musicians"
-                              component={Link}
-                            >
-                              To Musicians
-                            </MenuItem>
-                          </MenuList>
-                        </ClickAwayListener>
-                      </Paper>
-                    </Grow>
+                  <Badge badgeContent={0} color="secondary">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  // aria-controls={menuId}
+                  // aria-haspopup="true"
+                  // onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  {user.pic ? (
+                    <Avatar
+                      alt="Remy Sharp"
+                      src="/static/images/avatar/1.jpg"
+                    />
+                  ) : (
+                    <AccountCircle />
                   )}
-                </Popper>
-              </ClickAwayListener>
-              <Button color="inherit">Volunteer</Button>
-              <Button to="/contact" component={Link} color="inherit">
-                Contact
-              </Button>
-            </Grid>
-          </Grid>
-          <div className={classes.grow} />
+                </IconButton>
+                <IconButton
+                  onClick={onLogout}
+                  to="/"
+                  component={Link}
+                  color="inherit"
+                >
+                  <ExitToAppIcon />
+                </IconButton>
+              </div>
+              <div className={classes.sectionMobile}>
+                <IconButton
+                  aria-label="show more"
+                  aria-controls={mobileMenuId}
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </div>{' '}
+            </Fragment>
+          ) : (
+            <Fragment />
+          )}
         </Toolbar>
       </AppBar>
+      {renderMobileMenu}
+      {renderMenu}
     </div>
   );
-}
+};
+
+Navbar.propTypes = {
+  isAuthenticated: PropTypes.bool,
+  checkUser: PropTypes.func.isRequired,
+  user: PropTypes.object,
+  logout: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+  isAuthenticated: state.users.isAuthenticated,
+  user: state.users.user
+});
+
+export default connect(mapStateToProps, {
+  checkUser,
+  logout
+})(Navbar);
