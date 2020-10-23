@@ -28,6 +28,12 @@ const MainMenu = ({ isAuthenticated }) => {
       <Button to="/crushes" component={Link} color="inherit">
         Crushes
       </Button>
+      <Button to="/verify" component={Link} color="inherit">
+        Verify
+      </Button>
+      <Button to="/matches" component={Link} color="inherit">
+        Matches
+      </Button>
     </Grid>
   );
   return <Fragment>{isAuthenticated ? authLinks : guestLinks}</Fragment>;

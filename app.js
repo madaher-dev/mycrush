@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-
+const path = require('path');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -61,9 +61,18 @@ app.use((req, res, next) => {
 
 // 2-Routes
 
-app.use('/api/v1/crush', crushRouter);
+app.use('/api/v1/crushes', crushRouter);
 app.use('/api/v1/users', userRouter);
 // app.use('/api/v1/reviews', reviewRouter);
+
+// 3-Serving static assets in production
+if (process.env.NODE_ENV === 'production') {
+  //Set static folder
+  app.use(express.static('client/buid'));
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+  );
+}
 
 // Error Handling
 

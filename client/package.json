@@ -13,6 +13,7 @@
     "formik": "^2.2.0",
     "formik-material-ui": "^3.0.0",
     "material-ui-popup-state": "^1.7.0",
+    "moment": "^2.29.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-redux": "^7.2.1",
@@ -22,6 +23,9 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "universal-cookie": "^4.0.4"
+  },
+  "devDependencies": {
+    "source-map-loader": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

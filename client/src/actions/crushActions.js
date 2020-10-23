@@ -1,50 +1,51 @@
 import {
   ADD_CRUSH,
   DELETE_CRUSH,
-  SET_CURRENT,
-  CLEAR_CURRENT,
-  UPDATE_CRUSH,
-  FILTER_CRUSHS,
-  CLEAR_FILTER,
   CRUSH_ERROR,
   GET_CRUSHES,
-  CLEAR_CRUSHES
+  CLEAR_CRUSHES,
+  CLEAR_ERRORS
 } from './Types';
 import axios from 'axios';
 
 // Get Crushes
 export const getCrushes = () => async dispatch => {
   try {
-    const res = await axios.get('/api/v1/crushes');
-    dispatch({ type: GET_CRUSHES, payload: res.data });
+    const res = await axios.get('/api/v1/crushes/all');
+    dispatch({ type: GET_CRUSHES, payload: res.data.crushes });
   } catch (err) {
-    dispatch({ type: CRUSH_ERROR, payload: err.response.msg });
+    dispatch({ type: CRUSH_ERROR, payload: err.response.data.message });
   }
 };
 
-// Add Contact
-// export const addContact = contact => async dispatch => {
-//   const config = {
-//     headers: {
-//       'Content-Type': 'application/json'
-//     }
-//   };
-//   try {
-//     const res = await axios.post('/api/contacts', contact, config);
-//     dispatch({ type: ADD_CONTACT, payload: res.data });
-//   } catch (err) {
-//     dispatch({ type: CONTACT_ERROR, payload: err.response.msg });
-//   }
-// };
-// Delete Contact
-// export const deleteContact = id => async dispatch => {
-//   try {
-//     await axios.delete(`/api/contacts/${id}`);
-//     dispatch({ type: DELETE_CONTACT, payload: id });
-//   } catch (err) {
-//     dispatch({ type: CONTACT_ERROR, payload: err.response.msg });
-//   }
-// };
+// Add crush
+export const addCrush = crush => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  try {
+    const res = await axios.post('/api/v1/crushes', crush, config);
+    dispatch({ type: ADD_CRUSH, payload: res.data.data });
+  } catch (err) {
+    dispatch({ type: CRUSH_ERROR, payload: err.response.data.message });
+  }
+};
+//Delete Crush
+export const deleteCrush = id => async dispatch => {
+  try {
+    await axios.delete(`/api/v1/crushes/${id}`);
+    dispatch({ type: DELETE_CRUSH, payload: id });
+  } catch (err) {
+    dispatch({ type: CRUSH_ERROR, payload: err.response.data.message });
+  }
+};
+export const clearErrors = () => ({ type: CLEAR_ERRORS });
+
+// Clear Crushes
+export const clearCrushes = () => ({ type: CLEAR_CRUSHES });
 
 // Set Current Contact
 // export const setCurrent = contact => dispatch => {
@@ -82,5 +83,3 @@ export const getCrushes = () => async dispatch => {
 // });
 // // Clear Filter
 // export const clearFilter = () => ({ type: CLEAR_FILTER });
-// // Clear Contacts
-// export const clearContacts = () => ({ type: CLEAR_CONTACTS });

@@ -7,10 +7,10 @@ const crushSchema = mongoose.Schema(
     name: {
       type: String,
       required: [true, 'You should provide a name for your crush!'],
-      unique: true,
       maxlength: [40, 'A Crush name must be less than 40 characters!'],
       minlength: [5, 'A Crush name must have more than 5 characters!']
     },
+    phone: Number,
     facebook: {
       type: String,
       lowercase: true
@@ -25,8 +25,7 @@ const crushSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      lowercase: true,
-      validate: [validator.isEmail, 'Please provide a valid email']
+      lowercase: true
     },
 
     note: {
@@ -36,8 +35,8 @@ const crushSchema = mongoose.Schema(
 
     createdAt: {
       type: Date,
-      default: Date.now(),
-      select: false //does not return field in select query
+      default: Date.now()
+      // select: false //does not return field in select query
     },
     slug: String,
     secretCrush: {
@@ -92,25 +91,33 @@ crushSchema.index({ instagram: 1 });
 crushSchema.index({ twitter: 1 });
 crushSchema.index({ name: 1 });
 
-crushSchema.post('save', function(doc, next) {
-  //access to finished document
-  console.log(doc);
-  next();
-});
-// Query middlewre
+// crushSchema.post('save', function(doc, next) {
+//   //access to finished document
+//   console.log(doc);
+//   next();
+// });
+// Query middlewre used to remove secret crushes and add start time
 crushSchema.pre(/^find/, function(next) {
   //crushSchema.pre('find', function(next) {
   //runs before find queries
   this.find({ secretCrush: { $ne: true } });
-  // this.start = Date.now();
+  this.start = Date.now();
   next();
 });
-crushSchema.post(/^find/, function(docs, next) {
-  const time = Date.now() - this.start;
-  console.log(`The query took ${time} milliseconds!`);
-  next();
-});
+
+// // Query middlewre used to log time of query
+// crushSchema.post(/^find/, function(docs, next) {
+//   const time = Date.now() - this.start;
+//   console.log(`The query took ${time} milliseconds!`);
+//   next();
+// });
 
 const Crush = mongoose.model('Crush', crushSchema);
+const Archive = mongoose.model('Archive', crushSchema);
 
-module.exports = Crush;
+// module.exports = Crush;
+
+module.exports = {
+  Crush: Crush,
+  Archive: Archive
+};

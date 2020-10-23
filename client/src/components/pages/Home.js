@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-const Home = ({ checkUser, isAuthenticated, loading }) => {
+const Home = ({ isAuthenticated, loading }) => {
   if (loading) {
     return <LinearProgress color="secondary" />;
   } else {

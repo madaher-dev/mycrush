@@ -33,7 +33,7 @@ export const registerUser = user => async dispatch => {
       payload: err.response.data.message
     });
 
-    dispatch(deleteCookie());
+    dispatch(logout());
   }
 };
 
@@ -58,7 +58,7 @@ export const loginUser = user => async dispatch => {
       type: LOGIN_FAIL,
       payload: err.response.data.message
     });
-    dispatch(deleteCookie());
+    dispatch(logout());
   }
 };
 // Load User
@@ -96,20 +96,24 @@ export const checkUser = () => async dispatch => {
 // Logout
 
 export const logout = () => async dispatch => {
-  dispatch({
-    type: LOGOUT
-  });
-  dispatch(deleteCookie());
+  try {
+    await axios.get('/api/v1/users/deleteCookie');
+    dispatch({
+      type: LOGOUT
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 // Clear Errors
 export const clearErrors = () => ({ type: CLEAR_ERRORS });
 
-// Delete Cookie
-export const deleteCookie = () => async dispatch => {
-  try {
-    await axios.get('/api/v1/users/deleteCookie');
-  } catch (err) {
-    console.log(err);
-  }
-};
+// // Delete Cookie
+// export const deleteCookie = () => async dispatch => {
+//   try {
+//     await axios.get('/api/v1/users/deleteCookie');
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };

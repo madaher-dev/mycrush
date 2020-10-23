@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Navbar = ({ checkUser, isAuthenticated, user, logout }) => {
+const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
   const classes = useStyles();
 
   useEffect(() => {
@@ -119,8 +119,6 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout }) => {
     </Menu>
   );
 
-  let points = 0;
-  if (user) points = user.points;
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
@@ -154,7 +152,7 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout }) => {
         </IconButton>
         <p>Profile</p>
       </MenuItem>
-      <MenuItem onClick={onLogout} to="/" component={Link}>
+      <MenuItem onClick={onLogout} to="/login" component={Link}>
         <IconButton color="inherit">
           <ExitToAppIcon />
         </IconButton>
@@ -256,12 +254,14 @@ Navbar.propTypes = {
   isAuthenticated: PropTypes.bool,
   checkUser: PropTypes.func.isRequired,
   user: PropTypes.object,
-  logout: PropTypes.func.isRequired
+  logout: PropTypes.func.isRequired,
+  points: PropTypes.number.isRequired
 };
 
 const mapStateToProps = state => ({
   isAuthenticated: state.users.isAuthenticated,
-  user: state.users.user
+  user: state.users.user,
+  points: state.users.points
 });
 
 export default connect(mapStateToProps, {

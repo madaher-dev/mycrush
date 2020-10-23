@@ -67,9 +67,9 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = Model =>
   catchAsync(async (req, res, next) => {
-    // To allow for nested GET reviews on tour (hack)
+    // To allow for nested GET crushes on user (hack) - doesnt work becuase restricted to admin
     let filter = {};
-    if (req.params.tourId) filter = { tour: req.params.tourId };
+    // if (req.params.userId) filter = { sourceId: req.params.userId };
 
     const features = new APIFeatures(Model.find(filter), req.query)
       .filter()

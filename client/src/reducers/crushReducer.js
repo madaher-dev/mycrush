@@ -1,22 +1,20 @@
 import {
   ADD_CRUSH,
   DELETE_CRUSH,
-  SET_CURRENT,
-  CLEAR_CURRENT,
-  UPDATE_CRUSH,
-  FILTER_CRUSHES,
-  CLEAR_FILTER,
   CRUSH_ERROR,
   GET_CRUSHES,
-  CLEAR_CRUSHES
+  CLEAR_CRUSHES,
+  LOGOUT,
+  CLEAR_ERRORS
 } from '../actions/Types';
 
 const initialState = {
-  crushes: null,
+  crushes: [{}],
   current: null,
   filtered: null,
   error: null,
-  loading: true
+  loading: true,
+  added: null
 };
 
 export default (state = initialState, action) => {
@@ -24,23 +22,32 @@ export default (state = initialState, action) => {
     case ADD_CRUSH:
       return {
         ...state,
-        crushes: [action.payload, ...state.contacts],
+        crushes: [action.payload, ...state.crushes],
+        loading: false,
+        added: state.added + 1
+      };
+    case GET_CRUSHES:
+      return {
+        ...state,
+        crushes: action.payload,
         loading: false
       };
-    // case GET_CONTACTS:
-    //   return {
-    //     ...state,
-    //     contacts: action.payload,
-    //     loading: false
-    //   };
-    // case DELETE_CONTACT:
-    //   return {
-    //     ...state,
-    //     contacts: state.contacts.filter(
-    //       contact => contact._id !== action.payload
-    //     ),
-    //     loading: false
-    //   };
+    case DELETE_CRUSH:
+      return {
+        ...state,
+        crushes: state.crushes.filter(crush => crush._id !== action.payload),
+        loading: false
+      };
+    case CRUSH_ERROR:
+      return {
+        ...state,
+        error: action.payload
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null
+      };
     // case SET_CURRENT:
     //   return {
     //     ...state,
@@ -73,19 +80,16 @@ export default (state = initialState, action) => {
     //     filtered: null
     //   };
 
-    // case CLEAR_CONTACTS:
-    //   return {
-    //     ...state,
-    //     filtered: null,
-    //     contacts: null,
-    //     error: null,
-    //     current: null
-    //   };
-    // case CONTACT_ERROR:
-    //   return {
-    //     ...state,
-    //     error: action.payload
-    //   };
+    case CLEAR_CRUSHES:
+    case LOGOUT:
+      return {
+        ...state,
+        filtered: null,
+        crushes: [],
+        error: null,
+        current: null
+      };
+
     default:
       return state;
   }

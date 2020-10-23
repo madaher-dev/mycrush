@@ -7,7 +7,8 @@ import {
   LOGIN_FAIL,
   LOGOUT,
   CLEAR_ERRORS,
-  LOADING_FAILED
+  LOADING_FAILED,
+  ADD_CRUSH
 } from '../actions/Types';
 
 const initialState = {
@@ -15,7 +16,8 @@ const initialState = {
   isAuthenticated: null,
   loading: true,
   user: null,
-  error: null
+  error: null,
+  points: 0
 };
 
 export default (state = initialState, action) => {
@@ -27,14 +29,16 @@ export default (state = initialState, action) => {
         user: action.payload.data.user,
         token: action.payload.token,
         isAuthenticated: true,
-        loading: false
+        loading: false,
+        points: action.payload.data.user.points
       };
     case USER_LOADED:
       return {
         ...state,
         isAuthenticated: true,
         loading: false,
-        user: action.payload.data.data
+        user: action.payload.data.data,
+        points: action.payload.data.data.points
       };
     case REGISTER_FAIL:
     case LOGIN_FAIL:
@@ -46,7 +50,8 @@ export default (state = initialState, action) => {
         isAuthenticated: false,
         loading: false,
         user: null,
-        error: action.payload
+        error: action.payload,
+        points: 0
       };
     case LOADING_FAILED:
       return {
@@ -54,12 +59,18 @@ export default (state = initialState, action) => {
         token: null,
         isAuthenticated: false,
         loading: false,
-        user: null
+        user: null,
+        points: 0
       };
     case CLEAR_ERRORS:
       return {
         ...state,
         error: null
+      };
+    case ADD_CRUSH:
+      return {
+        ...state,
+        points: state.points - 1
       };
     default:
       return state;

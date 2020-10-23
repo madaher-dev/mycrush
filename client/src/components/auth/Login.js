@@ -39,117 +39,114 @@ const Login = ({
     }
   }, [error, setAlert, clearErrors]);
 
-  useEffect(() => {
-    checkUser();
+  // useEffect(() => {
+  //   checkUser();
 
-    // eslint-disable-next-line
-  }, [isAuthenticated]);
-  if (loading) {
-    return <LinearProgress />;
+  //   // eslint-disable-next-line
+  // }, []);
+  // if (loading) {
+  //   return <LinearProgress />;
+  // } else {
+  if (isAuthenticated) {
+    return <Redirect to="/welcome" />;
   } else {
-    if (isAuthenticated) {
-      return <Redirect to="/welcome" />;
-    } else {
-      return (
+    return (
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justify="center"
+      >
         <Grid
+          item
           container
-          spacing={0}
-          direction="column"
+          xs={12}
+          sm={4}
+          className={classes.main}
           alignItems="center"
           justify="center"
         >
-          <Grid
-            item
-            container
-            xs={12}
-            sm={4}
-            className={classes.main}
-            alignItems="center"
-            justify="center"
-          >
-            <Typography>
-              My Crush allows you to connect with your secret admireres. Your
-              crushes can search for you by Name, Phone, or various social media
-              platforms.
-            </Typography>
-            <Grid item xs={12} sm={8}>
-              <Formik
-                initialValues={{
-                  email: '',
-                  password: ''
-                }}
-                validate={values => {
-                  const errors = {};
+          <Typography>
+            My Crush allows you to connect with your secret admireres. Your
+            crushes can search for you by Name, Phone, or various social media
+            platforms.
+          </Typography>
+          <Grid item xs={12} sm={8}>
+            <Formik
+              initialValues={{
+                email: '',
+                password: ''
+              }}
+              validate={values => {
+                const errors = {};
 
-                  if (!values.email) {
-                    errors.email = 'Please enter a valid email';
-                  } else if (
-                    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(
-                      values.email
-                    )
-                  ) {
-                    errors.email = 'Invalid email address';
-                  }
-                  if (!values.password) {
-                    errors.password = 'Please enter a password';
-                  } else if (values.password.length < 8) {
-                    errors.password =
-                      'Password should be at least 8 characters';
-                  }
+                if (!values.email) {
+                  errors.email = 'Please enter a valid email';
+                } else if (
+                  !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(
+                    values.email
+                  )
+                ) {
+                  errors.email = 'Invalid email address';
+                }
+                if (!values.password) {
+                  errors.password = 'Please enter a password';
+                } else if (values.password.length < 8) {
+                  errors.password = 'Password should be at least 8 characters';
+                }
 
-                  return errors;
-                }}
-                onSubmit={(values, { setSubmitting }) => {
-                  setTimeout(() => {
-                    setSubmitting(false);
-                    loginUser(values);
-                  }, 500);
-                }}
-              >
-                {({ submitForm, isSubmitting, touched, errors }) => (
-                  <Form>
-                    <Box margin={1}>
-                      <Field
-                        component={TextField}
-                        name="email"
-                        type="email"
-                        label="Email"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </Box>
-                    <Box margin={1}>
-                      <Field
-                        component={TextField}
-                        type="password"
-                        label="Password"
-                        name="password"
-                        variant="outlined"
-                        fullWidth
-                      />
-                    </Box>
+                return errors;
+              }}
+              onSubmit={(values, { setSubmitting }) => {
+                setTimeout(() => {
+                  setSubmitting(false);
+                  loginUser(values);
+                }, 500);
+              }}
+            >
+              {({ submitForm, isSubmitting, touched, errors }) => (
+                <Form>
+                  <Box margin={1}>
+                    <Field
+                      component={TextField}
+                      name="email"
+                      type="email"
+                      label="Email"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  </Box>
+                  <Box margin={1}>
+                    <Field
+                      component={TextField}
+                      type="password"
+                      label="Password"
+                      name="password"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  </Box>
 
-                    <Box margin={1}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={isSubmitting}
-                        onClick={submitForm}
-                      >
-                        Login
-                      </Button>
-                    </Box>
-                  </Form>
-                )}
-              </Formik>
-            </Grid>
+                  <Box margin={1}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={isSubmitting}
+                      onClick={submitForm}
+                    >
+                      Login
+                    </Button>
+                  </Box>
+                </Form>
+              )}
+            </Formik>
           </Grid>
         </Grid>
-      );
-    }
+      </Grid>
+    );
   }
 };
-
 Login.propTypes = {
   loginUser: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,

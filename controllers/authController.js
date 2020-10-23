@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
+const { Crush } = require('./../models/crushModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
@@ -11,6 +12,34 @@ const signToken = id => {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
+
+// after signup search for matching crushes and label self as target ID
+
+const labelSelf = catchAsync(async user => {
+  let { name, email, phone, twitter, instagram, facebook } = user;
+
+  if (!name) name = 'empty';
+  if (!phone) phone = 0;
+  if (!email) email = 'empty';
+  if (!twitter) twitter = 'empty';
+  if (!instagram) instagram = 'empty';
+  if (!facebook) facebook = 'empty';
+
+  await Crush.updateMany(
+    {
+      $or: [
+        { name },
+        { otherName: name },
+        { email },
+        { phone },
+        { twitter },
+        { instagram },
+        { facebook }
+      ]
+    },
+    { targetId: user.id }
+  );
+});
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
@@ -24,6 +53,8 @@ const createSendToken = (user, statusCode, res) => {
 
   res.cookie('jwt', token, cookieOptions);
 
+  // Label self in all matching crushes
+  labelSelf(user);
   // Remove password from output
   user.password = undefined;
 
@@ -67,18 +98,18 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
-  let token = null;
-  if (req.headers.cookie) {
-    token = req.headers.cookie.split('=')[1];
-  }
-
+  let token;
   // if (
   //   req.headers.authorization &&
   //   req.headers.authorization.startsWith('Bearer')
   // ) {
   //   token = req.headers.authorization.split(' ')[1];
+  // } else if (req.cookies.jwt) {
+  //   token = req.cookies.jwt;
   // }
-
+  if (req.headers.cookie) {
+    token = req.headers.cookie.split('=')[1];
+  }
   if (!token) {
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
@@ -106,6 +137,20 @@ exports.protect = catchAsync(async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
   next();
+});
+
+exports.privateCrush = catchAsync(async (req, res, next) => {
+  if (req.user.type === 'admin' || req.user.type === 'support') next();
+  else {
+    const user = req.user.id;
+    const crush = req.params.id;
+    const currentUser = await Crush.findOne({ _id: crush, sourceId: user });
+    if (!currentUser) {
+      return next(new AppError('You do not have access to this crush!', 401));
+    }
+
+    next();
+  }
 });
 
 exports.restrictTo = (...roles) => {
@@ -212,7 +257,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteCookie = catchAsync(async (req, res, next) => {
-  console.log('test');
   const token = '';
   const cookieOptions = {
     expires: new Date(Date.now() + 1),

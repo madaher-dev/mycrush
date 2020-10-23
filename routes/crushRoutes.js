@@ -2,52 +2,70 @@ const express = require('express');
 const router = express.Router();
 
 const crushController = require('../controllers/crushController');
-const reviewRouter = require('./reviewRoutes');
 const authController = require('../controllers/authController');
 
-// A Middleware that runs only when there is a parameter
+// // A Middleware that runs only when there is a parameter
 
-router.param('id', crushController.checkID);
-
-//Reviews middleware -mounting router not controller
-// router.use('/:tourId/reviews', reviewRouter);
-
-// Top 5 implementing Aliasing
-router
-  .route('/top-5')
-  .get(crushController.aliasTop, crushController.getAllCrushes);
+// router.param('id', crushController.checkID);
 
 // Stats implementing aggregate
-router.route('/stats').get(crushController.crushStats);
+router
+  .route('/stats')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'support'),
+    crushController.crushStats
+  );
 
 // Monthly Plan implementing aggregate Unwinding and Projecting
 
-router
-  .route('/plan/:year')
-  .get(
-    authController.protect,
-    authController.restrictTo('admin', 'lead-guide'),
-    crushController.crushPlan
-  );
+// router
+//   .route('/plan/:year')
+//   .get(
+//     authController.protect,
+//     authController.restrictTo('admin', 'lead-guide'),
+//     crushController.crushPlan
+//   );
 
+// Get All Crushes - Create Crush
 router
   .route('/')
-  .get(crushController.getAllCrushes)
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'support'),
+    crushController.getAllCrushes
+  )
   .post(
     authController.protect,
-    authController.restrictTo('admin', 'lead-guide', 'guide'),
-    crushController.validateBody,
+    crushController.setSourceIds,
+    crushController.checkSourceDup,
+    crushController.checkPoints,
+    crushController.checkUserExists,
     crushController.createCrush
   );
 
+//Get All User's Crushes
 router
-  .route('/:id/:optional?')
-  .get(crushController.getCrush)
+  .route('/all')
+  .get(authController.protect, crushController.getUserCrushes);
+
+// Get - Update - Delete Crush by ID
+router
+  .route('/:id')
+  .get(
+    authController.protect,
+    authController.privateCrush,
+    crushController.getCrush
+  )
   .patch(
     authController.protect,
-    authController.restrictTo('admin', 'lead-guide'),
+    authController.restrictTo('admin', 'support'),
     crushController.updateCrush
   )
-  .delete(crushController.deleteCrush);
+  .delete(
+    authController.protect,
+    authController.privateCrush,
+    crushController.deleteCrush
+  );
 
 module.exports = router;
