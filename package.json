@@ -4,9 +4,10 @@
   "description": "Crush Matching app",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "startprod": "SET NODE_ENV=production&&nodemon server.js",
     "debug": "ndb server.js",
+    "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "clientinstall": "npm i --prefix client",
     "dev": "concurrently \"npm run startprod\" \"npm run client\"",
