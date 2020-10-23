@@ -16,7 +16,11 @@ const userRouter = require('./routes/userRoutes');
 // 1- Global Middleware
 
 // Set security HTTP headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
 
 // Limit requests from same API
 const limiter = rateLimit({
@@ -75,7 +79,6 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
   );
 }
-
 // Error Handling
 
 app.all('*', (req, res, next) => {
