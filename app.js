@@ -1,5 +1,5 @@
 const express = require('express');
-
+const compression = require('compression');
 const app = express();
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -35,6 +35,8 @@ app.use(mongoSanitize());
 // Data sanitization against XSS
 app.use(xss());
 
+// Compression
+app.use(compression());
 // Prevent parameter pollution
 app.use(
   hpp({

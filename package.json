@@ -5,18 +5,19 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "startprod": "SET NODE_ENV=production&&nodemon server.js",
+    "startdev": "SET NODE_ENV=production&&nodemon server.js",
     "debug": "ndb server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "clientinstall": "npm i --prefix client",
-    "dev": "concurrently \"npm run startprod\" \"npm run client\"",
+    "dev": "concurrently \"npm run startdev\" \"npm run client\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "author": "Mohamad Daher",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.0.0",

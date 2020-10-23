@@ -49,7 +49,7 @@ const createSendToken = (user, statusCode, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -262,7 +262,7 @@ exports.deleteCookie = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + 1),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
   res.status(200).json({

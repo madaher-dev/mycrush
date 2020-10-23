@@ -1,5 +1,5 @@
 node_modules/
-config.env
+*.env
 
 /client/build
 .DS_Store
