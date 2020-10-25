@@ -10,7 +10,7 @@ const Home = ({ isAuthenticated, loading }) => {
     return <LinearProgress color="secondary" />;
   } else {
     return isAuthenticated ? (
-      <Redirect to="/welcome" />
+      <Redirect to="/welcome2" />
     ) : (
       <Redirect to="/register" />
     );

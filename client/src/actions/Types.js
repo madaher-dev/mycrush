@@ -10,6 +10,7 @@ export const REMOVE_ALERT = 'REMOVE_ALERT';
 export const CRUSH_ERROR = 'CRUSH_ERROR';
 export const GET_CRUSHES = 'GET_CRUSHES';
 export const CLEAR_CRUSHES = 'CLEAR_CRUSHES';
+export const SET_CRUSH_LOADING = 'SET_CRUSH_LOADING';
 
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 export const REGISTER_FAIL = 'REGISTER_FAIL';
@@ -19,4 +20,7 @@ export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGIN_FAIL = 'LOGIN_FAIL';
 export const LOGOUT = 'LOGOUT';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
-export const LOADING_FAILED = 'LOADING_FAILED';
+export const LINK_SENT = 'LINK_SENT';
+export const RESET_PASS_SUCCESSS = 'RESET_PASS_SUCCESSS';
+export const SET_USER_LOADING = 'SET_USER_LOADING';
+export const TOKEN_CONFIRMED = 'TOKEN_CONFIRMED';

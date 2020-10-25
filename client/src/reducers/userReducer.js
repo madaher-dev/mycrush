@@ -7,30 +7,40 @@ import {
   LOGIN_FAIL,
   LOGOUT,
   CLEAR_ERRORS,
-  LOADING_FAILED,
-  ADD_CRUSH
+  ADD_CRUSH,
+  SET_USER_LOADING,
+  LINK_SENT,
+  RESET_PASS_SUCCESSS,
+  TOKEN_CONFIRMED
 } from '../actions/Types';
 
 const initialState = {
-  token: null,
   isAuthenticated: null,
   loading: true,
   user: null,
   error: null,
-  points: 0
+  points: 0,
+  linkSent: false,
+  email_token: false
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
+    case RESET_PASS_SUCCESSS:
       return {
         ...state,
         user: action.payload.data.user,
-        token: action.payload.token,
         isAuthenticated: true,
         loading: false,
         points: action.payload.data.user.points
+      };
+    case TOKEN_CONFIRMED:
+      return {
+        ...state,
+        email_token: true,
+        user: action.payload
       };
     case USER_LOADED:
       return {
@@ -46,31 +56,36 @@ export default (state = initialState, action) => {
     case LOGOUT:
       return {
         ...state,
-        token: null,
         isAuthenticated: false,
         loading: false,
         user: null,
         error: action.payload,
-        points: 0
+        points: 0,
+        linkSent: false
       };
-    case LOADING_FAILED:
-      return {
-        ...state,
-        token: null,
-        isAuthenticated: false,
-        loading: false,
-        user: null,
-        points: 0
-      };
+
     case CLEAR_ERRORS:
       return {
         ...state,
-        error: null
+        error: null,
+        linkSent: false
       };
     case ADD_CRUSH:
       return {
         ...state,
         points: state.points - 1
+      };
+    case SET_USER_LOADING:
+      return {
+        ...state,
+        loading: true
+      };
+    case LINK_SENT:
+      return {
+        ...state,
+        linkSent: true,
+        loading: false,
+        error: action.payload
       };
     default:
       return state;

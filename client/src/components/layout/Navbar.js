@@ -18,7 +18,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import RedeemIcon from '@material-ui/icons/Redeem';
 import Avatar from '@material-ui/core/Avatar';
-import { Link } from 'react-router-dom';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles(theme => ({
@@ -152,7 +151,7 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
         </IconButton>
         <p>Profile</p>
       </MenuItem>
-      <MenuItem onClick={onLogout} to="/login" component={Link}>
+      <MenuItem onClick={onLogout}>
         <IconButton color="inherit">
           <ExitToAppIcon />
         </IconButton>
@@ -218,12 +217,7 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
                     <AccountCircle />
                   )}
                 </IconButton>
-                <IconButton
-                  onClick={onLogout}
-                  to="/"
-                  component={Link}
-                  color="inherit"
-                >
+                <IconButton onClick={onLogout} color="inherit">
                   <ExitToAppIcon />
                 </IconButton>
               </div>

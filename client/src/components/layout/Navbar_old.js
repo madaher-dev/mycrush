@@ -110,11 +110,11 @@ const Navbar = ({ checkUser, loading, isAuthenticated, user, logout }) => {
   }, [open]);
 
   // const large = require('../../images/logo_header.png');
-  useEffect(() => {
-    checkUser();
+  // useEffect(() => {
+  //   checkUser();
 
-    // eslint-disable-next-line
-  }, [isAuthenticated]);
+  //   // eslint-disable-next-line
+  // }, [isAuthenticated]);
 
   const onLogout = () => {
     logout();

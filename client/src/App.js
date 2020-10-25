@@ -4,14 +4,15 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import Navbar from './components/layout/Navbar';
-import Home from './components/pages/Home';
 import Crushes from './components/pages/Crushes';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
+import Forgot from './components/auth/Forgot';
 import Footer from './components/layout/Footer';
 import Welcome from './components/pages/Welcome';
 import Alerts from './components/layout/Alerts';
 import PrivateRoute from './components/routing/PrivateRoute';
+import ResetPassword from './components/auth/ResetPassword';
 
 const theme = createMuiTheme({
   palette: {
@@ -43,11 +44,17 @@ const App = () => {
               <Alerts />
               <Navbar />
               <Switch>
-                <Route exact path="/" component={Home} />
+                <Route exact path="/" component={Login} />
                 <PrivateRoute exact path="/welcome" component={Welcome} />
                 <PrivateRoute exact path="/crushes" component={Crushes} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
+                <Route exact path="/forgot" component={Forgot} />
+                <Route
+                  exact
+                  path="/reset/:email_token"
+                  component={ResetPassword}
+                />
                 {/* <Route exact path='/about' component={About} />
                 <Route exact path='/donate/:channel' component={Donate} /> */}
               </Switch>

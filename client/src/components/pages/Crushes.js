@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { setAlert } from '../../actions/alertActions';
 import PropTypes from 'prop-types';
@@ -10,7 +10,12 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { Formik, Form, Field } from 'formik';
 import { Button, InputAdornment } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { addCrush, getCrushes, clearErrors } from '../../actions/crushActions';
+import {
+  addCrush,
+  getCrushes,
+  clearErrors,
+  setLoading
+} from '../../actions/crushActions';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import TwitterIcon from '@material-ui/icons/Twitter';
@@ -57,10 +62,12 @@ const Crushes = ({
   added,
   error,
   clearErrors,
-  setAlert
+  setAlert,
+  setLoading
 }) => {
   const classes = useStyles();
   useEffect(() => {
+    setLoading();
     getCrushes();
 
     // eslint-disable-next-line
@@ -259,7 +266,7 @@ const Crushes = ({
     </Grid>
   );
   const listView = (
-    <Grid item container xs={12} sm={6}>
+    <Grid item container xs={11} sm={6}>
       <Typography>
         Click on the <AddCircleOutlineIcon /> Button to add a new Crush. Your
         crush will be notified that they have a secret crush but will never know
@@ -278,22 +285,22 @@ const Crushes = ({
           item
           container
           spacing={2}
-          direction="column"
-          justify="flex-start"
-          alignItems="center"
+          // direction="column"
+          justify="center"
+          // alignItems="center"
         >
           {crushes.map(crush => (
             //Looping through Crushes array and list Crush Item Component
 
             <Grid item key={crush._id}>
-              <Grid item>
-                <CrushCard crush={crush} />
-              </Grid>
+              <CrushCard crush={crush} />
             </Grid>
           ))}
         </Grid>
-      ) : (
+      ) : loading ? (
         <LinearProgress />
+      ) : (
+        <Fragment />
       )}
     </Grid>
   );
@@ -318,7 +325,8 @@ Crushes.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.string,
   clearErrors: PropTypes.func.isRequired,
-  setAlert: PropTypes.func.isRequired
+  setAlert: PropTypes.func.isRequired,
+  setLoading: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -332,5 +340,6 @@ export default connect(mapStateToProps, {
   addCrush,
   getCrushes,
   clearErrors,
-  setAlert
+  setAlert,
+  setLoading
 })(Crushes);

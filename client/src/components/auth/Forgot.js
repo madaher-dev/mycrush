@@ -2,16 +2,17 @@ import React, { useEffect } from 'react';
 import { setAlert } from '../../actions/alertActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { loginUser, clearErrors } from '../../actions/userActions';
+import { forgotPass, clearErrors, setLoading } from '../../actions/userActions';
 import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Formik, Form, Field } from 'formik';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
+import Backdrop from '@material-ui/core/Backdrop';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -22,27 +23,43 @@ const useStyles = makeStyles(theme => ({
   },
   loginButton: {
     flexGrow: 1
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
   }
 }));
 
 const Login = ({
-  loginUser,
+  forgotPass,
   isAuthenticated,
   error,
   clearErrors,
-  setAlert
+  setAlert,
+  linkSent,
+  setLoading,
+  loading
 }) => {
   const classes = useStyles();
 
   useEffect(() => {
-    if (error) {
+    if (error && !linkSent) {
       setAlert(error, 'error');
       clearErrors();
     }
-  }, [error, setAlert, clearErrors]);
+  }, [linkSent, error, setAlert, clearErrors]);
+
+  useEffect(() => {
+    if (linkSent) {
+      setAlert(error, 'success');
+      clearErrors();
+    }
+  }, [linkSent, setAlert, clearErrors, error]);
 
   if (isAuthenticated) {
     return <Redirect to="/welcome" />;
+  } else if (linkSent) {
+    return <Redirect to="/login" />;
   } else {
     return (
       <Grid
@@ -62,15 +79,13 @@ const Login = ({
           justify="center"
         >
           <Typography>
-            My Crush allows you to connect with your secret admireres. Your
-            crushes can search for you by Name, Phone, or various social media
-            platforms.
+            If you forget your password you can reset it by providing your
+            registered email. You will reveive a reset password link by email.
           </Typography>
           <Grid item xs={12} sm={8}>
             <Formik
               initialValues={{
-                email: '',
-                password: ''
+                email: ''
               }}
               validate={values => {
                 const errors = {};
@@ -84,18 +99,14 @@ const Login = ({
                 ) {
                   errors.email = 'Invalid email address';
                 }
-                if (!values.password) {
-                  errors.password = 'Please enter a password';
-                } else if (values.password.length < 8) {
-                  errors.password = 'Password should be at least 8 characters';
-                }
 
                 return errors;
               }}
               onSubmit={(values, { setSubmitting }) => {
                 setTimeout(() => {
                   setSubmitting(false);
-                  loginUser(values);
+                  setLoading();
+                  forgotPass(values);
                 }, 500);
               }}
             >
@@ -111,39 +122,23 @@ const Login = ({
                       fullWidth
                     />
                   </Box>
-                  <Box margin={1}>
-                    <Field
-                      component={TextField}
-                      type="password"
-                      label="Password"
-                      name="password"
-                      variant="outlined"
-                      fullWidth
-                    />
-                  </Box>
 
                   <Box margin={1}>
-                    <Grid container>
-                      <Grid item className={classes.loginButton}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          disabled={isSubmitting}
-                          onClick={submitForm}
-                        >
-                          Login
-                        </Button>
-                      </Grid>
-                      <Grid item className={classes.forgotLink}>
-                        <Typography>
-                          <Link href="/forgot">Forgot Password?</Link>
-                        </Typography>
-                      </Grid>
-                    </Grid>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={isSubmitting}
+                      onClick={submitForm}
+                    >
+                      Send
+                    </Button>
                   </Box>
                 </Form>
               )}
             </Formik>
+            <Backdrop className={classes.backdrop} open={loading}>
+              <CircularProgress color="inherit" />
+            </Backdrop>
           </Grid>
         </Grid>
       </Grid>
@@ -151,19 +146,24 @@ const Login = ({
   }
 };
 Login.propTypes = {
-  loginUser: PropTypes.func.isRequired,
+  forgotPass: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
   error: PropTypes.string,
-  setAlert: PropTypes.func.isRequired
+  setAlert: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  setLoading: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   isAuthenticated: state.users.isAuthenticated,
-  error: state.users.error
+  error: state.users.error,
+  loading: state.users.loading,
+  linkSent: state.users.linkSent
 });
 
 export default connect(mapStateToProps, {
-  loginUser,
+  forgotPass,
   clearErrors,
-  setAlert
+  setAlert,
+  setLoading
 })(Login);

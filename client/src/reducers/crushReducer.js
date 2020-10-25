@@ -5,7 +5,8 @@ import {
   GET_CRUSHES,
   CLEAR_CRUSHES,
   LOGOUT,
-  CLEAR_ERRORS
+  CLEAR_ERRORS,
+  SET_CRUSH_LOADING
 } from '../actions/Types';
 
 const initialState = {
@@ -47,6 +48,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         error: null
+      };
+    case SET_CRUSH_LOADING:
+      return {
+        ...state,
+        loading: true
       };
     // case SET_CURRENT:
     //   return {

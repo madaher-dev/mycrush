@@ -49,15 +49,14 @@ const createSendToken = (user, statusCode, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
 
-  // Label self in all matching crushes
+  // Label self in all matching crushes - can be removed for reset password actions
   labelSelf(user);
   // Remove password from output
   user.password = undefined;
-
   res.status(statusCode).json({
     status: 'success',
     token,
@@ -168,10 +167,10 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-  // 1) Get user based on POSTed email
+  // 1) Get user based on Posted email
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return next(new AppError('There is no user with email address.', 404));
+    return next(new AppError('There is no user with that email address.', 404));
   }
 
   // 2) Generate the random reset token
@@ -179,17 +178,23 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // 3) Send it to user's email
-  const resetURL = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/users/resetPassword/${resetToken}`;
-
-  const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
-
+  const resetURL = `${req.protocol}://${req.get('host')}/reset/${resetToken}`;
+  const message =
+    'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+    'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
+    `${resetURL}.\n` +
+    `If you didn't forget your password, please ignore this email!`;
+  const html_message =
+    '<p> You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+    'Please click on the following link, or paste this into your browser to complete the process within one hour of receiving it:\n\n' +
+    `<a href="${resetURL}">${resetURL}</a>\n` +
+    `If you didn't forget your password, please ignore this email!</p>`;
   try {
     await sendEmail({
       email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      message
+      subject: 'Your password reset token (valid for 1 hr)',
+      message,
+      html_message
     });
 
     res.status(200).json({
@@ -206,6 +211,32 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       500
     );
   }
+});
+exports.checkEmailToken = catchAsync(async (req, res, next) => {
+  // 1) Get user based on the token
+
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() }
+  });
+
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+  // Remove password from output
+  user.password = undefined;
+  res.status(200).json({
+    status: 'success',
+
+    data: {
+      user
+    }
+  });
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
@@ -262,7 +293,7 @@ exports.deleteCookie = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + 1),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
   res.status(200).json({

@@ -17,7 +17,6 @@ import { Typography } from '@material-ui/core';
 
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
-import LinearProgress from '@material-ui/core/LinearProgress';
 
 const useStyles = makeStyles(theme => ({
   main: {

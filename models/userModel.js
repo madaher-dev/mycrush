@@ -122,7 +122,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
 userSchema.methods.createPasswordResetToken = function() {
   //create a token
   const resetToken = crypto.randomBytes(32).toString('hex');
-  //encrypt the token
+  //encrypt the token before saving it to database - send unencrypted to user
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
@@ -130,7 +130,7 @@ userSchema.methods.createPasswordResetToken = function() {
 
   // console.log({ resetToken }, this.passwordResetToken);
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  this.passwordResetExpires = Date.now() + 60 * 60 * 1000;
   //save encrypted in DB and send user the unencrypted version
   return resetToken;
 };

@@ -7,7 +7,10 @@ import {
   LOGIN_FAIL,
   LOGOUT,
   CLEAR_ERRORS,
-  LOADING_FAILED
+  SET_USER_LOADING,
+  LINK_SENT,
+  RESET_PASS_SUCCESSS,
+  TOKEN_CONFIRMED
 } from './Types';
 import axios from 'axios';
 
@@ -78,6 +81,76 @@ export const loadUser = () => async dispatch => {
   }
 };
 
+// Forget Password
+
+export const forgotPass = email => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  try {
+    const res = await axios.post('/api/v1/users/forgotPassword', email, config);
+    dispatch({
+      type: LINK_SENT,
+      payload: res.data.message
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.message
+    });
+  }
+};
+
+// Reset Password
+
+export const resetPass = (newPass, email_token) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  try {
+    const res = await axios.patch(
+      `/api/v1/users/resetPassword/${email_token}`,
+      newPass,
+      config
+    );
+
+    dispatch({
+      type: RESET_PASS_SUCCESSS,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.message
+    });
+  }
+};
+
+// Check email token before reset password
+
+export const checkToken = email_token => async dispatch => {
+  try {
+    const res = await axios.patch(
+      `/api/v1/users/checkResetToken/${email_token}`
+    );
+
+    dispatch({
+      type: TOKEN_CONFIRMED,
+      payload: res.data.data.user
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.message
+    });
+  }
+};
+
 //Similar to loadUser but does not return error on fail
 export const checkUser = () => async dispatch => {
   try {
@@ -88,7 +161,7 @@ export const checkUser = () => async dispatch => {
     });
   } catch (err) {
     dispatch({
-      type: LOADING_FAILED
+      type: AUTH_ERROR
     });
   }
 };
@@ -108,6 +181,9 @@ export const logout = () => async dispatch => {
 
 // Clear Errors
 export const clearErrors = () => ({ type: CLEAR_ERRORS });
+
+// Set Loading
+export const setLoading = () => ({ type: SET_USER_LOADING });
 
 // // Delete Cookie
 // export const deleteCookie = () => async dispatch => {

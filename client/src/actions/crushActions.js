@@ -4,7 +4,8 @@ import {
   CRUSH_ERROR,
   GET_CRUSHES,
   CLEAR_CRUSHES,
-  CLEAR_ERRORS
+  CLEAR_ERRORS,
+  SET_CRUSH_LOADING
 } from './Types';
 import axios from 'axios';
 
@@ -46,6 +47,9 @@ export const clearErrors = () => ({ type: CLEAR_ERRORS });
 
 // Clear Crushes
 export const clearCrushes = () => ({ type: CLEAR_CRUSHES });
+
+// Set Crush Loading
+export const setLoading = () => ({ type: SET_CRUSH_LOADING });
 
 // Set Current Contact
 // export const setCurrent = contact => dispatch => {
