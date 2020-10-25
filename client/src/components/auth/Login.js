@@ -12,6 +12,7 @@ import { Typography } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
+import Error from '../../components/auth/Error';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -30,7 +31,8 @@ const Login = ({
   isAuthenticated,
   error,
   clearErrors,
-  setAlert
+  setAlert,
+  user
 }) => {
   const classes = useStyles();
 
@@ -43,6 +45,8 @@ const Login = ({
 
   if (isAuthenticated) {
     return <Redirect to="/welcome" />;
+  } else if (user && !user.email_confirmed) {
+    return <Redirect to="/notconfirmed" />;
   } else {
     return (
       <Grid
@@ -154,12 +158,14 @@ Login.propTypes = {
   loginUser: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
   error: PropTypes.string,
-  setAlert: PropTypes.func.isRequired
+  setAlert: PropTypes.func.isRequired,
+  user: PropTypes.object
 };
 
 const mapStateToProps = state => ({
   isAuthenticated: state.users.isAuthenticated,
-  error: state.users.error
+  error: state.users.error,
+  user: state.users.user
 });
 
 export default connect(mapStateToProps, {

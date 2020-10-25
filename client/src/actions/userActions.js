@@ -10,7 +10,9 @@ import {
   SET_USER_LOADING,
   LINK_SENT,
   RESET_PASS_SUCCESSS,
-  TOKEN_CONFIRMED
+  TOKEN_CONFIRMED,
+  EMAIL_CONFIRMED,
+  EMAIL_RESEND
 } from './Types';
 import axios from 'axios';
 
@@ -24,12 +26,11 @@ export const registerUser = user => async dispatch => {
   };
   try {
     const res = await axios.post('/api/v1/users/signup', user, config);
+    console.log(res);
     dispatch({
       type: REGISTER_SUCCESS,
-      payload: res.data //Token
+      payload: res.data //User
     });
-
-    dispatch(loadUser());
   } catch (err) {
     dispatch({
       type: REGISTER_FAIL,
@@ -50,12 +51,17 @@ export const loginUser = user => async dispatch => {
   };
   try {
     const res = await axios.post('/api/v1/users/login', user, config);
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: res.data //Token
-    });
-
-    dispatch(loadUser());
+    if (res.data.token) {
+      dispatch({
+        type: EMAIL_CONFIRMED,
+        payload: res.data //Token
+      });
+    } else {
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: res.data //Token
+      });
+    }
   } catch (err) {
     dispatch({
       type: LOGIN_FAIL,
@@ -71,6 +77,49 @@ export const loadUser = () => async dispatch => {
     const res = await axios.get('/api/v1/users/me');
     dispatch({
       type: USER_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.message
+    });
+  }
+};
+
+// Resend Confirm Email
+
+export const resendEmail = email => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  try {
+    const res = await axios.post(
+      '/api/v1/users/resendEmail',
+      { email },
+      config
+    );
+    dispatch({
+      type: EMAIL_RESEND,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.message
+    });
+  }
+};
+
+// Confirm Email
+
+export const confirmEmail = token => async dispatch => {
+  try {
+    const res = await axios.patch(`/api/v1/users/confirm/${token}`);
+    dispatch({
+      type: EMAIL_CONFIRMED,
       payload: res.data
     });
   } catch (err) {
@@ -155,6 +204,7 @@ export const checkToken = email_token => async dispatch => {
 export const checkUser = () => async dispatch => {
   try {
     const res = await axios.get('/api/v1/users/me');
+
     dispatch({
       type: USER_LOADED,
       payload: res.data
@@ -184,12 +234,3 @@ export const clearErrors = () => ({ type: CLEAR_ERRORS });
 
 // Set Loading
 export const setLoading = () => ({ type: SET_USER_LOADING });
-
-// // Delete Cookie
-// export const deleteCookie = () => async dispatch => {
-//   try {
-//     await axios.get('/api/v1/users/deleteCookie');
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };

@@ -13,6 +13,8 @@ import Welcome from './components/pages/Welcome';
 import Alerts from './components/layout/Alerts';
 import PrivateRoute from './components/routing/PrivateRoute';
 import ResetPassword from './components/auth/ResetPassword';
+import NotConfirmed from './components/auth/NotConfirmed';
+import ConfirmEmail from './components/auth/ConfirmEmail';
 
 const theme = createMuiTheme({
   palette: {
@@ -50,10 +52,16 @@ const App = () => {
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/forgot" component={Forgot} />
+                <Route exact path="/notconfirmed" component={NotConfirmed} />
                 <Route
                   exact
                   path="/reset/:email_token"
                   component={ResetPassword}
+                />
+                <Route
+                  exact
+                  path="/confirm/:email_token"
+                  component={ConfirmEmail}
                 />
                 {/* <Route exact path='/about' component={About} />
                 <Route exact path='/donate/:channel' component={Donate} /> */}

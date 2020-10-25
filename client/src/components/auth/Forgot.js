@@ -9,10 +9,11 @@ import { Formik, Form, Field } from 'formik';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   main: {

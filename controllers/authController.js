@@ -6,6 +6,7 @@ const { Crush } = require('./../models/crushModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
+const { findOne } = require('./../models/userModel');
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -53,8 +54,6 @@ const createSendToken = (user, statusCode, res) => {
 
   res.cookie('jwt', token, cookieOptions);
 
-  // Label self in all matching crushes - can be removed for reset password actions
-  labelSelf(user);
   // Remove password from output
   user.password = undefined;
   res.status(statusCode).json({
@@ -65,8 +64,9 @@ const createSendToken = (user, statusCode, res) => {
     }
   });
 };
-
 exports.signup = catchAsync(async (req, res, next) => {
+  // const currentUser = await User.findOne({ email: req.body.email });
+  // if (!currentUser) {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -74,7 +74,124 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm
   });
 
-  createSendToken(newUser, 201, res);
+  const confirmToken = newUser.createEmailConfirmToken();
+  await newUser.save({ validateBeforeSave: false });
+
+  // 3) Send it to user's email
+  const confirmtURL = `${req.protocol}://${req.get(
+    'host'
+  )}/confirm/${confirmToken}`;
+  const message =
+    'Please click on the following link, or paste this into your browser to confirm your email on :\n\n' +
+    `${confirmtURL}.\n`;
+
+  const html_message =
+    `<p> Please click on the following link, or paste this into your browser to confirm your email on :\n\n` +
+    `${confirmtURL}.\n</p>`;
+
+  try {
+    await sendEmail({
+      email: newUser.email,
+      subject: 'Confirm your Email',
+      message,
+      html_message
+    });
+
+    newUser.password = undefined;
+
+    // Label self in all matching crushes - can be removed for reset password actions
+    labelSelf(newUser);
+
+    res.status('200').json({
+      status: 'success',
+      data: {
+        user: newUser
+      }
+    });
+  } catch (err) {
+    await newUser.remove();
+
+    return next(
+      new AppError('There was an error sending the email. Try again later!'),
+      500
+    );
+  }
+  // } else {
+  // if (currentUser.email_verified) next();
+  // else {
+  //   return next(new AppError('User already exists!', 401));
+  // }
+  // }
+});
+
+// exports.signup = catchAsync(async (req, res, next) => {
+//   const newUser = await User.create({
+//     name: req.body.name,
+//     email: req.body.email,
+//     password: req.body.password,
+//     passwordConfirm: req.body.passwordConfirm
+//   });
+
+//   createSendToken(newUser, 201, res);
+// });
+
+exports.resendEmail = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  const confirmToken = user.createEmailConfirmToken();
+  await user.save({ validateBeforeSave: false });
+
+  // 3) Send it to user's email
+  const confirmtURL = `${req.protocol}://${req.get(
+    'host'
+  )}/confirm/${confirmToken}`;
+  const message =
+    'Please click on the following link, or paste this into your browser to confirm your email on :\n\n' +
+    `${confirmtURL}.\n`;
+
+  const html_message =
+    `<p> Please click on the following link, or paste this into your browser to confirm your email on :\n\n` +
+    `${confirmtURL}.\n</p>`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Confirm your Email',
+      message,
+      html_message
+    });
+
+    user.password = undefined;
+
+    res.status('200').json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  } catch (err) {
+    return next(
+      new AppError('There was an error sending the email. Try again later!'),
+      500
+    );
+  }
+});
+
+exports.confirmEmail = catchAsync(async (req, res, next) => {
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOneAndUpdate(
+    { emailConfirmToken: hashedToken },
+    { email_confirmed: true, emailConfirmToken: null },
+    { new: true }
+  );
+
+  if (!user) {
+    return next(new AppError('Invalid token or email does not exist!', 401));
+  } else createSendToken(user, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -90,9 +207,16 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
-
-  // 3) If everything ok, send token to client
-  createSendToken(user, 200, res);
+  //3) Check if email verified
+  if (!user.email_confirmed) {
+    res.status('200').json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  } else createSendToken(user, 200, res);
+  // 4) If everything ok, send token to client
 });
 
 exports.protect = catchAsync(async (req, res, next) => {

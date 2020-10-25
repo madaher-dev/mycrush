@@ -11,7 +11,9 @@ import {
   SET_USER_LOADING,
   LINK_SENT,
   RESET_PASS_SUCCESSS,
-  TOKEN_CONFIRMED
+  TOKEN_CONFIRMED,
+  EMAIL_CONFIRMED,
+  EMAIL_RESEND
 } from '../actions/Types';
 
 const initialState = {
@@ -21,14 +23,15 @@ const initialState = {
   error: null,
   points: 0,
   linkSent: false,
-  email_token: false
+  email_token: false,
+  email_confirmed: false,
+  emailSent: false
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case REGISTER_SUCCESS:
-    case LOGIN_SUCCESS:
-    case RESET_PASS_SUCCESSS:
+    case EMAIL_CONFIRMED:
+    case RESET_PASS_SUCCESSS: //check if not email confirmed
       return {
         ...state,
         user: action.payload.data.user,
@@ -36,19 +39,33 @@ export default (state = initialState, action) => {
         loading: false,
         points: action.payload.data.user.points
       };
+    case REGISTER_SUCCESS:
+    case LOGIN_SUCCESS:
+      return {
+        ...state,
+        user: action.payload.data.user,
+        loading: false
+      };
     case TOKEN_CONFIRMED:
       return {
         ...state,
         email_token: true,
-        user: action.payload
+        user: action.payload,
+        loading: false
+      };
+    case EMAIL_RESEND:
+      return {
+        ...state,
+        emailSent: true,
+        loading: false
       };
     case USER_LOADED:
       return {
         ...state,
         isAuthenticated: true,
         loading: false,
-        user: action.payload.data.data,
-        points: action.payload.data.data.points
+        user: action.payload.data.doc,
+        points: action.payload.data.doc.points
       };
     case REGISTER_FAIL:
     case LOGIN_FAIL:
@@ -58,7 +75,7 @@ export default (state = initialState, action) => {
         ...state,
         isAuthenticated: false,
         loading: false,
-        user: null,
+        //user: null, --Night need to remove user on logout and keep it in AUTH_ERROR
         error: action.payload,
         points: 0,
         linkSent: false
@@ -73,7 +90,8 @@ export default (state = initialState, action) => {
     case ADD_CRUSH:
       return {
         ...state,
-        points: state.points - 1
+        points: state.points - 1,
+        loading: false
       };
     case SET_USER_LOADING:
       return {

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import {
   registerUser,
   clearErrors,
-  checkUser
+  setLoading
 } from '../../actions/userActions';
 import { Redirect } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
@@ -17,10 +17,16 @@ import { Typography } from '@material-ui/core';
 
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   main: {
     paddingTop: 20
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
   }
 }));
 
@@ -30,7 +36,8 @@ const Register = ({
   error,
   clearErrors,
   setAlert,
-  checkUser,
+  user,
+  setLoading,
   loading
 }) => {
   const classes = useStyles();
@@ -41,17 +48,10 @@ const Register = ({
     }
   }, [error, setAlert, clearErrors]);
 
-  // useEffect(() => {
-  //   checkUser();
-
-  //   // eslint-disable-next-line
-  // }, []);
-
-  // if (loading) {
-  //   return <LinearProgress color="secondary" />;
-  // } else {
   if (isAuthenticated) {
     return <Redirect to="/welcome" />;
+  } else if (user) {
+    if (!user.email_confirmed) return <Redirect to="/notconfirmed" />;
   } else {
     return (
       <Grid
@@ -110,6 +110,7 @@ const Register = ({
               onSubmit={(values, { setSubmitting }) => {
                 setTimeout(() => {
                   setSubmitting(false);
+                  setLoading();
                   registerUser(values);
                 }, 500);
               }}
@@ -170,6 +171,9 @@ const Register = ({
                 </Form>
               )}
             </Formik>
+            <Backdrop className={classes.backdrop} open={loading}>
+              <CircularProgress color="primary" />
+            </Backdrop>
           </Grid>
         </Grid>
       </Grid>
@@ -180,14 +184,16 @@ Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
   error: PropTypes.string,
+  user: PropTypes.object,
   setAlert: PropTypes.func.isRequired,
-  checkUser: PropTypes.func.isRequired,
+  setLoading: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
   isAuthenticated: state.users.isAuthenticated,
   error: state.users.error,
+  user: state.users.user,
   loading: state.users.loading
 });
 
@@ -195,5 +201,5 @@ export default connect(mapStateToProps, {
   registerUser,
   clearErrors,
   setAlert,
-  checkUser
+  setLoading
 })(Register);

@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email']
   },
+  email_confirmed: {
+    type: Boolean,
+    default: false
+  },
   photo: String,
   facebook: String,
   twitter: String,
@@ -45,6 +49,8 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  emailConfirmToken: String,
+
   active: {
     type: Boolean,
     default: true
@@ -118,7 +124,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   return false;
 };
 
-//Create a token
+//Create a reset password token
 userSchema.methods.createPasswordResetToken = function() {
   //create a token
   const resetToken = crypto.randomBytes(32).toString('hex');
@@ -133,6 +139,20 @@ userSchema.methods.createPasswordResetToken = function() {
   this.passwordResetExpires = Date.now() + 60 * 60 * 1000;
   //save encrypted in DB and send user the unencrypted version
   return resetToken;
+};
+//Create a reset password token
+userSchema.methods.createEmailConfirmToken = function() {
+  //create a token
+  const confirmToken = crypto.randomBytes(32).toString('hex');
+  //encrypt the token before saving it to database - send unencrypted to user
+  this.emailConfirmToken = crypto
+    .createHash('sha256')
+    .update(confirmToken)
+    .digest('hex');
+
+  // console.log({ resetToken }, this.passwordResetToken);
+
+  return confirmToken;
 };
 
 const User = mongoose.model('User', userSchema);
