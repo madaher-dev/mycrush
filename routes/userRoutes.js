@@ -11,9 +11,9 @@ const authController = require('../controllers/authController');
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.post('/forgotPassword', authController.forgotPassword);
-router.patch('/checkResetToken/:token', authController.checkEmailToken);
+router.get('/checkResetToken/:token', authController.checkEmailToken);
 router.patch('/resetPassword/:token', authController.resetPassword);
-router.patch('/confirm/:token', authController.confirmEmail);
+router.get('/confirm/:token', authController.confirmEmail);
 router.get('/deleteCookie', authController.deleteCookie);
 router.post('/resendEmail', authController.resendEmail);
 

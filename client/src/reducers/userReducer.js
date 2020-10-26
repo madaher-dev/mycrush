@@ -50,7 +50,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         email_token: true,
-        user: action.payload,
+        user: action.payload.data.user,
         loading: false
       };
     case EMAIL_RESEND:
@@ -103,7 +103,7 @@ export default (state = initialState, action) => {
         ...state,
         linkSent: true,
         loading: false,
-        error: action.payload
+        error: action.payload.message
       };
     default:
       return state;

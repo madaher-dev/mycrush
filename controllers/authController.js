@@ -87,7 +87,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const html_message =
     `<p> Please click on the following link, or paste this into your browser to confirm your email on :\n\n` +
-    `${confirmtURL}.\n</p>`;
+    `<a href="${confirmtURL}">${confirmtURL}</a>\n`;
 
   try {
     await sendEmail({
@@ -151,7 +151,7 @@ exports.resendEmail = catchAsync(async (req, res, next) => {
 
   const html_message =
     `<p> Please click on the following link, or paste this into your browser to confirm your email on :\n\n` +
-    `${confirmtURL}.\n</p>`;
+    `<a href="${confirmtURL}">${confirmtURL}</a>\n`;
 
   try {
     await sendEmail({

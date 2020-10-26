@@ -12,7 +12,6 @@ import { Typography } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
-import Error from '../../components/auth/Error';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -157,7 +156,7 @@ const Login = ({
 Login.propTypes = {
   loginUser: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
-  error: PropTypes.string,
+  error: PropTypes.object,
   setAlert: PropTypes.func.isRequired,
   user: PropTypes.object
 };
