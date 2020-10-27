@@ -13,7 +13,8 @@ import {
   RESET_PASS_SUCCESSS,
   TOKEN_CONFIRMED,
   EMAIL_CONFIRMED,
-  EMAIL_RESEND
+  EMAIL_RESEND,
+  FB_LOADED
 } from '../actions/Types';
 
 const initialState = {
@@ -25,7 +26,8 @@ const initialState = {
   linkSent: false,
   email_token: false,
   email_confirmed: false,
-  emailSent: false
+  emailSent: false,
+  fb: null
 };
 
 export default (state = initialState, action) => {
@@ -45,6 +47,14 @@ export default (state = initialState, action) => {
         ...state,
         user: action.payload.data.user,
         loading: false
+      };
+    case FB_LOADED:
+      return {
+        ...state,
+        user: action.payload.user,
+        isAuthenticated: true,
+        loading: false,
+        points: action.payload.user.points
       };
     case TOKEN_CONFIRMED:
       return {

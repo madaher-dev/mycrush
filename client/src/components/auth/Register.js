@@ -5,16 +5,18 @@ import PropTypes from 'prop-types';
 import {
   registerUser,
   clearErrors,
-  setLoading
+  setLoading,
+  checkFB
 } from '../../actions/userActions';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 
 import { Formik, Form, Field } from 'formik';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-
+import FacebookLogin from 'react-facebook-login';
+import Avatar from '@material-ui/core/Avatar';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -27,6 +29,19 @@ const useStyles = makeStyles(theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff'
+  },
+  forgotLink: {
+    alignSelf: 'flex-end'
+  },
+  loginButton: {
+    flexGrow: 1
+  },
+  social: {
+    padding: 10
+  },
+  avatar: {
+    // backgroundColor: red[500]
+    backgroundColor: '#e91e63'
   }
 }));
 
@@ -38,9 +53,13 @@ const Register = ({
   setAlert,
   user,
   setLoading,
-  loading
+  loading,
+  checkFB
 }) => {
   const classes = useStyles();
+  const responseFacebook = response => {
+    checkFB(response);
+  };
   useEffect(() => {
     if (error) {
       setAlert(error, 'error');
@@ -159,22 +178,52 @@ const Register = ({
                   </Box>
 
                   <Box margin={1}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={isSubmitting}
-                      onClick={submitForm}
-                    >
-                      Signup
-                    </Button>
+                    <Grid container>
+                      <Grid item className={classes.loginButton}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={isSubmitting}
+                          onClick={submitForm}
+                        >
+                          Signup
+                        </Button>
+                      </Grid>
+                      <Grid item className={classes.forgotLink}>
+                        <Typography>
+                          <Link to="/login">Have an Account? Login here</Link>
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Box>
                 </Form>
               )}
             </Formik>
-            <Backdrop className={classes.backdrop} open={loading}>
-              <CircularProgress color="primary" />
-            </Backdrop>
           </Grid>
+          <Grid
+            item
+            container
+            xs={12}
+            sm={8}
+            alignItems="center"
+            justify="center"
+          >
+            <Avatar className={classes.avatar}>OR</Avatar>
+          </Grid>
+          <Grid item xs={12} sm={8} className={classes.social}>
+            <FacebookLogin
+              buttonStyle={{ padding: '6px', width: '100%' }}
+              appId="380772783291898"
+              autoLoad={true}
+              fields="name,email,picture"
+              scope="public_profile,user_link"
+              callback={responseFacebook}
+              icon="fa-facebook"
+            />
+          </Grid>
+          <Backdrop className={classes.backdrop} open={loading}>
+            <CircularProgress color="primary" />
+          </Backdrop>
         </Grid>
       </Grid>
     );
@@ -187,7 +236,8 @@ Register.propTypes = {
   user: PropTypes.object,
   setAlert: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired
+  loading: PropTypes.bool.isRequired,
+  checkFB: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -201,5 +251,6 @@ export default connect(mapStateToProps, {
   registerUser,
   clearErrors,
   setAlert,
-  setLoading
+  setLoading,
+  checkFB
 })(Register);

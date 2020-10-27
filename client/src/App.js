@@ -15,6 +15,8 @@ import PrivateRoute from './components/routing/PrivateRoute';
 import ResetPassword from './components/auth/ResetPassword';
 import NotConfirmed from './components/auth/NotConfirmed';
 import ConfirmEmail from './components/auth/ConfirmEmail';
+import FaceBook from './components/auth/FaceBook';
+import Privacy from './components/layout/Privacy';
 
 const theme = createMuiTheme({
   palette: {
@@ -47,6 +49,8 @@ const App = () => {
               <Navbar />
               <Switch>
                 <Route exact path="/" component={Login} />
+                <Route exact path="/fb" component={FaceBook} />
+                <Route exact path="/privacy" component={Privacy} />
                 <PrivateRoute exact path="/welcome" component={Welcome} />
                 <PrivateRoute exact path="/crushes" component={Crushes} />
                 <Route exact path="/register" component={Register} />

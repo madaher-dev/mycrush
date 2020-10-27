@@ -6,7 +6,8 @@ import {
   LOGOUT,
   CLEAR_ERRORS,
   SET_USER_LOADING,
-  EMAIL_CONFIRMED
+  EMAIL_CONFIRMED,
+  FB_LOADED
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -38,7 +39,11 @@ export const resendEmail = email =>
 // Confirm Email
 
 export const confirmEmail = token =>
-  factory.get(`/api/v1/users/${token}`, 'EMAIL_CONFIRMED', 'AUTH_ERROR');
+  factory.get(
+    `/api/v1/users/confirm/${token}`,
+    'EMAIL_CONFIRMED',
+    'AUTH_ERROR'
+  );
 
 // Forget Password
 
@@ -130,6 +135,28 @@ export const checkUser = () => async dispatch => {
   } catch (err) {
     dispatch({
       type: AUTH_ERROR
+    });
+  }
+};
+
+//Check FB Status
+export const checkFB = response => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  try {
+    const res = await axios.post('/api/v1/users/fb', response, config);
+
+    dispatch({
+      type: FB_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR,
+      payload: err.response.data.message
     });
   }
 };

@@ -26,3 +26,4 @@ export const SET_USER_LOADING = 'SET_USER_LOADING';
 export const TOKEN_CONFIRMED = 'TOKEN_CONFIRMED';
 export const EMAIL_CONFIRMED = 'EMAIL_CONFIRMED';
 export const EMAIL_RESEND = 'EMAIL_RESEND';
+export const FB_LOADED = 'FB_LOADED';

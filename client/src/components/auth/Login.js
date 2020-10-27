@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { setAlert } from '../../actions/alertActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { loginUser, clearErrors } from '../../actions/userActions';
-import { Redirect } from 'react-router-dom';
+import { loginUser, clearErrors, checkFB } from '../../actions/userActions';
+import { Redirect, Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Formik, Form, Field } from 'formik';
 import { Button } from '@material-ui/core';
@@ -11,7 +11,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
+import FacebookLogin from 'react-facebook-login';
+import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -22,6 +23,13 @@ const useStyles = makeStyles(theme => ({
   },
   loginButton: {
     flexGrow: 1
+  },
+  social: {
+    padding: 10
+  },
+  avatar: {
+    // backgroundColor: red[500]
+    backgroundColor: '#e91e63'
   }
 }));
 
@@ -31,9 +39,14 @@ const Login = ({
   error,
   clearErrors,
   setAlert,
-  user
+  user,
+  checkFB
 }) => {
   const classes = useStyles();
+
+  const responseFacebook = response => {
+    checkFB(response);
+  };
 
   useEffect(() => {
     if (error) {
@@ -65,7 +78,7 @@ const Login = ({
           justify="center"
         >
           <Typography>
-            My Crush allows you to connect with your secret admireres. Your
+            My Crush allows you to connect with your secret admirers. Your
             crushes can search for you by Name, Phone, or various social media
             platforms.
           </Typography>
@@ -139,7 +152,7 @@ const Login = ({
                       </Grid>
                       <Grid item className={classes.forgotLink}>
                         <Typography>
-                          <Link href="/forgot">Forgot Password?</Link>
+                          <Link to="/forgot">Forgot Password?</Link>
                         </Typography>
                       </Grid>
                     </Grid>
@@ -147,6 +160,40 @@ const Login = ({
                 </Form>
               )}
             </Formik>
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            <Box margin={1}>
+              <Grid container>
+                <Grid item className={classes.loginButton}>
+                  <Typography>Dont Have an account?</Typography>
+                </Grid>
+                <Grid item className={classes.forgotLink}>
+                  <Typography>
+                    <Link to="/register">Signup Now</Link>
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+          <Grid
+            item
+            container
+            xs={12}
+            sm={8}
+            alignItems="center"
+            justify="center"
+          >
+            <Avatar className={classes.avatar}>OR</Avatar>
+          </Grid>
+          <Grid item xs={12} sm={8} className={classes.social}>
+            <FacebookLogin
+              buttonStyle={{ padding: '6px', width: '100%' }}
+              appId="380772783291898"
+              autoLoad={false}
+              fields="name,email,picture"
+              scope="public_profile,user_link"
+              callback={responseFacebook}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -156,9 +203,10 @@ const Login = ({
 Login.propTypes = {
   loginUser: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
-  error: PropTypes.object,
+  error: PropTypes.string,
   setAlert: PropTypes.func.isRequired,
-  user: PropTypes.object
+  user: PropTypes.object,
+  checkFB: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -170,5 +218,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   loginUser,
   clearErrors,
-  setAlert
+  setAlert,
+  checkFB
 })(Login);

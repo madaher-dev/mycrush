@@ -3,13 +3,12 @@ import { setAlert } from '../../actions/alertActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { forgotPass, clearErrors, setLoading } from '../../actions/userActions';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Formik, Form, Field } from 'formik';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -81,7 +80,7 @@ const Login = ({
         >
           <Typography>
             If you forget your password you can reset it by providing your
-            registered email. You will reveive a reset password link by email.
+            registered email. You will receive a reset password link by email.
           </Typography>
           <Grid item xs={12} sm={8}>
             <Formik
@@ -125,14 +124,23 @@ const Login = ({
                   </Box>
 
                   <Box margin={1}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      disabled={isSubmitting}
-                      onClick={submitForm}
-                    >
-                      Send
-                    </Button>
+                    <Grid container>
+                      <Grid item className={classes.loginButton}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          disabled={isSubmitting}
+                          onClick={submitForm}
+                        >
+                          Send
+                        </Button>
+                      </Grid>
+                      <Grid item className={classes.forgotLink}>
+                        <Typography>
+                          <Link to="/login">Back to Login</Link>
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </Box>
                 </Form>
               )}
