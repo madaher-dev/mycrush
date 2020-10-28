@@ -5,6 +5,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import Navbar from './components/layout/Navbar';
 import Crushes from './components/pages/Crushes';
+import Verify from './components/pages/Verify';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Forgot from './components/auth/Forgot';
@@ -15,6 +16,7 @@ import PrivateRoute from './components/routing/PrivateRoute';
 import ResetPassword from './components/auth/ResetPassword';
 import NotConfirmed from './components/auth/NotConfirmed';
 import ConfirmEmail from './components/auth/ConfirmEmail';
+import ConfirmNetwork from './components/auth/ConfirmNetwork';
 import FaceBook from './components/auth/FaceBook';
 import Privacy from './components/layout/Privacy';
 
@@ -53,6 +55,7 @@ const App = () => {
                 <Route exact path="/privacy" component={Privacy} />
                 <PrivateRoute exact path="/welcome" component={Welcome} />
                 <PrivateRoute exact path="/crushes" component={Crushes} />
+                <PrivateRoute exact path="/verify" component={Verify} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/forgot" component={Forgot} />
@@ -67,8 +70,11 @@ const App = () => {
                   path="/confirm/:email_token"
                   component={ConfirmEmail}
                 />
-                {/* <Route exact path='/about' component={About} />
-                <Route exact path='/donate/:channel' component={Donate} /> */}
+                <Route
+                  exact
+                  path="/confirmnet/:email_token"
+                  component={ConfirmNetwork}
+                />
               </Switch>
               <Footer />
             </Fragment>

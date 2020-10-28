@@ -208,11 +208,8 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
                   // onClick={handleProfileMenuOpen}
                   color="inherit"
                 >
-                  {user.pic ? (
-                    <Avatar
-                      alt="Remy Sharp"
-                      src="/static/images/avatar/1.jpg"
-                    />
+                  {user.photo ? (
+                    <Avatar alt="Remy Sharp" src={user.photo} />
                   ) : (
                     <AccountCircle />
                   )}

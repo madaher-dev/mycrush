@@ -14,7 +14,11 @@ import {
   TOKEN_CONFIRMED,
   EMAIL_CONFIRMED,
   EMAIL_RESEND,
-  FB_LOADED
+  FB_LOADED,
+  CONNECT_EMAIL_SUCCESSS,
+  CONNECT_EMAIL_FAIL,
+  EMAIL_DISCONNECTED,
+  EMAIL_DISCONNECT_FAIL
 } from '../actions/Types';
 
 const initialState = {
@@ -27,7 +31,7 @@ const initialState = {
   email_token: false,
   email_confirmed: false,
   emailSent: false,
-  fb: null
+  email_added: false
 };
 
 export default (state = initialState, action) => {
@@ -41,6 +45,7 @@ export default (state = initialState, action) => {
         loading: false,
         points: action.payload.data.user.points
       };
+
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
       return {
@@ -63,6 +68,36 @@ export default (state = initialState, action) => {
         user: action.payload.data.user,
         loading: false
       };
+    case CONNECT_EMAIL_SUCCESSS:
+      return {
+        ...state,
+        email_added: true,
+        loading: false,
+        user: action.payload.data.user,
+        error: null
+      };
+    case CONNECT_EMAIL_FAIL:
+      return {
+        ...state,
+        email_added: false,
+        loading: false,
+        error: action.payload
+      };
+    case EMAIL_DISCONNECTED:
+      return {
+        ...state,
+        loading: false,
+        user: action.payload.data.user,
+        error: null
+      };
+    case EMAIL_DISCONNECT_FAIL:
+      return {
+        ...state,
+        email_added: false,
+        loading: false,
+        error: action.payload
+      };
+
     case EMAIL_RESEND:
       return {
         ...state,
@@ -75,17 +110,26 @@ export default (state = initialState, action) => {
         isAuthenticated: true,
         loading: false,
         user: action.payload.data.doc,
-        points: action.payload.data.doc.points
+        points: action.payload.data.doc.points,
+        email_added: false
       };
     case REGISTER_FAIL:
     case LOGIN_FAIL:
-    case AUTH_ERROR:
     case LOGOUT:
       return {
         ...state,
         isAuthenticated: false,
         loading: false,
-        //user: null, --Night need to remove user on logout and keep it in AUTH_ERROR
+        user: null,
+        error: action.payload,
+        points: 0,
+        linkSent: false
+      };
+    case AUTH_ERROR:
+      return {
+        ...state,
+        isAuthenticated: false,
+        loading: false,
         error: action.payload,
         points: 0,
         linkSent: false

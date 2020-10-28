@@ -45,6 +45,15 @@ export const confirmEmail = token =>
     'AUTH_ERROR'
   );
 
+// Confirm other Emails
+
+export const confirmNetwork = token =>
+  factory.get(
+    `/api/v1/networks/confirm/${token}`,
+    'EMAIL_CONFIRMED',
+    'AUTH_ERROR'
+  );
+
 // Forget Password
 
 export const forgotPass = email =>
@@ -64,6 +73,36 @@ export const resetPass = (newPass, email_token) =>
     'RESET_PASS_SUCCESSS',
     'AUTH_ERROR'
   );
+
+// Connect Email
+
+export const connectEmail = email =>
+  factory.patch(
+    { email },
+    '/api/v1/networks/connectEmail',
+    'CONNECT_EMAIL_SUCCESSS',
+    'CONNECT_EMAIL_FAIL'
+  );
+
+// Disconnect Email
+
+export const disconnectEmail = emailId =>
+  factory.patch(
+    { emailId },
+    '/api/v1/networks/disconnectEmail',
+    'EMAIL_DISCONNECTED',
+    'EMAIL_DISCONNECT_FAIL'
+  );
+
+// //Disconnect Email
+// export const disconnectEmail = emailId => async dispatch => {
+//   try {
+//     await axios.delete(`/api/v1/crushes/${id}`);
+//     dispatch({ type: DELETE_CRUSH, payload: id });
+//   } catch (err) {
+//     dispatch({ type: CRUSH_ERROR, payload: err.response.data.message });
+//   }
+// };
 
 // Check email token before reset password
 
