@@ -15,10 +15,13 @@ import {
   EMAIL_CONFIRMED,
   EMAIL_RESEND,
   FB_LOADED,
+  FB_FAILED,
   CONNECT_EMAIL_SUCCESSS,
   CONNECT_EMAIL_FAIL,
   EMAIL_DISCONNECTED,
-  EMAIL_DISCONNECT_FAIL
+  EMAIL_DISCONNECT_FAIL,
+  FB_DISCONNECTED,
+  FB_DISCONNECT_FAIL
 } from '../actions/Types';
 
 const initialState = {
@@ -54,6 +57,7 @@ export default (state = initialState, action) => {
         loading: false
       };
     case FB_LOADED:
+    case FB_DISCONNECTED:
       return {
         ...state,
         user: action.payload.user,
@@ -61,6 +65,14 @@ export default (state = initialState, action) => {
         loading: false,
         points: action.payload.user.points
       };
+    case FB_FAILED:
+    case FB_DISCONNECT_FAIL:
+      return {
+        ...state,
+        error: action.payload,
+        loading: false
+      };
+
     case TOKEN_CONFIRMED:
       return {
         ...state,

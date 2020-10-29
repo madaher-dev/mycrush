@@ -12,20 +12,25 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {
   connectEmail,
   clearErrors,
-  disconnectEmail
+  disconnectEmail,
+  connectFB,
+  disconnectFB
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
-import PersonIcon from '@material-ui/icons/Person';
 import Avatar from '@material-ui/core/Avatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import BlockIcon from '@material-ui/icons/Block';
+import CancelIcon from '@material-ui/icons/Cancel';
+import Tooltip from '@material-ui/core/Tooltip';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import FacebookIcon from '@material-ui/icons/Facebook';
+import EmailIcon from '@material-ui/icons/Email';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -35,8 +40,12 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   avatar: {
-    backgroundColor: 'red',
-    color: 'blue'
+    backgroundColor: '#e91e63'
+  },
+
+  fbButton: {
+    margin: 3,
+    backgroundColor: '#4267B2'
   }
 }));
 
@@ -46,7 +55,9 @@ const Verify = ({
   clearErrors,
   setAlert,
   error,
-  disconnectEmail
+  disconnectEmail,
+  connectFB,
+  disconnectFB
 }) => {
   const classes = useStyles();
 
@@ -67,6 +78,10 @@ const Verify = ({
   const handleDelete = id => {
     disconnectEmail(id);
   };
+
+  const handleDisconnectFB = id => {
+    disconnectFB(id);
+  };
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -78,6 +93,9 @@ const Verify = ({
   const handleSubmit = () => {
     setOpen(false);
     connectEmail(email);
+  };
+  const responseFacebook = response => {
+    connectFB(response, user._id);
   };
   return (
     <Grid
@@ -105,6 +123,28 @@ const Verify = ({
           >
             Connect new Email
           </Button>
+          {user.facebook ? (
+            <Fragment />
+          ) : (
+            <FacebookLogin
+              appId="380772783291898"
+              fields="name,email,picture"
+              //   scope="public_profile,user_link"
+              //autoLoad
+              callback={responseFacebook}
+              render={renderProps => (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  // disabled={isSubmitting}
+                  onClick={renderProps.onClick}
+                  className={classes.fbButton}
+                >
+                  Connect Facebook
+                </Button>
+              )}
+            />
+          )}
           <Dialog
             open={open}
             onClose={handleClose}
@@ -139,16 +179,24 @@ const Verify = ({
         <Grid item xs={12}>
           <List>
             {user.facebook ? (
-              <ListItem
-                button
-                // onClick={() => handleListItemClick(email)}
-              >
+              <ListItem>
                 <ListItemAvatar>
                   <Avatar className={classes.avatar}>
-                    <PersonIcon />
+                    <FacebookIcon />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={user.facebook} />
+                <ListItemSecondaryAction>
+                  <Tooltip title="Disconnect" aria-label="disc">
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => handleDisconnectFB(user.facebook)}
+                    >
+                      <CancelIcon color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                </ListItemSecondaryAction>
               </ListItem>
             ) : (
               <Fragment />
@@ -159,10 +207,22 @@ const Verify = ({
             >
               <ListItemAvatar>
                 <Avatar className={classes.avatar}>
-                  <PersonIcon />
+                  <EmailIcon />
                 </Avatar>
               </ListItemAvatar>
               <ListItemText primary={user.email} />
+              <ListItemSecondaryAction>
+                <Tooltip title="Confirmed" aria-label="confirmed">
+                  <IconButton
+                    edge="end"
+                    aria-label="status"
+                    disableRipple
+                    // onClick={() => handleDelete(email._id)}
+                  >
+                    <VerifiedUserIcon color="primary" />
+                  </IconButton>
+                </Tooltip>
+              </ListItemSecondaryAction>
             </ListItem>
             {user.otherEmails.map(email => (
               <ListItem
@@ -172,25 +232,44 @@ const Verify = ({
               >
                 <ListItemAvatar>
                   <Avatar className={classes.avatar}>
-                    <PersonIcon />
+                    <EmailIcon />
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={email.email} />
                 <ListItemSecondaryAction>
-                  <IconButton
-                    edge="end"
-                    aria-label="delete"
-                    onClick={() => handleDelete(email._id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                  <IconButton
-                    edge="end"
-                    aria-label="status"
-                    // onClick={() => handleDelete(email._id)}
-                  >
-                    {email.confirmed ? <VerifiedUserIcon /> : <BlockIcon />}
-                  </IconButton>
+                  <Tooltip title="Disconnect" aria-label="disc">
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => handleDelete(email._id)}
+                    >
+                      <CancelIcon color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+
+                  {email.confirmed ? (
+                    <Tooltip title="Confirmed" aria-label="confirmed">
+                      <IconButton
+                        edge="end"
+                        aria-label="status"
+                        disableRipple
+                        // onClick={() => handleDelete(email._id)}
+                      >
+                        <VerifiedUserIcon color="primary" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Not Confirmed" aria-label="notconfirmed">
+                      <IconButton
+                        edge="end"
+                        aria-label="status"
+                        disableRipple
+                        // onClick={() => handleDelete(email._id)}
+                      >
+                        <BlockIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
@@ -207,7 +286,9 @@ Verify.propTypes = {
   error: PropTypes.string,
   clearErrors: PropTypes.func.isRequired,
   setAlert: PropTypes.func.isRequired,
-  disconnectEmail: PropTypes.func.isRequired
+  disconnectEmail: PropTypes.func.isRequired,
+  connectFB: PropTypes.func.isRequired,
+  disconnectFB: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -219,5 +300,7 @@ export default connect(mapStateToProps, {
   connectEmail,
   clearErrors,
   setAlert,
-  disconnectEmail
+  disconnectEmail,
+  connectFB,
+  disconnectFB
 })(Verify);

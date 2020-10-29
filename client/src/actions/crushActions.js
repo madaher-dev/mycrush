@@ -5,9 +5,11 @@ import {
   GET_CRUSHES,
   CLEAR_CRUSHES,
   CLEAR_ERRORS,
-  SET_CRUSH_LOADING
+  SET_CRUSH_LOADING,
+  MATCH_FOUND
 } from './Types';
 import axios from 'axios';
+const factory = require('./actionsFactory');
 
 // Get Crushes
 export const getCrushes = () => async dispatch => {
@@ -29,7 +31,10 @@ export const addCrush = crush => async dispatch => {
 
   try {
     const res = await axios.post('/api/v1/crushes', crush, config);
-    dispatch({ type: ADD_CRUSH, payload: res.data.data });
+    console.log(res.data);
+    if (!res.data.data.match)
+      dispatch({ type: ADD_CRUSH, payload: res.data.data });
+    else dispatch({ type: MATCH_FOUND, payload: res.data.data });
   } catch (err) {
     dispatch({ type: CRUSH_ERROR, payload: err.response.data.message });
   }
@@ -43,6 +48,8 @@ export const deleteCrush = id => async dispatch => {
     dispatch({ type: CRUSH_ERROR, payload: err.response.data.message });
   }
 };
+
+// Clear Errors
 export const clearErrors = () => ({ type: CLEAR_ERRORS });
 
 // Clear Crushes

@@ -24,7 +24,20 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import CommentIcon from '@material-ui/icons/Comment';
 import CrushCard from './CrushCard';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import Tooltip from '@material-ui/core/Tooltip';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+import { Redirect } from 'react-router-dom';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -63,7 +76,9 @@ const Crushes = ({
   error,
   clearErrors,
   setAlert,
-  setLoading
+  setLoading,
+  match,
+  current
 }) => {
   const classes = useStyles();
   useEffect(() => {
@@ -91,6 +106,10 @@ const Crushes = ({
 
   const handleCancel = () => {
     setAdd(false);
+  };
+
+  const handleClose = () => {
+    return <Redirect to="/matches" />;
   };
 
   const addView = (
@@ -274,9 +293,16 @@ const Crushes = ({
       </Typography>
       <Grid item container justify="flex-end">
         <Grid item className={classes.addButton}>
-          <IconButton color="primary" onClick={handleAdd}>
-            <AddCircleOutlineIcon />
-          </IconButton>
+          <Tooltip title="Add new Crush" aria-label="add">
+            <Fab
+              color="secondary"
+              aria-label="add"
+              className={classes.margin}
+              onClick={handleAdd}
+            >
+              <AddIcon />
+            </Fab>
+          </Tooltip>
         </Grid>
       </Grid>
 
@@ -314,6 +340,29 @@ const Crushes = ({
       className={classes.main}
     >
       {add ? addView : listView}
+      <Dialog
+        open={match}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title">
+          {'Its A Match!'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            {current ? current.sourceId : <Fragment />}{' '}
+            {current ? current.targetId : <Fragment />}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Hooray!
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };
@@ -326,14 +375,18 @@ Crushes.propTypes = {
   error: PropTypes.string,
   clearErrors: PropTypes.func.isRequired,
   setAlert: PropTypes.func.isRequired,
-  setLoading: PropTypes.func.isRequired
+  setLoading: PropTypes.func.isRequired,
+  match: PropTypes.bool,
+  current: PropTypes.object
 };
 
 const mapStateToProps = state => ({
   crushes: state.crushes.crushes,
   loading: state.crushes.loading,
   added: state.crushes.added,
-  error: state.crushes.error
+  error: state.crushes.error,
+  match: state.crushes.match,
+  current: state.crushes.current
 });
 
 export default connect(mapStateToProps, {

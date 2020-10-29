@@ -6,8 +6,7 @@ import {
   LOGOUT,
   CLEAR_ERRORS,
   SET_USER_LOADING,
-  EMAIL_CONFIRMED,
-  FB_LOADED
+  EMAIL_CONFIRMED
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -30,7 +29,7 @@ export const loadUser = () =>
 
 export const resendEmail = email =>
   factory.post(
-    email,
+    { email },
     '/api/v1/users/resendEmail',
     'EMAIL_RESEND',
     'AUTH_ERROR'
@@ -179,23 +178,63 @@ export const checkUser = () => async dispatch => {
 };
 
 //Check FB Status
-export const checkFB = response => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-  try {
-    const res = await axios.post('/api/v1/users/fb', response, config);
+// export const checkFB = response => async dispatch => {
+//   const config = {
+//     headers: {
+//       'Content-Type': 'application/json'
+//     }
+//   };
+//   try {
+//     const res = await axios.post('/api/v1/users/fb', response, config);
 
-    dispatch({
-      type: FB_LOADED,
-      payload: res.data
-    });
-  } catch (err) {
-    dispatch({
-      type: AUTH_ERROR,
-      payload: err.response.data.message
-    });
-  }
-};
+//     dispatch({
+//       type: FB_LOADED,
+//       payload: res.data
+//     });
+//   } catch (err) {
+//     dispatch({
+//       type: AUTH_ERROR,
+//       payload: err.response.data.message
+//     });
+//   }
+// };
+
+// export const connectFB = (response, id) => async dispatch => {
+//   const config = {
+//     headers: {
+//       'Content-Type': 'application/json'
+//     }
+//   };
+//   try {
+//     const res = await axios.post(`/api/v1/users/fb/${id}`, response, config);
+
+//     dispatch({
+//       type: FB_LOADED,
+//       payload: res.data
+//     });
+//   } catch (err) {
+//     dispatch({
+//       type: FB_FAILED,
+//       payload: err.response.data.message
+//     });
+//   }
+// };
+
+// Signup FB
+
+export const checkFB = response =>
+  factory.post(response, '/api/v1/users/fb', 'FB_LOADED', 'AUTH_ERROR');
+
+// Connect FB
+
+export const connectFB = (response, id) =>
+  factory.post(response, `/api/v1/users/fb/${id}`, 'FB_LOADED', 'FB_FAILED');
+
+// Disconnect FB
+
+export const disconnectFB = id =>
+  factory.get(
+    `/api/v1/users/fb/${id}`,
+    'FB_DISCONNECTED',
+    'FB_DISCONNECT_FAIL'
+  );

@@ -11,13 +11,13 @@ import Login from './components/auth/Login';
 import Forgot from './components/auth/Forgot';
 import Footer from './components/layout/Footer';
 import Welcome from './components/pages/Welcome';
+import Match from './components/pages/Matches';
 import Alerts from './components/layout/Alerts';
 import PrivateRoute from './components/routing/PrivateRoute';
 import ResetPassword from './components/auth/ResetPassword';
 import NotConfirmed from './components/auth/NotConfirmed';
 import ConfirmEmail from './components/auth/ConfirmEmail';
 import ConfirmNetwork from './components/auth/ConfirmNetwork';
-import FaceBook from './components/auth/FaceBook';
 import Privacy from './components/layout/Privacy';
 
 const theme = createMuiTheme({
@@ -51,11 +51,11 @@ const App = () => {
               <Navbar />
               <Switch>
                 <Route exact path="/" component={Login} />
-                <Route exact path="/fb" component={FaceBook} />
                 <Route exact path="/privacy" component={Privacy} />
                 <PrivateRoute exact path="/welcome" component={Welcome} />
                 <PrivateRoute exact path="/crushes" component={Crushes} />
                 <PrivateRoute exact path="/verify" component={Verify} />
+                <PrivateRoute exact path="/matches" component={Match} />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/forgot" component={Forgot} />

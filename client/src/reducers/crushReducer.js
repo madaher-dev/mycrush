@@ -6,7 +6,8 @@ import {
   CLEAR_CRUSHES,
   LOGOUT,
   CLEAR_ERRORS,
-  SET_CRUSH_LOADING
+  SET_CRUSH_LOADING,
+  MATCH_FOUND
 } from '../actions/Types';
 
 const initialState = {
@@ -15,7 +16,8 @@ const initialState = {
   filtered: null,
   error: null,
   loading: true,
-  added: null
+  added: null,
+  match: false
 };
 
 export default (state = initialState, action) => {
@@ -26,6 +28,13 @@ export default (state = initialState, action) => {
         crushes: [action.payload, ...state.crushes],
         loading: false,
         added: state.added + 1
+      };
+    case MATCH_FOUND:
+      return {
+        ...state,
+        current: action.payload,
+        match: true,
+        loading: false
       };
     case GET_CRUSHES:
       return {
@@ -54,38 +63,6 @@ export default (state = initialState, action) => {
         ...state,
         loading: true
       };
-    // case SET_CURRENT:
-    //   return {
-    //     ...state,
-    //     current: action.payload
-    //   };
-    // case CLEAR_CURRENT:
-    //   return {
-    //     ...state,
-    //     current: null
-    //   };
-    // case UPDATE_CONTACT:
-    //   return {
-    //     ...state,
-    //     contacts: state.contacts.map(contact =>
-    //       contact._id === action.payload._id ? action.payload : contact
-    //     ),
-    //     loading: false
-    //   };
-    // case FILTER_CONTACTS:
-    //   return {
-    //     ...state,
-    //     filtered: state.contacts.filter(({ name, email }) => {
-    //       const testString = `${name}${email}`.toLowerCase();
-    //       return testString.includes(action.payload.toLowerCase());
-    //     })
-    //   };
-    // case CLEAR_FILTER:
-    //   return {
-    //     ...state,
-    //     filtered: null
-    //   };
-
     case CLEAR_CRUSHES:
     case LOGOUT:
       return {
