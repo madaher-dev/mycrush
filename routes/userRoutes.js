@@ -4,6 +4,7 @@ const router = express.Router();
 
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const fbController = require('../controllers/fbController');
 
 //@route  POST api/v1/users/
 //@desc Register - login - forget password - reset password for a user
@@ -17,14 +18,12 @@ router.get('/confirm/:token', authController.confirmEmail);
 router.get('/deleteCookie', authController.deleteCookie);
 router.post('/resendEmail', authController.resendEmail);
 
+router.post('/fb', fbController.signup);
+router.post('/fb/:id', fbController.connect);
+router.get('/fb/:id', fbController.disconnect);
+
 //Protect all routes after this middleware
 router.use(authController.protect);
-
-router.patch(
-  '/updateMyPassword',
-
-  authController.updatePassword
-);
 
 router.get('/me', userController.getMe, userController.getUser);
 router.patch(
@@ -34,6 +33,12 @@ router.patch(
   userController.updateMe
 );
 router.delete('/deleteMe', userController.deleteMe);
+
+router.patch(
+  '/updateMyPassword',
+
+  authController.updatePassword
+);
 
 //Restrict all the middleware after this point to admin
 router.use(authController.restrictTo('admin'));

@@ -6,7 +6,6 @@ const { Crush } = require('./../models/crushModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
-const { findOne } = require('./../models/userModel');
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -82,11 +81,11 @@ exports.signup = catchAsync(async (req, res, next) => {
     'host'
   )}/confirm/${confirmToken}`;
   const message =
-    'Please click on the following link, or paste this into your browser to confirm your email on :\n\n' +
+    'Please click on the following link, or paste this into your browser to confirm your email:\n\n' +
     `${confirmtURL}.\n`;
 
   const html_message =
-    `<p> Please click on the following link, or paste this into your browser to confirm your email on :\n\n` +
+    `<p> Please click on the following link, or paste this into your browser to confirm your email:\n\n` +
     `<a href="${confirmtURL}">${confirmtURL}</a>\n`;
 
   try {
@@ -151,7 +150,7 @@ exports.resendEmail = catchAsync(async (req, res, next) => {
 
   const html_message =
     `<p> Please click on the following link, or paste this into your browser to confirm your email on :\n\n` +
-    `<a href="${confirmtURL}">${confirmtURL}</a>\n`;
+    `<a href="${confirmtURL}">${confirmtURL}</a>\n</p>`;
 
   try {
     await sendEmail({
@@ -222,14 +221,7 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
   let token;
-  // if (
-  //   req.headers.authorization &&
-  //   req.headers.authorization.startsWith('Bearer')
-  // ) {
-  //   token = req.headers.authorization.split(' ')[1];
-  // } else if (req.cookies.jwt) {
-  //   token = req.cookies.jwt;
-  // }
+
   if (req.headers.cookie) {
     token = req.headers.cookie.split('=')[1];
   }

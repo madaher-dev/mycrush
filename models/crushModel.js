@@ -60,7 +60,12 @@ const crushSchema = mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'Card'
     },
-    targetPic: String
+    targetPic: String,
+    match: {
+      type: Boolean,
+      default: false
+    },
+    matchedAt: Date
   },
   {
     toJson: { virtuals: true },
@@ -77,7 +82,7 @@ crushSchema.pre('save', function(next) {
 
 crushSchema.pre(/^find/, function(next) {
   this.populate({
-    path: 'sourceId',
+    path: 'sourceId targetId',
     select: '-__v -passwordChangedAt'
   });
 
@@ -114,10 +119,12 @@ crushSchema.pre(/^find/, function(next) {
 
 const Crush = mongoose.model('Crush', crushSchema);
 const Archive = mongoose.model('Archive', crushSchema);
+const Match = mongoose.model('Match', crushSchema);
 
 // module.exports = Crush;
 
 module.exports = {
   Crush: Crush,
-  Archive: Archive
+  Archive: Archive,
+  Match: Match
 };

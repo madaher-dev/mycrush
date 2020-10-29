@@ -1,5 +1,5 @@
 const AppError = require('../utils/appError');
-const { Crush, Archive } = require('./../models/crushModel');
+const { Crush, Archive, Match } = require('./../models/crushModel');
 const User = require('./../models/userModel');
 const APIFeatures = require('../utils/APIFeatures');
 const catchAsync = require('../utils/catchAsync');
@@ -7,10 +7,6 @@ const factory = require('./handlerFactory');
 //CRUD
 
 exports.getAllCrushes = catchAsync(async (req, res, next) => {
-  //127.0.0.1:8000/api/v1/crushes?sort=price,-duration&duration[gte]=5&difficulty=easy
-  //-price for desending
-  //,duration as a second sorting operator in case of tie
-
   const features = new APIFeatures(Crush.find(), req.query)
     .filter()
     .sort()
@@ -74,7 +70,7 @@ exports.checkSourceDup = catchAsync(async (req, res, next) => {
   next();
 });
 
-//Need to implement Match
+// Calls Match after check found
 const checkUserCrushes = catchAsync(async (req, res, next) => {
   const crushFound = await Crush.findOne({
     sourceId: req.userFound,
@@ -82,9 +78,9 @@ const checkUserCrushes = catchAsync(async (req, res, next) => {
   });
 
   if (crushFound) {
-    //match logic
-    console.log('match');
-    next();
+    //MATCH FOUND
+    req.crushFound = crushFound._id;
+    createMatch(req, res, next);
   } else {
     req.body.targetId = req.userFound;
     //increment crushes
@@ -134,6 +130,27 @@ exports.checkPoints = (req, res, next) => {
   next();
 };
 
+//Need to implement Match
+const createMatch = catchAsync(async (req, res, next) => {
+  await Crush.findById(req.crushFound, function(err, result) {
+    let match = new Match(result.toJSON()); //or result.toObject
+    /* you could set a new id
+    swap._id = mongoose.Types.ObjectId()
+    swap.isNew = true
+    */
+
+    result.remove();
+    match.match = true;
+    match.matchedAt = Date.now();
+    match.save();
+    // swap is now in a better place
+    res.status(200).json({
+      status: 'success',
+      data: match
+    });
+  });
+});
+
 //Create Crush and Deduct point
 exports.createCrush = catchAsync(async (req, res, next) => {
   const crush = await Crush.create(req.body);
@@ -158,8 +175,8 @@ exports.getAllCrushes = factory.getAll(Crush);
 
 // exports.getCrush = factory.getOne(Crush, { path: 'reviews' }); //reviews is populate option
 exports.getCrush = factory.getOne(Crush);
-exports.updateCrush = factory.updateOne(Crush);
-exports.deleteCrush = factory.deleteOne(Crush);
+// exports.updateCrush = factory.updateOne(Crush);
+// exports.deleteCrush = factory.deleteOne(Crush);
 
 exports.getUserCrushes = catchAsync(async (req, res, next) => {
   const crushes = await Crush.find({ sourceId: req.user.id }).sort(
@@ -172,6 +189,20 @@ exports.getUserCrushes = catchAsync(async (req, res, next) => {
     crushes
   });
 });
+
+exports.getUserMatches = catchAsync(async (req, res, next) => {
+  const matches = await Match.find({
+    $or: [{ sourceId: req.user.id }, { targetId: req.user.id }]
+  }).sort('-matchedAt');
+
+  // SEND RESPONSE
+  res.status(200).json({
+    status: 'success',
+    results: matches.length,
+    matches
+  });
+});
+
 exports.updateCrush = catchAsync(async (req, res, next) => {
   const crush = await Crush.findByIdAndUpdate(req.params.id, req.body, {
     new: true,

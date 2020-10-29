@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   photo: String,
-  facebook: String,
+  facebook: {
+    type: String,
+    // `facebook` must be unique, unless it isn't defined
+    index: { unique: true, sparse: true }
+  },
   twitter: String,
   instagram: String,
   role: {
@@ -31,25 +35,41 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
-    minlength: 8,
+    // required: [true, 'Please provide a password'],
+    // minlength: 8,
     select: false
   },
   passwordConfirm: {
-    type: String,
-    required: [true, 'Please confirm your password'],
-    validate: {
-      // Custom Validator - This only works on CREATE and SAVE!!!
-      validator: function(el) {
-        return el === this.password;
-      },
-      message: 'Passwords are not the same!'
-    }
+    type: String
+    // required: [true, 'Please confirm your password'],
+    // validate: {
+    //   // Custom Validator - This only works on CREATE and SAVE!!!
+    //   validator: function(el) {
+    //     return el === this.password;
+    //   },
+    //   message: 'Passwords are not the same!'
+    // }
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
   emailConfirmToken: String,
+  fbAccessToken: String,
+  otherEmails: [
+    {
+      confirmed: {
+        type: Boolean,
+        default: false
+      },
+      email: {
+        type: String,
+        unique: true,
+        lowercase: true,
+        validate: [validator.isEmail, 'Please provide a valid email']
+      },
+      token: String
+    }
+  ],
 
   active: {
     type: Boolean,

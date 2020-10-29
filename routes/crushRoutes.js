@@ -4,29 +4,6 @@ const router = express.Router();
 const crushController = require('../controllers/crushController');
 const authController = require('../controllers/authController');
 
-// // A Middleware that runs only when there is a parameter
-
-// router.param('id', crushController.checkID);
-
-// Stats implementing aggregate
-router
-  .route('/stats')
-  .get(
-    authController.protect,
-    authController.restrictTo('admin', 'support'),
-    crushController.crushStats
-  );
-
-// Monthly Plan implementing aggregate Unwinding and Projecting
-
-// router
-//   .route('/plan/:year')
-//   .get(
-//     authController.protect,
-//     authController.restrictTo('admin', 'lead-guide'),
-//     crushController.crushPlan
-//   );
-
 // Get All Crushes - Create Crush
 router
   .route('/')
@@ -37,17 +14,22 @@ router
   )
   .post(
     authController.protect,
-    crushController.setSourceIds,
-    crushController.checkSourceDup,
-    crushController.checkPoints,
-    crushController.checkUserExists,
-    crushController.createCrush
+    crushController.setSourceIds, //adds sourceID to the stack - can be removed
+    crushController.checkSourceDup, //checks if user has crush with same entry
+    crushController.checkPoints, // check if enough points
+    crushController.checkUserExists, // check if crush in user DB - if exist check match
+    crushController.createCrush //create crush
   );
 
 //Get All User's Crushes
 router
   .route('/all')
   .get(authController.protect, crushController.getUserCrushes);
+
+//Get All User's Crushes
+router
+  .route('/matches')
+  .get(authController.protect, crushController.getUserMatches);
 
 // Get - Update - Delete Crush by ID
 router

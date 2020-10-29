@@ -12,6 +12,7 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const crushRouter = require('./routes/crushRoutes');
 const userRouter = require('./routes/userRoutes');
+const networkRouter = require('./routes/networkRoutes');
 
 // 1- Global Middleware
 
@@ -69,6 +70,7 @@ app.use((req, res, next) => {
 
 app.use('/api/v1/crushes', crushRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/networks', networkRouter);
 // app.use('/api/v1/reviews', reviewRouter);
 
 // 3-Serving static assets in production
