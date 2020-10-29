@@ -12,9 +12,9 @@ const PrivateRoute = ({
   component: Component,
   ...rest
 }) => {
-  if (!isAuthenticated) {
-    checkUser();
-  }
+  // if (!isAuthenticated) {
+  //   checkUser();
+  // }
   return (
     <Route
       {...rest}

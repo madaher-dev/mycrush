@@ -78,7 +78,7 @@ const Login = ({
           justify="center"
         >
           <Typography>
-            My Crush allows you to connect with your secret admirers. Your
+            MyCrush allows you to connect with your secret admirers. Your
             crushes can search for you by Name, Phone, or various social media
             platforms.
           </Typography>

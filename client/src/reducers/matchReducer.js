@@ -9,7 +9,8 @@ import {
 const initialState = {
   matches: [{}],
   error: null,
-  loading: true
+  loading: true,
+  matchesLoaded: false
 };
 
 export default (state = initialState, action) => {
@@ -18,18 +19,21 @@ export default (state = initialState, action) => {
       return {
         ...state,
         matches: action.payload.matches,
-        loading: false
+        loading: false,
+        matchesLoaded: true
       };
     case MATCH_ERROR:
       return {
         ...state,
-        error: action.payload
+        error: action.payload,
+        matchesLoaded: false
       };
     case LOGOUT:
       return {
         ...state,
         crushes: [],
-        error: null
+        error: null,
+        matchesLoaded: false
       };
     case SET_MATCH_LOADING:
       return {

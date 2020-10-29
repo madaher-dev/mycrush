@@ -13,11 +13,11 @@ import {
 const initialState = {
   crushes: [{}],
   current: null,
-  filtered: null,
   error: null,
   loading: true,
   added: null,
-  match: false
+  match: false,
+  crushesLoaded: false
 };
 
 export default (state = initialState, action) => {
@@ -40,7 +40,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         crushes: action.payload,
-        loading: false
+        loading: false,
+        crushesLoaded: true
       };
     case DELETE_CRUSH:
       return {
@@ -51,7 +52,8 @@ export default (state = initialState, action) => {
     case CRUSH_ERROR:
       return {
         ...state,
-        error: action.payload
+        error: action.payload,
+        crushesLoaded: false
       };
     case CLEAR_ERRORS:
       return {
@@ -67,10 +69,10 @@ export default (state = initialState, action) => {
     case LOGOUT:
       return {
         ...state,
-        filtered: null,
         crushes: [],
         error: null,
-        current: null
+        current: null,
+        crushesLoaded: false
       };
 
     default:

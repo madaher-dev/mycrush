@@ -34,13 +34,17 @@ import EmailIcon from '@material-ui/icons/Email';
 
 const useStyles = makeStyles(theme => ({
   main: {
-    paddingTop: 20
+    paddingTop: 20,
+    paddingBottom: 100
   },
   buttons: {
     flexGrow: 1
   },
   avatar: {
     backgroundColor: '#e91e63'
+  },
+  fbavatar: {
+    backgroundColor: '#4267B2'
   },
 
   fbButton: {
@@ -181,7 +185,7 @@ const Verify = ({
             {user.facebook ? (
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar className={classes.avatar}>
+                  <Avatar className={classes.fbavatar}>
                     <FacebookIcon />
                   </Avatar>
                 </ListItemAvatar>

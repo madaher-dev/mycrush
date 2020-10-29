@@ -1,6 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
@@ -24,12 +22,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-// import DialogContent from '@material-ui/core/DialogContent';
-// import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -91,14 +84,19 @@ if(match.sourceId._id === userId) type = 'targetId'
   };
 
 
-  let initials = null;
+ 
+let name = match.[type].name
 
-  if (match.[type].name) {
-    initials = match.[type].name.match(/\b\w/g) || [];
+let initials = null;
+
+  if (name) {
+    initials = name.match(/\b\w/g) || [];
     initials = (
       (initials.shift() || '') + (initials.pop() || '')
     ).toUpperCase();
   }
+
+  
 
   const email = (
     <Grid container>
@@ -143,17 +141,19 @@ if(match.sourceId._id === userId) type = 'targetId'
   return (
     <Card className={classes.root}>
       <CardHeader
-        avatar={
+        avatar={match.[type].photo ? (<Avatar aria-label="recipe" className={classes.avatar} src=  {match.[type].photo}/>
+      
+     ) : (
           <Avatar aria-label="recipe" className={classes.avatar}>
-            {match.[type].name}
-          </Avatar>
+            {initials}
+          </Avatar>)
         }
         action={
           <IconButton disableRipple>
             <DeleteIcon />
           </IconButton>
         }
-        title={match.[type].name}
+        title={name}
         subheader={Moment(match.matchedAt).format('LLL')}
       />
 

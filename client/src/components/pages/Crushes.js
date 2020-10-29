@@ -6,7 +6,6 @@ import { Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import { Formik, Form, Field } from 'formik';
 import { Button, InputAdornment } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -34,6 +33,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import { Redirect } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Hooray from './Hooray';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -41,7 +42,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const useStyles = makeStyles(theme => ({
   main: {
-    paddingTop: 20
+    paddingTop: 20,
+    paddingBottom: 100
   },
 
   fb: {
@@ -78,12 +80,16 @@ const Crushes = ({
   setAlert,
   setLoading,
   match,
-  current
+  current,
+  user,
+  crushesLoaded
 }) => {
   const classes = useStyles();
   useEffect(() => {
-    setLoading();
-    getCrushes();
+    if (!crushesLoaded) {
+      setLoading();
+      getCrushes();
+    }
 
     // eslint-disable-next-line
   }, []);
@@ -103,7 +109,11 @@ const Crushes = ({
   const handleAdd = () => {
     setAdd(true);
   };
-
+  // let x = true;
+  // let y = {
+  //   sourceId: { name: 'her name', email: 'test1@test.come' },
+  //   targetId: { name: 'my name', email: 'test2@test.com' }
+  // };
   const handleCancel = () => {
     setAdd(false);
   };
@@ -285,7 +295,7 @@ const Crushes = ({
     </Grid>
   );
   const listView = (
-    <Grid item container xs={11} sm={6}>
+    <Grid item container xs={11} sm={6} alignItems="center" justify="center">
       <Typography>
         Click on the <AddCircleOutlineIcon /> Button to add a new Crush. Your
         crush will be notified that they have a secret crush but will never know
@@ -324,7 +334,7 @@ const Crushes = ({
           ))}
         </Grid>
       ) : loading ? (
-        <LinearProgress />
+        <CircularProgress />
       ) : (
         <Fragment />
       )}
@@ -349,13 +359,13 @@ const Crushes = ({
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle id="alert-dialog-slide-title">
-          {'Its A Match!'}
+          {`It's A Match!`}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            {current ? current.sourceId : <Fragment />}{' '}
-            {current ? current.targetId : <Fragment />}
+            {current ? current.sourceId : <Fragment />}
           </DialogContentText>
+          <Hooray match={current} userId={user._id}></Hooray>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
@@ -377,7 +387,8 @@ Crushes.propTypes = {
   setAlert: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   match: PropTypes.bool,
-  current: PropTypes.object
+  current: PropTypes.object,
+  crushesLoaded: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -386,7 +397,9 @@ const mapStateToProps = state => ({
   added: state.crushes.added,
   error: state.crushes.error,
   match: state.crushes.match,
-  current: state.crushes.current
+  current: state.crushes.current,
+  user: state.users.user,
+  crushesLoaded: state.crushes.crushesLoaded
 });
 
 export default connect(mapStateToProps, {

@@ -3,14 +3,17 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   main: {
-    paddingTop: 100
+    paddingTop: 20,
+    paddingLeft: 40,
+    paddingRight: 40,
+    paddingBottom: 100
   }
 }));
 
 const Privacy = () => {
   const classes = useStyles();
   return (
-    <Fragment className={classes.main}>
+    <div className={classes.main}>
       <h1>Privacy Policy</h1>
       <p>Last updated: October 26, 2020</p>
       <p>
@@ -535,7 +538,7 @@ const Privacy = () => {
       <ul>
         <li>By email: info@mycrush.ws</li>
       </ul>
-    </Fragment>
+    </div>
   );
 };
 
