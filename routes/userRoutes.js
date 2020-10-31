@@ -25,6 +25,11 @@ router.get('/fb/:id', fbController.disconnect);
 //Protect all routes after this middleware
 router.use(authController.protect);
 
+router.get(
+  '/notifications',
+  userController.clearNotifications,
+  userController.getNotifications
+);
 router.get('/me', userController.getMe, userController.getUser);
 router.patch(
   '/updateMe',

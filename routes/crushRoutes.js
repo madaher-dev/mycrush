@@ -7,6 +7,7 @@ const authController = require('../controllers/authController');
 // Get All Crushes - Create Crush
 router
   .route('/')
+  //Will be used for admin
   .get(
     authController.protect,
     authController.restrictTo('admin', 'support'),
@@ -19,8 +20,9 @@ router
     crushController.checkPoints, // check if enough points
     crushController.checkUserExists, // check if crush in user DB - if exist check match -match will send notification and communication
     crushController.createCrush, //create crush
-    crushController.sendNotification, //if user exists send notification
-    crushController.sendCommunication // send communication to users and to potential
+    crushController.sendNotification('new-crush'), //if user exists send notification
+    crushController.sendCommunication('new-crush'), // send communication to users and to potential
+    crushController.sendResult // send request result to user
   );
 
 //Get All User's Crushes

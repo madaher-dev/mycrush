@@ -92,3 +92,17 @@ exports.getAllUsers = factory.getAll(User);
 // Do NOT update passwords with this!
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
+
+exports.clearNotifications = catchAsync(async (req, res, next) => {
+  await findByIdAndUpdate(req.user, { notifications: 0 });
+  next();
+});
+
+exports.getNotifications = catchAsync(async (req, res, next) => {
+  const notifications = await find({ user: req.user });
+
+  res.status(200).json({
+    status: 'success',
+    data: notifications
+  });
+});

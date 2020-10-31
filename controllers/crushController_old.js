@@ -1,11 +1,9 @@
 const AppError = require('../utils/appError');
 const { Crush, Archive, Match } = require('./../models/crushModel');
-const Notification = require('./../models/notificationsModel');
 const User = require('./../models/userModel');
 const APIFeatures = require('../utils/APIFeatures');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
-const sendEmail = require('../utils/email');
 
 //CRUD
 exports.getAllCrushes = catchAsync(async (req, res, next) => {
@@ -78,7 +76,8 @@ const checkUserCrushes = catchAsync(async (req, res, next) => {
     createMatch(req, res, next);
   } else {
     req.body.targetId = req.userFound;
-
+    //increment crushes
+    //notify user
     next();
   }
 });
@@ -124,7 +123,7 @@ exports.checkPoints = (req, res, next) => {
   next();
 };
 
-//Create Match if User Found and Match
+//Need to implement Match
 const createMatch = catchAsync(async (req, res, next) => {
   await Crush.findById(req.crushFound, function(err, result) {
     let match = new Match(result.toJSON()); //or result.toObject
@@ -138,10 +137,6 @@ const createMatch = catchAsync(async (req, res, next) => {
     match.matchedAt = Date.now();
     match.save();
     // swap is now in a better place
-
-    sendNotification('new-match');
-    sendCommunication('new-match');
-
     res.status(200).json({
       status: 'success',
       data: match
@@ -162,16 +157,17 @@ exports.createCrush = catchAsync(async (req, res, next) => {
   crush.sourceId.points = crush.sourceId.points - 1;
 
   // Notify crush by email, phone , or social media
-  req.crush = crush;
-  next();
+
+  res.status(201).json({
+    status: 'success',
+    data: crush
+  });
 });
 
-exports.getCrush = factory.getOne(Crush);
-
-// exports.getAllCrushes = factory.getAll(Crush);
+exports.getAllCrushes = factory.getAll(Crush);
 
 // exports.getCrush = factory.getOne(Crush, { path: 'reviews' }); //reviews is populate option
-
+exports.getCrush = factory.getOne(Crush);
 // exports.updateCrush = factory.updateOne(Crush);
 // exports.deleteCrush = factory.deleteOne(Crush);
 
@@ -241,82 +237,99 @@ exports.deleteCrush = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.sendNotification = type =>
-  catchAsync(async (req, res, next) => {
-    if (req.userFound) {
-      await Notification.create({ user: req.userFound, notType: type });
-      const user = await User.findByIdAndUpdate(req.userFound, {
-        $inc: { notifications: 1 }
-      });
-      req.userFoundEmail = user.email;
-    }
-    next();
-  });
+// Top 5 - Aliasing
+exports.aliasTop = (req, res, next) => {
+  //prefilling query string
 
-exports.sendCommunication = type =>
-  catchAsync(async (req, res, next) => {
-    if (type === 'new-crush') {
-      if (req.userFoundEmail) {
-        constructEmail('new-crush', req.userFoundEmail);
-      } else if (req.crush.email) {
-        constructEmail('new-crush', req.crush.email);
-      }
-    } else if (type === 'new-match') {
-      constructEmail('new-match', req.userFoundEmail);
-    }
-    next();
-  });
-
-// Finally Send create crush result
-exports.sendResult = (req, res) => {
-  const crush = req.crush;
-
-  res.status(201).json({
-    status: 'success',
-    data: crush
-  });
+  req.query.limit = 5; //choosing top 5
+  req.query.sort = '-ratingsAverage,price'; //top 5 average sorted by price
+  req.query.fields = 'name, price'; //show only certain fields
+  next();
 };
 
-const constructEmail = catchAsync(async (type, email) => {
-  // const URL = `${req.protocol}://${req.get('host')}/`;
+// validate middleware
 
-  const URL = `https://www.mycrush.ws`;
-
-  if (type === 'new-crush') {
-    const message = `Something is cooking! Someone seems to have a crush on you. Visit ${URL} , add a new crush and try to match with your secret admirer. Happy matching!`;
-
-    const html_message = `<p> Something is cooking! Someone seems to have a crush on you. Visit ${URL} , add a new crush and try to match with your secret admirer. Happy matching!</p>`;
-
-    try {
-      await sendEmail({
-        email,
-        subject: 'Someone has a Crush on you!',
-        message,
-        html_message
-      });
-    } catch (err) {
-      return next(
-        new AppError('There was an error sending the email. Try again later!'),
-        500
-      );
-    }
-  } else if (type === 'new-crush') {
-    const message = `Hooray! You have a new match on MyCrush. Visit ${URL} to find out who it is. Happy Matching!`;
-
-    const html_message = `<p> Hooray! You have a new match on MyCrush. Visit ${URL} to find out who it is. Happy Matching!</p>`;
-
-    try {
-      await sendEmail({
-        email,
-        subject: `It's a Match!`,
-        message,
-        html_message
-      });
-    } catch (err) {
-      return next(
-        new AppError('There was an error sending the email. Try again later!'),
-        500
-      );
-    }
+exports.validateBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Missing fields in body'
+    });
   }
+  next();
+};
+
+//Aggregation Pipeline - ex: Statistics
+exports.crushStats = catchAsync(async (req, res, next) => {
+  const stats = await Crush.aggregate([
+    //get all crushes grouped per target and sorted by number of followers
+    {
+      $match: { targetId: { $ne: null } }
+    },
+    {
+      $group: {
+        _id: { $toUpper: '$targetId' }, //Grouping , use null to disable
+        numFollowers: { $sum: 1 } //calculate total crushes
+        // numFollowers: { $sum: '$sourceId' } // otheroperators: $avg , $min, $max
+      }
+    },
+    {
+      $sort: { numFollowers: 1 } //sort by average price -1 for descending
+    }
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      stats
+    }
+  });
+});
+
+// Aggregation pipeline Unwinding and Projecting
+// How many tours there are in each month in a given year
+
+exports.crushPlan = catchAsync(async (req, res, next) => {
+  const year = req.params.year * 1;
+  const plan = await Crush.aggregate([
+    {
+      $unwind: '$startDates' //deconstruct an array field from the input document then output one document per array
+    },
+    {
+      $match: {
+        //match only tours in selected year
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`)
+        }
+      }
+    },
+    {
+      $group: {
+        _id: { $month: '$startDates' },
+        numToursStarts: { $sum: 1 },
+        tours: { $push: '$name' } //array of name of tours that fits criteria
+      }
+    },
+    {
+      $addFields: { month: '$_id' }
+    },
+    {
+      $project: {
+        //Removes the _id field
+        _id: 0
+      }
+    },
+    {
+      $sort: { numToursStarts: -1 }
+    },
+    {
+      $limit: 6 //limit to 6 results
+    }
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      plan
+    }
+  });
 });
