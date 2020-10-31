@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import PropTypes from 'prop-types';
@@ -10,6 +10,7 @@ import MatchCard from './MatchCard';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Link } from 'react-router-dom';
+import { setPage } from '../../actions/userActions';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -28,7 +29,8 @@ const Matches = ({
   matches,
   loading,
   user,
-  matchesLoaded
+  matchesLoaded,
+  setPage
 }) => {
   const classes = useStyles();
   useEffect(() => {
@@ -36,7 +38,7 @@ const Matches = ({
       setLoading();
       getMatches();
     }
-
+    setPage('Matches');
     // eslint-disable-next-line
   }, []);
 
@@ -95,7 +97,8 @@ Matches.propTypes = {
   loading: PropTypes.bool,
   setLoading: PropTypes.func.isRequired,
   user: PropTypes.object,
-  matchesLoaded: PropTypes.bool.isRequired
+  matchesLoaded: PropTypes.bool.isRequired,
+  setPage: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -108,5 +111,6 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   getMatches,
-  setLoading
+  setLoading,
+  setPage
 })(Matches);

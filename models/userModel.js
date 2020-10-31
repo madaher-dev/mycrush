@@ -82,6 +82,10 @@ const userSchema = new mongoose.Schema({
   points: {
     type: Number,
     default: 3
+  },
+  notifications: {
+    type: Number,
+    default: 0
   }
 });
 

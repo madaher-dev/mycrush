@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import CrushesBox from './CrushesBox';
@@ -7,6 +7,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { setPage } from '../../actions/userActions';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -16,12 +17,18 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 20,
     paddingLeft: 20,
     paddingRight: 20,
+    paddingBottom: 100,
     alignItems: 'stretch',
     width: '100%'
   }
 }));
-const Welcome = ({ crushes, crushesLoaded, user }) => {
+const Welcome = ({ crushes, crushesLoaded, user, setPage }) => {
   const classes = useStyles();
+
+  useEffect(() => {
+    setPage('Dashboard');
+    // eslint-disable-next-line
+  }, []);
   return (
     <Grid container direction="column" alignItems="center">
       <Grid
@@ -51,7 +58,7 @@ const Welcome = ({ crushes, crushesLoaded, user }) => {
         ) : (
           <Fragment />
         )}
-        {crushesLoaded && crushes.length == 0 ? (
+        {crushesLoaded && crushes.length === 0 ? (
           <Grid item xs={12}>
             <Alert severity="warning">
               You do not have any Crushes. Go to the{' '}
@@ -62,7 +69,7 @@ const Welcome = ({ crushes, crushesLoaded, user }) => {
                 Crushes
               </Link>{' '}
               Page and create a new Crush Now! Your crush will only know about
-              your feelings if you mutually have a crush!
+              your feelings if the interest is mutual!
             </Alert>
           </Grid>
         ) : (
@@ -82,7 +89,8 @@ const Welcome = ({ crushes, crushesLoaded, user }) => {
 Welcome.propTypes = {
   crushes: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   user: PropTypes.object,
-  crushesLoaded: PropTypes.bool.isRequired
+  crushesLoaded: PropTypes.bool.isRequired,
+  setPage: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -91,4 +99,4 @@ const mapStateToProps = state => ({
   user: state.users.user
 });
 
-export default connect(mapStateToProps, {})(Welcome);
+export default connect(mapStateToProps, { setPage })(Welcome);

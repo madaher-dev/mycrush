@@ -15,6 +15,7 @@ import {
   clearErrors,
   setLoading
 } from '../../actions/crushActions';
+import { setPage } from '../../actions/userActions';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import TwitterIcon from '@material-ui/icons/Twitter';
@@ -23,9 +24,6 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import CommentIcon from '@material-ui/icons/Comment';
 import CrushCard from './CrushCard';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
-import Tooltip from '@material-ui/core/Tooltip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -58,11 +56,8 @@ const useStyles = makeStyles(theme => ({
   insta: {
     color: '#C13584'
   },
-  addButton: {
-    paddingRight: 40,
-    [theme.breakpoints.up('sm')]: {
-      paddingRight: 60
-    }
+  list: {
+    paddingTop: 20
   },
   cancel: {
     marginLeft: 20
@@ -79,10 +74,12 @@ const Crushes = ({
   clearErrors,
   setAlert,
   setLoading,
-  match,
+  match1,
   current,
   user,
-  crushesLoaded
+  crushesLoaded,
+  setPage,
+  location
 }) => {
   const classes = useStyles();
   useEffect(() => {
@@ -93,6 +90,7 @@ const Crushes = ({
 
     // eslint-disable-next-line
   }, []);
+
   useEffect(() => {
     if (added) setAdd(false);
   }, [added]);
@@ -106,14 +104,17 @@ const Crushes = ({
 
   const [add, setAdd] = useState(false);
 
+  useEffect(() => {
+    if (!add) setPage('Crushes');
+
+    // eslint-disable-next-line
+  }, [add]);
+
   const handleAdd = () => {
     setAdd(true);
+    setPage('Add Crush');
   };
-  // let x = true;
-  // let y = {
-  //   sourceId: { name: 'her name', email: 'test1@test.come' },
-  //   targetId: { name: 'my name', email: 'test2@test.com' }
-  // };
+
   const handleCancel = () => {
     setAdd(false);
   };
@@ -121,6 +122,11 @@ const Crushes = ({
   const handleClose = () => {
     return <Redirect to="/matches" />;
   };
+
+  if (location.addOpen && !add) {
+    handleAdd();
+    location.addOpen = false;
+  }
 
   const addView = (
     <Grid item container xs={12} sm={6} justify="center">
@@ -301,20 +307,6 @@ const Crushes = ({
         crush will be notified that they have a secret crush but will never know
         who it is unless you both match. Happy Crushing!
       </Typography>
-      <Grid item container justify="flex-end">
-        <Grid item className={classes.addButton}>
-          <Tooltip title="Add new Crush" aria-label="add">
-            <Fab
-              color="secondary"
-              aria-label="add"
-              className={classes.margin}
-              onClick={handleAdd}
-            >
-              <AddIcon />
-            </Fab>
-          </Tooltip>
-        </Grid>
-      </Grid>
 
       {crushes !== [] && !loading ? (
         <Grid
@@ -323,6 +315,7 @@ const Crushes = ({
           spacing={2}
           // direction="column"
           justify="center"
+          className={classes.list}
           // alignItems="center"
         >
           {crushes.map(crush => (
@@ -351,7 +344,7 @@ const Crushes = ({
     >
       {add ? addView : listView}
       <Dialog
-        open={match}
+        open={match1}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -386,9 +379,11 @@ Crushes.propTypes = {
   clearErrors: PropTypes.func.isRequired,
   setAlert: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
-  match: PropTypes.bool,
+  match1: PropTypes.bool,
   current: PropTypes.object,
-  crushesLoaded: PropTypes.bool.isRequired
+  crushesLoaded: PropTypes.bool.isRequired,
+  setPage: PropTypes.func.isRequired,
+  addAction: PropTypes.bool
 };
 
 const mapStateToProps = state => ({
@@ -396,7 +391,7 @@ const mapStateToProps = state => ({
   loading: state.crushes.loading,
   added: state.crushes.added,
   error: state.crushes.error,
-  match: state.crushes.match,
+  match1: state.crushes.match,
   current: state.crushes.current,
   user: state.users.user,
   crushesLoaded: state.crushes.crushesLoaded
@@ -407,5 +402,6 @@ export default connect(mapStateToProps, {
   getCrushes,
   clearErrors,
   setAlert,
-  setLoading
+  setLoading,
+  setPage
 })(Crushes);

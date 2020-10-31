@@ -19,6 +19,8 @@ import NotConfirmed from './components/auth/NotConfirmed';
 import ConfirmEmail from './components/auth/ConfirmEmail';
 import ConfirmNetwork from './components/auth/ConfirmNetwork';
 import Privacy from './components/layout/Privacy';
+import MobileMenu from './components/layout/MobileMenu';
+import Tutorial from './components/layout/Tutorial';
 
 const theme = createMuiTheme({
   palette: {
@@ -75,7 +77,9 @@ const App = () => {
                   path="/confirmnet/:email_token"
                   component={ConfirmNetwork}
                 />
+                <Route exact path="/tutorial" component={Tutorial} />
               </Switch>
+              <MobileMenu />
               <Footer />
             </Fragment>
           </Router>

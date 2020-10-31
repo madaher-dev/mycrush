@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from 'react';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Typography } from '@material-ui/core';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,7 +14,8 @@ import {
   clearErrors,
   disconnectEmail,
   connectFB,
-  disconnectFB
+  disconnectFB,
+  setPage
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -31,6 +32,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import EmailIcon from '@material-ui/icons/Email';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -48,7 +51,6 @@ const useStyles = makeStyles(theme => ({
   },
 
   fbButton: {
-    margin: 3,
     backgroundColor: '#4267B2'
   }
 }));
@@ -61,7 +63,10 @@ const Verify = ({
   error,
   disconnectEmail,
   connectFB,
-  disconnectFB
+  disconnectFB,
+  setPage,
+  location,
+  anchor
 }) => {
   const classes = useStyles();
 
@@ -71,6 +76,11 @@ const Verify = ({
       clearErrors();
     }
   }, [error, setAlert, clearErrors]);
+  useEffect(() => {
+    setPage('Networks');
+
+    // eslint-disable-next-line
+  }, []);
 
   const [open, setOpen] = React.useState(false);
   const [email, setEmail] = React.useState('');
@@ -87,6 +97,7 @@ const Verify = ({
     disconnectFB(id);
   };
   const handleClickOpen = () => {
+    handleMenuClose();
     setOpen(true);
   };
 
@@ -99,8 +110,76 @@ const Verify = ({
     connectEmail(email);
   };
   const responseFacebook = response => {
+    handleMenuClose();
     connectFB(response, user._id);
   };
+
+  const [menu, setMenuOpen] = React.useState(false);
+
+  const handleMenuClose = () => {
+    setMenuOpen(false);
+  };
+
+  if (location.addOpen) {
+    setMenuOpen(true);
+    location.addOpen = false;
+  }
+  const renderNetworksMenu = (
+    <Menu
+      anchorEl={anchor}
+      //anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      id={'networks-menu'}
+      keepMounted
+      transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      open={menu}
+      onClose={handleMenuClose}
+    >
+      {/* <MenuItem>
+        <IconButton aria-label="show notifications" color="inherit">
+          <Badge badgeContent={0} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Notifications</p>
+      </MenuItem> */}
+      <MenuItem>
+        <Button
+          variant="contained"
+          color="primary"
+          // disabled={isSubmitting}
+          onClick={handleClickOpen}
+          startIcon={<EmailIcon />}
+        >
+          Connect new Email
+        </Button>
+      </MenuItem>
+      <MenuItem>
+        {user.facebook ? (
+          <Fragment />
+        ) : (
+          <FacebookLogin
+            appId="380772783291898"
+            fields="name,email,picture"
+            //   scope="public_profile,user_link"
+            //autoLoad
+            callback={responseFacebook}
+            render={renderProps => (
+              <Button
+                variant="contained"
+                color="primary"
+                // disabled={isSubmitting}
+                onClick={renderProps.onClick}
+                className={classes.fbButton}
+                startIcon={<FacebookIcon />}
+              >
+                Connect Facebook
+              </Button>
+            )}
+          />
+        )}
+      </MenuItem>
+    </Menu>
+  );
   return (
     <Grid
       container
@@ -119,36 +198,10 @@ const Verify = ({
         justify="center"
       >
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            // disabled={isSubmitting}
-            onClick={handleClickOpen}
-          >
-            Connect new Email
-          </Button>
-          {user.facebook ? (
-            <Fragment />
-          ) : (
-            <FacebookLogin
-              appId="380772783291898"
-              fields="name,email,picture"
-              //   scope="public_profile,user_link"
-              //autoLoad
-              callback={responseFacebook}
-              render={renderProps => (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  // disabled={isSubmitting}
-                  onClick={renderProps.onClick}
-                  className={classes.fbButton}
-                >
-                  Connect Facebook
-                </Button>
-              )}
-            />
-          )}
+          <Typography>
+            Below are the networks that you have currently verified. Connect
+            more networks to increase your chances of a match!
+          </Typography>
           <Dialog
             open={open}
             onClose={handleClose}
@@ -280,6 +333,7 @@ const Verify = ({
           </List>
         </Grid>
       </Grid>
+      {renderNetworksMenu}
     </Grid>
   );
 };
@@ -292,12 +346,15 @@ Verify.propTypes = {
   setAlert: PropTypes.func.isRequired,
   disconnectEmail: PropTypes.func.isRequired,
   connectFB: PropTypes.func.isRequired,
-  disconnectFB: PropTypes.func.isRequired
+  disconnectFB: PropTypes.func.isRequired,
+  setPage: PropTypes.func.isRequired,
+  anchor: PropTypes.object
 };
 
 const mapStateToProps = state => ({
   user: state.users.user,
-  error: state.users.error
+  error: state.users.error,
+  anchor: state.users.ev
 });
 
 export default connect(mapStateToProps, {
@@ -306,5 +363,6 @@ export default connect(mapStateToProps, {
   setAlert,
   disconnectEmail,
   connectFB,
-  disconnectFB
+  disconnectFB,
+  setPage
 })(Verify);

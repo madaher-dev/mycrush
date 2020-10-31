@@ -15,16 +15,19 @@ import { Formik, Form, Field } from 'formik';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import Avatar from '@material-ui/core/Avatar';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FacebookIcon from '@material-ui/icons/Facebook';
 
 const useStyles = makeStyles(theme => ({
   main: {
-    paddingTop: 20
+    paddingTop: 20,
+    paddingLeft: 20,
+    paddingRight: 20
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -41,7 +44,13 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     // backgroundColor: red[500]
-    backgroundColor: '#e91e63'
+    backgroundColor: '#e91e63',
+    marginTop: 20,
+    marginBottom: 20
+  },
+  fbButton: {
+    backgroundColor: '#4267B2',
+    width: '100%'
   }
 }));
 
@@ -212,13 +221,23 @@ const Register = ({
           </Grid>
           <Grid item xs={12} sm={8} className={classes.social}>
             <FacebookLogin
-              buttonStyle={{ padding: '6px', width: '100%' }}
               appId="380772783291898"
-              autoLoad={true}
               fields="name,email,picture"
-              scope="public_profile,user_link"
+              //   scope="public_profile,user_link"
+              //autoLoad
               callback={responseFacebook}
-              icon="fa-facebook"
+              render={renderProps => (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  // disabled={isSubmitting}
+                  onClick={renderProps.onClick}
+                  className={classes.fbButton}
+                  startIcon={<FacebookIcon />}
+                >
+                  Signup with Facebook
+                </Button>
+              )}
             />
           </Grid>
           <Backdrop className={classes.backdrop} open={loading}>

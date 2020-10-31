@@ -31,7 +31,6 @@ export const addCrush = crush => async dispatch => {
 
   try {
     const res = await axios.post('/api/v1/crushes', crush, config);
-    console.log(res.data);
     if (!res.data.data.match)
       dispatch({ type: ADD_CRUSH, payload: res.data.data });
     else dispatch({ type: MATCH_FOUND, payload: res.data.data });

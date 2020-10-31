@@ -16,7 +16,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   main: {
-    paddingTop: 20
+    paddingTop: 20,
+    paddingLeft: 20,
+    paddingRight: 20
   },
   forgotLink: {
     alignSelf: 'flex-end'

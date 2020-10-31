@@ -29,7 +29,7 @@ const MainMenu = ({ isAuthenticated }) => {
         Crushes
       </Button>
       <Button to="/verify" component={Link} color="inherit">
-        Verify
+        Networks
       </Button>
       <Button to="/matches" component={Link} color="inherit">
         Matches

@@ -5,20 +5,22 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
 import LoyaltyIcon from '@material-ui/icons/Loyalty';
 import MainMenu from './MainMenu';
-import { checkUser, logout } from '../../actions/userActions';
+import {
+  checkUser,
+  logout,
+  setMobileMenuOpen
+} from '../../actions/userActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import RedeemIcon from '@material-ui/icons/Redeem';
 import Avatar from '@material-ui/core/Avatar';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -32,13 +34,17 @@ const useStyles = makeStyles(theme => ({
     }
   },
   logo: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    textDecoration: 'none',
+    color: 'white'
   },
   title: {
     display: 'block',
     [theme.breakpoints.up('sm')]: {
       display: 'block'
-    }
+    },
+    textDecoration: 'none',
+    color: 'white'
   },
   mainMenu: {
     position: 'relative',
@@ -66,7 +72,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
+const Navbar = ({
+  checkUser,
+  isAuthenticated,
+  user,
+  logout,
+  points,
+  setMobileMenuOpen
+}) => {
   const classes = useStyles();
 
   useEffect(() => {
@@ -74,91 +87,13 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
     // eslint-disable-next-line
   }, []);
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
-  const handleMobileMenuOpen = event => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
-
   const onLogout = () => {
     logout();
-    handleMobileMenuClose();
   };
 
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = 'primary-search-account-menu-mobile';
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton aria-label="show points" color="inherit">
-          <Badge badgeContent={points} color="secondary">
-            <RedeemIcon />
-          </Badge>
-        </IconButton>
-        <p>Points</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="show notifications" color="inherit">
-          <Badge badgeContent={0} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton color="inherit">
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-      <MenuItem onClick={onLogout}>
-        <IconButton color="inherit">
-          <ExitToAppIcon />
-        </IconButton>
-        <p>Logout</p>
-      </MenuItem>
-    </Menu>
-  );
+  const mobileMenuOpen = () => {
+    setMobileMenuOpen(true);
+  };
 
   return (
     <div className={classes.grow}>
@@ -169,15 +104,23 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
-            aria-controls={menuId}
+            // aria-controls={menuId}
             aria-haspopup="true"
-            onClick={handleProfileMenuOpen}
+            onClick={mobileMenuOpen}
           >
             <MenuIcon />
           </IconButton>
-          <LoyaltyIcon className={classes.logo} />
-          <Typography className={classes.title} variant="h6" noWrap>
-            My Crush
+          <IconButton component={Link} to="/">
+            <LoyaltyIcon className={classes.logo} />
+          </IconButton>
+          <Typography
+            className={classes.title}
+            variant="h6"
+            noWrap
+            component={Link}
+            to="/"
+          >
+            MyCrush
           </Typography>
           <div className={classes.grow} />
           <div className={classes.mainMenu}>
@@ -220,13 +163,26 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
               </div>
               <div className={classes.sectionMobile}>
                 <IconButton
-                  aria-label="show more"
-                  aria-controls={mobileMenuId}
-                  aria-haspopup="true"
-                  onClick={handleMobileMenuOpen}
+                  aria-label="show 17 new notifications"
                   color="inherit"
                 >
-                  <MoreIcon />
+                  <Badge badgeContent={0} color="secondary">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  // aria-controls={menuId}
+                  // aria-haspopup="true"
+                  // onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  {user.photo ? (
+                    <Avatar alt="Remy Sharp" src={user.photo} />
+                  ) : (
+                    <AccountCircle />
+                  )}
                 </IconButton>
               </div>{' '}
             </Fragment>
@@ -235,8 +191,6 @@ const Navbar = ({ checkUser, isAuthenticated, user, logout, points }) => {
           )}
         </Toolbar>
       </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
     </div>
   );
 };
@@ -246,7 +200,8 @@ Navbar.propTypes = {
   checkUser: PropTypes.func.isRequired,
   user: PropTypes.object,
   logout: PropTypes.func.isRequired,
-  points: PropTypes.number.isRequired
+  points: PropTypes.number.isRequired,
+  setMobileMenuOpen: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -257,5 +212,6 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   checkUser,
-  logout
+  logout,
+  setMobileMenuOpen
 })(Navbar);

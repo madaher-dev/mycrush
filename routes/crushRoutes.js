@@ -17,8 +17,10 @@ router
     crushController.setSourceIds, //adds sourceID to the stack - can be removed
     crushController.checkSourceDup, //checks if user has crush with same entry
     crushController.checkPoints, // check if enough points
-    crushController.checkUserExists, // check if crush in user DB - if exist check match
-    crushController.createCrush //create crush
+    crushController.checkUserExists, // check if crush in user DB - if exist check match -match will send notification and communication
+    crushController.createCrush, //create crush
+    crushController.sendNotification, //if user exists send notification
+    crushController.sendCommunication // send communication to users and to potential
   );
 
 //Get All User's Crushes

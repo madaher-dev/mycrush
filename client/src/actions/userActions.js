@@ -6,7 +6,11 @@ import {
   LOGOUT,
   CLEAR_ERRORS,
   SET_USER_LOADING,
-  EMAIL_CONFIRMED
+  EMAIL_CONFIRMED,
+  SET_PAGE,
+  SET_EVENT,
+  SET_MOBILE_MENU,
+  CLOSE_MOBILE_MENU
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -130,6 +134,18 @@ export const clearErrors = () => ({ type: CLEAR_ERRORS });
 
 // Set Loading
 export const setLoading = () => ({ type: SET_USER_LOADING });
+
+// Set Page
+export const setPage = page => ({ type: SET_PAGE, payload: page });
+
+// Set Action Button event
+export const setEvent = ev => ({ type: SET_EVENT, payload: ev });
+
+// Set Mobile Menu Open
+export const setMobileMenuOpen = () => ({ type: SET_MOBILE_MENU });
+
+// Set Mobile Menu Open
+export const setMobileMenuClose = () => ({ type: CLOSE_MOBILE_MENU });
 
 // Login User
 

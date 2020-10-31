@@ -28,6 +28,10 @@ export const EMAIL_CONFIRMED = 'EMAIL_CONFIRMED';
 export const EMAIL_RESEND = 'EMAIL_RESEND';
 export const FB_LOADED = 'FB_LOADED';
 export const FB_FAILED = 'FB_FAILED';
+export const SET_PAGE = 'SET_PAGE';
+export const SET_EVENT = 'SET_EVENT';
+export const SET_MOBILE_MENU = 'SET_MOBILE_MENU';
+export const CLOSE_MOBILE_MENU = 'CLOSE_MOBILE_MENU';
 
 export const CONNECT_EMAIL_SUCCESSS = 'CONNECT_EMAIL_SUCCESSS';
 export const CONNECT_EMAIL_FAIL = 'CONNECT_EMAIL_FAIL';

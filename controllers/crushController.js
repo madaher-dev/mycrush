@@ -4,8 +4,8 @@ const User = require('./../models/userModel');
 const APIFeatures = require('../utils/APIFeatures');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
-//CRUD
 
+//CRUD
 exports.getAllCrushes = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Crush.find(), req.query)
     .filter()
@@ -56,13 +56,6 @@ exports.checkSourceDup = catchAsync(async (req, res, next) => {
     { sourceId: user }
   ]);
 
-  // const crushDup = await Crush.find({
-  //   $and: [{ $or: [{ name }, { email },{ twitter }, { instagram }, { facebook }] }, { sourceId: user }]
-  // });
-
-  //const count = crushDup.length;
-
-  // if (count !== 0) {
   if (crushDup) {
     return next(new AppError('You already have a similar crush!', 404));
   }
@@ -78,7 +71,7 @@ const checkUserCrushes = catchAsync(async (req, res, next) => {
   });
 
   if (crushFound) {
-    //MATCH FOUND
+    //MATCH FOUND -- Add notification, send communication
     req.crushFound = crushFound._id;
     createMatch(req, res, next);
   } else {

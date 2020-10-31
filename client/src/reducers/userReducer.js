@@ -21,7 +21,11 @@ import {
   EMAIL_DISCONNECTED,
   EMAIL_DISCONNECT_FAIL,
   FB_DISCONNECTED,
-  FB_DISCONNECT_FAIL
+  FB_DISCONNECT_FAIL,
+  SET_PAGE,
+  SET_EVENT,
+  SET_MOBILE_MENU,
+  CLOSE_MOBILE_MENU
 } from '../actions/Types';
 
 const initialState = {
@@ -34,7 +38,10 @@ const initialState = {
   email_token: false,
   email_confirmed: false,
   emailSent: false,
-  email_added: false
+  email_added: false,
+  page: null,
+  ev: null,
+  mobileMenu: false
 };
 
 export default (state = initialState, action) => {
@@ -135,7 +142,9 @@ export default (state = initialState, action) => {
         user: null,
         error: action.payload,
         points: 0,
-        linkSent: false
+        linkSent: false,
+        page: null,
+        mobileMenu: false
       };
     case AUTH_ERROR:
       return {
@@ -170,6 +179,26 @@ export default (state = initialState, action) => {
         linkSent: true,
         loading: false,
         error: action.payload.message
+      };
+    case SET_PAGE:
+      return {
+        ...state,
+        page: action.payload
+      };
+    case SET_EVENT:
+      return {
+        ...state,
+        ev: action.payload
+      };
+    case SET_MOBILE_MENU:
+      return {
+        ...state,
+        mobileMenu: true
+      };
+    case CLOSE_MOBILE_MENU:
+      return {
+        ...state,
+        mobileMenu: false
       };
     default:
       return state;
