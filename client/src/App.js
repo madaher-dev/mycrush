@@ -22,6 +22,8 @@ import ConfirmNetwork from './components/auth/ConfirmNetwork';
 import Privacy from './components/layout/Privacy';
 import MobileMenu from './components/layout/MobileMenu';
 import Tutorial from './components/layout/Tutorial';
+import ReactGA from 'react-ga';
+import { createBrowserHistory } from 'history';
 
 const theme = createMuiTheme({
   palette: {
@@ -43,12 +45,20 @@ const theme = createMuiTheme({
   }
 });
 
+const history = createBrowserHistory();
+
+// Initialize google analytics page view tracking
+history.listen(location => {
+  ReactGA.set({ page: location.pathname }); // Update the user's current page
+  ReactGA.pageview(location.pathname); // Record a pageview for the given page
+});
+
 const App = () => {
   return (
     <div className="App">
       <Provider store={store}>
         <MuiThemeProvider theme={theme}>
-          <Router>
+          <Router history={history}>
             <Fragment>
               <Alerts />
               <Navbar />

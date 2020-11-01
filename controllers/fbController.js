@@ -93,7 +93,7 @@ const createSendToken = (user, statusCode, req, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
 
