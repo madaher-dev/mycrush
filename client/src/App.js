@@ -12,6 +12,7 @@ import Forgot from './components/auth/Forgot';
 import Footer from './components/layout/Footer';
 import Welcome from './components/pages/Welcome';
 import Match from './components/pages/Matches';
+import Notifications from './components/pages/Notifications';
 import Alerts from './components/layout/Alerts';
 import PrivateRoute from './components/routing/PrivateRoute';
 import ResetPassword from './components/auth/ResetPassword';
@@ -58,6 +59,11 @@ const App = () => {
                 <PrivateRoute exact path="/crushes" component={Crushes} />
                 <PrivateRoute exact path="/verify" component={Verify} />
                 <PrivateRoute exact path="/matches" component={Match} />
+                <PrivateRoute
+                  exact
+                  path="/notifications"
+                  component={Notifications}
+                />
                 <Route exact path="/register" component={Register} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/forgot" component={Forgot} />

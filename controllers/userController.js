@@ -1,6 +1,7 @@
 const multer = require('multer');
 const sharp = require('sharp');
 const User = require('./../models/userModel');
+const Notifications = require('./../models/notificationsModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
@@ -94,12 +95,15 @@ exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 
 exports.clearNotifications = catchAsync(async (req, res, next) => {
-  await findByIdAndUpdate(req.user, { notifications: 0 });
+  await User.findByIdAndUpdate(req.user._id, {
+    notifications: 0
+  });
+
   next();
 });
 
 exports.getNotifications = catchAsync(async (req, res, next) => {
-  const notifications = await find({ user: req.user });
+  const notifications = await Notifications.find({ user: req.user });
 
   res.status(200).json({
     status: 'success',

@@ -7,10 +7,9 @@ import {
   CLEAR_ERRORS,
   SET_USER_LOADING,
   EMAIL_CONFIRMED,
-  SET_PAGE,
-  SET_EVENT,
   SET_MOBILE_MENU,
-  CLOSE_MOBILE_MENU
+  CLOSE_MOBILE_MENU,
+  CLEAR_NOTIFICATIONS
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -135,12 +134,6 @@ export const clearErrors = () => ({ type: CLEAR_ERRORS });
 // Set Loading
 export const setLoading = () => ({ type: SET_USER_LOADING });
 
-// Set Page
-export const setPage = page => ({ type: SET_PAGE, payload: page });
-
-// Set Action Button event
-export const setEvent = ev => ({ type: SET_EVENT, payload: ev });
-
 // Set Mobile Menu Open
 export const setMobileMenuOpen = () => ({ type: SET_MOBILE_MENU });
 
@@ -192,6 +185,18 @@ export const checkUser = () => async dispatch => {
     });
   }
 };
+
+// Confirm other Emails
+
+export const getNotifications = () =>
+  factory.get(
+    `/api/v1/users/notifications`,
+    'GET_NOTIFICATIONS',
+    'NOTIFICATIONS_ERROR'
+  );
+
+// Clear Notifications
+export const clearNotifications = () => ({ type: CLEAR_NOTIFICATIONS });
 
 //Check FB Status
 // export const checkFB = response => async dispatch => {

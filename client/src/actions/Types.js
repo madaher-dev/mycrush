@@ -11,6 +11,8 @@ export const CRUSH_ERROR = 'CRUSH_ERROR';
 export const GET_CRUSHES = 'GET_CRUSHES';
 export const CLEAR_CRUSHES = 'CLEAR_CRUSHES';
 export const SET_CRUSH_LOADING = 'SET_CRUSH_LOADING';
+export const SET_ADD = 'SET_ADD';
+export const CLOSE_ADD = 'CLOSE_ADD';
 
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 export const REGISTER_FAIL = 'REGISTER_FAIL';
@@ -29,7 +31,6 @@ export const EMAIL_RESEND = 'EMAIL_RESEND';
 export const FB_LOADED = 'FB_LOADED';
 export const FB_FAILED = 'FB_FAILED';
 export const SET_PAGE = 'SET_PAGE';
-export const SET_EVENT = 'SET_EVENT';
 export const SET_MOBILE_MENU = 'SET_MOBILE_MENU';
 export const CLOSE_MOBILE_MENU = 'CLOSE_MOBILE_MENU';
 
@@ -43,3 +44,7 @@ export const MATCH_FOUND = 'MATCH_FOUND';
 export const SET_MATCH_LOADING = 'SET_MATCH_LOADING';
 export const GET_MATCHES = 'GET_MATCHES';
 export const MATCH_ERROR = 'MATCH_ERROR';
+
+export const GET_NOTIFICATIONS = 'GET_NOTIFICATIONS';
+export const NOTIFICATIONS_ERROR = 'NOTIFICATIONS_ERROR';
+export const CLEAR_NOTIFICATIONS = 'CLEAR_NOTIFICATIONS';

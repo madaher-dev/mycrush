@@ -14,7 +14,8 @@ import {
   clearErrors,
   disconnectEmail,
   connectFB,
-  disconnectFB
+  disconnectFB,
+  setPage
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -39,10 +40,12 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 20,
     paddingBottom: 100
   },
+  Topmain: {
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
   anchor: {
-    position: 'fixed',
-    top: 'auto',
-    bottom: 32
+    alignSelf: 'flex-end'
   },
   buttons: {
     flexGrow: 1
@@ -68,6 +71,7 @@ const Verify = ({
   disconnectEmail,
   connectFB,
   disconnectFB,
+  setPage,
   location
 }) => {
   const classes = useStyles();
@@ -78,83 +82,82 @@ const Verify = ({
       clearErrors();
     }
   }, [error, setAlert, clearErrors]);
+  useEffect(() => {
+    setPage('Networks');
 
-  // Connect Email Dialog
-  const [openConnectEmail, setOpen] = React.useState(false);
+    // eslint-disable-next-line
+  }, []);
+
+  const [open, setOpen] = React.useState(false);
   const [email, setEmail] = React.useState('');
-
-  const handleCloseConnectEmail = () => {
-    setOpen(false);
-  };
 
   const onChange = e => {
     setEmail(e.target.value);
   };
 
-  const handleDisconnectEmail = id => {
+  const handleDelete = id => {
     disconnectEmail(id);
   };
 
-  const handleSubmitConnectEmail = () => {
-    setOpen(false);
-    connectEmail(email);
+  const handleDisconnectFB = id => {
+    disconnectFB(id);
   };
-
-  const handleClickOpenConnectEmail = () => {
+  const handleClickOpen = () => {
     handleMenuClose();
     setOpen(true);
   };
 
-  // FB connect - disconnect
-  const handleDisconnectFB = id => {
-    disconnectFB(id);
+  const handleClose = () => {
+    setOpen(false);
   };
 
+  const handleSubmit = () => {
+    setOpen(false);
+    connectEmail(email);
+  };
   const responseFacebook = response => {
     handleMenuClose();
     connectFB(response, user._id);
   };
 
-  // Networks Menu
-
   const [menu, setMenuOpen] = React.useState(false);
+
   const handleMenuClose = () => {
     setMenuOpen(false);
   };
-  //Location of div bottom center
-  const divRef = useRef();
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  //get open from footer
   if (location.addOpen) {
     setMenuOpen(true);
-    setAnchorEl(divRef.current);
     location.addOpen = false;
   }
 
+  const inputEl = useRef(null);
+
   const renderNetworksMenu = (
     <Menu
-      anchorEl={anchorEl}
-      // getContentAnchorEl={null}
-      // anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      //anchorEl={inputEl}
+      getContentAnchorEl={null}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       id={'networks-menu'}
       keepMounted
       transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       open={menu}
       onClose={handleMenuClose}
-      PaperProps={{
-        style: {
-          paddingBottom: 50
-        }
-      }}
-      style={{ zIndex: -500 }}
     >
+      {/* <MenuItem>
+        <IconButton aria-label="show notifications" color="inherit">
+          <Badge badgeContent={0} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+        <p>Notifications</p>
+      </MenuItem> */}
       <MenuItem>
         <Button
           variant="contained"
           color="primary"
           // disabled={isSubmitting}
-          onClick={handleClickOpenConnectEmail}
+          onClick={handleClickOpen}
           startIcon={<EmailIcon />}
         >
           Connect new Email
@@ -194,6 +197,7 @@ const Verify = ({
       direction="row"
       alignItems="center"
       justify="center"
+      className={classes.Topmain}
     >
       <Grid
         item
@@ -210,8 +214,8 @@ const Verify = ({
             more networks to increase your chances of a match!
           </Typography>
           <Dialog
-            open={openConnectEmail}
-            onClose={handleCloseConnectEmail}
+            open={open}
+            onClose={handleClose}
             aria-labelledby="form-dialog-title"
           >
             <DialogTitle id="form-dialog-title">Connect new Email</DialogTitle>
@@ -231,10 +235,10 @@ const Verify = ({
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleCloseConnectEmail} color="primary">
+              <Button onClick={handleClose} color="primary">
                 Cancel
               </Button>
-              <Button onClick={handleSubmitConnectEmail} color="primary">
+              <Button onClick={handleSubmit} color="primary">
                 Connect
               </Button>
             </DialogActions>
@@ -305,7 +309,7 @@ const Verify = ({
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleDisconnectEmail(email._id)}
+                      onClick={() => handleDelete(email._id)}
                     >
                       <CancelIcon color="secondary" />
                     </IconButton>
@@ -341,7 +345,7 @@ const Verify = ({
         </Grid>
       </Grid>
       {renderNetworksMenu}
-      <div className={classes.anchor} ref={divRef} />
+      <div className={classes.anchor}>Test</div>
     </Grid>
   );
 };
@@ -354,12 +358,15 @@ Verify.propTypes = {
   setAlert: PropTypes.func.isRequired,
   disconnectEmail: PropTypes.func.isRequired,
   connectFB: PropTypes.func.isRequired,
-  disconnectFB: PropTypes.func.isRequired
+  disconnectFB: PropTypes.func.isRequired,
+  setPage: PropTypes.func.isRequired,
+  anchor: PropTypes.object
 };
 
 const mapStateToProps = state => ({
   user: state.users.user,
-  error: state.users.error
+  error: state.users.error,
+  anchor: state.users.ev
 });
 
 export default connect(mapStateToProps, {
@@ -368,5 +375,6 @@ export default connect(mapStateToProps, {
   setAlert,
   disconnectEmail,
   connectFB,
-  disconnectFB
+  disconnectFB,
+  setPage
 })(Verify);

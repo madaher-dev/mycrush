@@ -22,10 +22,12 @@ import {
   EMAIL_DISCONNECT_FAIL,
   FB_DISCONNECTED,
   FB_DISCONNECT_FAIL,
-  SET_PAGE,
-  SET_EVENT,
   SET_MOBILE_MENU,
-  CLOSE_MOBILE_MENU
+  CLOSE_MOBILE_MENU,
+  GET_NOTIFICATIONS,
+  NOTIFICATIONS_ERROR,
+  CLEAR_NOTIFICATIONS,
+  MATCH_FOUND
 } from '../actions/Types';
 
 const initialState = {
@@ -39,9 +41,9 @@ const initialState = {
   email_confirmed: false,
   emailSent: false,
   email_added: false,
-  page: null,
-  ev: null,
-  mobileMenu: false
+  mobileMenu: false,
+  notifications: [{}],
+  newNotifications: null
 };
 
 export default (state = initialState, action) => {
@@ -53,7 +55,8 @@ export default (state = initialState, action) => {
         user: action.payload.data.user,
         isAuthenticated: true,
         loading: false,
-        points: action.payload.data.user.points
+        points: action.payload.data.user.points,
+        newNotifications: action.payload.data.user.notifications
       };
 
     case REGISTER_SUCCESS:
@@ -70,7 +73,8 @@ export default (state = initialState, action) => {
         user: action.payload.user,
         isAuthenticated: true,
         loading: false,
-        points: action.payload.user.points
+        points: action.payload.user.points,
+        newNotifications: action.payload.user.notifications
       };
     case FB_FAILED:
     case FB_DISCONNECT_FAIL:
@@ -143,7 +147,6 @@ export default (state = initialState, action) => {
         error: action.payload,
         points: 0,
         linkSent: false,
-        page: null,
         mobileMenu: false
       };
     case AUTH_ERROR:
@@ -168,6 +171,13 @@ export default (state = initialState, action) => {
         points: state.points - 1,
         loading: false
       };
+    case MATCH_FOUND:
+      return {
+        ...state,
+        ...state,
+        points: state.points - 1,
+        loading: false
+      };
     case SET_USER_LOADING:
       return {
         ...state,
@@ -180,16 +190,22 @@ export default (state = initialState, action) => {
         loading: false,
         error: action.payload.message
       };
-    case SET_PAGE:
+    case GET_NOTIFICATIONS:
       return {
         ...state,
-        page: action.payload
+        notifications: action.payload.data
       };
-    case SET_EVENT:
+    case NOTIFICATIONS_ERROR:
       return {
         ...state,
-        ev: action.payload
+        error: action.payload.message
       };
+    case CLEAR_NOTIFICATIONS:
+      return {
+        ...state,
+        newNotifications: 0
+      };
+
     case SET_MOBILE_MENU:
       return {
         ...state,

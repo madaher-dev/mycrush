@@ -68,8 +68,8 @@ exports.checkSourceDup = catchAsync(async (req, res, next) => {
 // Calls Match after check found
 const checkUserCrushes = catchAsync(async (req, res, next) => {
   const crushFound = await Crush.findOne({
-    sourceId: req.userFound,
-    targetId: req.user
+    sourceId: req.userFound._id,
+    targetId: req.user._id
   });
 
   if (crushFound) {
@@ -111,6 +111,7 @@ exports.checkUserExists = catchAsync(async (req, res, next) => {
 
   if (userFound) {
     req.userFound = userFound;
+
     checkUserCrushes(req, res, next);
   } else next();
 });
@@ -126,26 +127,31 @@ exports.checkPoints = (req, res, next) => {
 
 //Create Match if User Found and Match
 const createMatch = catchAsync(async (req, res, next) => {
-  await Crush.findById(req.crushFound, function(err, result) {
-    let match = new Match(result.toJSON()); //or result.toObject
-    /* you could set a new id
-    swap._id = mongoose.Types.ObjectId()
-    swap.isNew = true
-    */
+  let result = await Crush.findById(req.crushFound);
 
-    result.remove();
-    match.match = true;
-    match.matchedAt = Date.now();
-    match.save();
-    // swap is now in a better place
+  result.match = true;
+  result.matchedAt = Date.now();
 
-    sendNotification('new-match');
-    sendCommunication('new-match');
+  let match = await Match.create(result.toJSON());
+  match = await match.populate('sourceId targetId').execPopulate();
 
-    res.status(200).json({
-      status: 'success',
-      data: match
-    });
+  result.remove();
+
+  await Notification.create({ user: req.userFound._id, notType: 'new-match' });
+  const user = await User.findByIdAndUpdate(req.userFound._id, {
+    $inc: { notifications: 1 }
+  });
+
+  constructEmail('new-match', user.email);
+  const newPoints = req.user.points - 1;
+
+  await User.findByIdAndUpdate(req.user._id, {
+    points: newPoints
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: match
   });
 });
 
@@ -155,11 +161,11 @@ exports.createCrush = catchAsync(async (req, res, next) => {
 
   const newPoints = req.user.points - 1;
 
-  await User.findByIdAndUpdate(req.user.id, {
+  await User.findByIdAndUpdate(req.user._id, {
     points: newPoints
   });
 
-  crush.sourceId.points = crush.sourceId.points - 1;
+  //crush.sourceId.points = crush.sourceId.points - 1;
 
   // Notify crush by email, phone , or social media
   req.crush = crush;
@@ -241,7 +247,7 @@ exports.deleteCrush = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.sendNotification = type =>
+const sendNotification = type =>
   catchAsync(async (req, res, next) => {
     if (req.userFound) {
       await Notification.create({ user: req.userFound, notType: type });
@@ -252,8 +258,9 @@ exports.sendNotification = type =>
     }
     next();
   });
+exports.sendNotification = sendNotification;
 
-exports.sendCommunication = type =>
+const sendCommunication = type =>
   catchAsync(async (req, res, next) => {
     if (type === 'new-crush') {
       if (req.userFoundEmail) {
@@ -266,7 +273,7 @@ exports.sendCommunication = type =>
     }
     next();
   });
-
+exports.sendCommunication = sendCommunication;
 // Finally Send create crush result
 exports.sendResult = (req, res) => {
   const crush = req.crush;
@@ -300,7 +307,7 @@ const constructEmail = catchAsync(async (type, email) => {
         500
       );
     }
-  } else if (type === 'new-crush') {
+  } else if (type === 'new-match') {
     const message = `Hooray! You have a new match on MyCrush. Visit ${URL} to find out who it is. Happy Matching!`;
 
     const html_message = `<p> Hooray! You have a new match on MyCrush. Visit ${URL} to find out who it is. Happy Matching!</p>`;

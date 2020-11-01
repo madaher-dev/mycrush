@@ -10,7 +10,6 @@ import MatchCard from './MatchCard';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Link } from 'react-router-dom';
-import { setPage } from '../../actions/userActions';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -29,8 +28,7 @@ const Matches = ({
   matches,
   loading,
   user,
-  matchesLoaded,
-  setPage
+  matchesLoaded
 }) => {
   const classes = useStyles();
   useEffect(() => {
@@ -38,7 +36,7 @@ const Matches = ({
       setLoading();
       getMatches();
     }
-    setPage('Matches');
+
     // eslint-disable-next-line
   }, []);
 
@@ -97,8 +95,7 @@ Matches.propTypes = {
   loading: PropTypes.bool,
   setLoading: PropTypes.func.isRequired,
   user: PropTypes.object,
-  matchesLoaded: PropTypes.bool.isRequired,
-  setPage: PropTypes.func.isRequired
+  matchesLoaded: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -111,6 +108,5 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   getMatches,
-  setLoading,
-  setPage
+  setLoading
 })(Matches);

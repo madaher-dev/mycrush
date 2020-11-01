@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { setAlert } from '../../actions/alertActions';
 import PropTypes from 'prop-types';
@@ -13,9 +13,9 @@ import {
   addCrush,
   getCrushes,
   clearErrors,
-  setLoading
+  setLoading,
+  closeAddCrush
 } from '../../actions/crushActions';
-import { setPage } from '../../actions/userActions';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import TwitterIcon from '@material-ui/icons/Twitter';
@@ -69,17 +69,15 @@ const Crushes = ({
   getCrushes,
   loading,
   crushes,
-  added,
   error,
   clearErrors,
   setAlert,
   setLoading,
-  match1,
+  match2,
   current,
-  user,
   crushesLoaded,
-  setPage,
-  location
+  closeAddCrush,
+  add
 }) => {
   const classes = useStyles();
   useEffect(() => {
@@ -92,41 +90,34 @@ const Crushes = ({
   }, []);
 
   useEffect(() => {
-    if (added) setAdd(false);
-  }, [added]);
-
-  useEffect(() => {
     if (error) {
       setAlert(error, 'error');
       clearErrors();
     }
   }, [error, setAlert, clearErrors]);
 
-  const [add, setAdd] = useState(false);
+  const [hooray, setOpen] = React.useState(false);
 
   useEffect(() => {
-    if (!add) setPage('Crushes');
-
-    // eslint-disable-next-line
-  }, [add]);
-
-  const handleAdd = () => {
-    setAdd(true);
-    setPage('Add Crush');
-  };
+    if (match2) {
+      setOpen(true);
+    }
+  }, [match2, setOpen]);
 
   const handleCancel = () => {
-    setAdd(false);
+    closeAddCrush();
   };
 
+  // if (location.addOpen) {
+  //   setAddCrush();
+  //   // location.addOpen = false;
+  // }
+
+  // Close Hooray Match Popup
   const handleClose = () => {
+    setOpen(false);
     return <Redirect to="/matches" />;
   };
-
-  if (location.addOpen && !add) {
-    handleAdd();
-    location.addOpen = false;
-  }
 
   const addView = (
     <Grid item container xs={12} sm={6} justify="center">
@@ -344,7 +335,7 @@ const Crushes = ({
     >
       {add ? addView : listView}
       <Dialog
-        open={match1}
+        open={hooray}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -356,9 +347,9 @@ const Crushes = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            {current ? current.sourceId : <Fragment />}
+            {/* {current ? current.sourceId : <Fragment />} */}
           </DialogContentText>
-          <Hooray match={current} userId={user._id}></Hooray>
+          <Hooray match1={current}></Hooray>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
@@ -379,22 +370,22 @@ Crushes.propTypes = {
   clearErrors: PropTypes.func.isRequired,
   setAlert: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
-  match1: PropTypes.bool,
+  match2: PropTypes.bool,
   current: PropTypes.object,
   crushesLoaded: PropTypes.bool.isRequired,
-  setPage: PropTypes.func.isRequired,
-  addAction: PropTypes.bool
+  addAction: PropTypes.bool,
+  closeAddCrush: PropTypes.func.isRequired,
+  add: PropTypes.bool
 };
 
 const mapStateToProps = state => ({
   crushes: state.crushes.crushes,
   loading: state.crushes.loading,
-  added: state.crushes.added,
   error: state.crushes.error,
-  match1: state.crushes.match,
+  match2: state.crushes.match,
   current: state.crushes.current,
-  user: state.users.user,
-  crushesLoaded: state.crushes.crushesLoaded
+  crushesLoaded: state.crushes.crushesLoaded,
+  add: state.crushes.addOpen
 });
 
 export default connect(mapStateToProps, {
@@ -403,5 +394,5 @@ export default connect(mapStateToProps, {
   clearErrors,
   setAlert,
   setLoading,
-  setPage
+  closeAddCrush
 })(Crushes);

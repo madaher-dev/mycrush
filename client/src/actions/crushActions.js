@@ -6,7 +6,9 @@ import {
   CLEAR_CRUSHES,
   CLEAR_ERRORS,
   SET_CRUSH_LOADING,
-  MATCH_FOUND
+  MATCH_FOUND,
+  SET_ADD,
+  CLOSE_ADD
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -31,6 +33,7 @@ export const addCrush = crush => async dispatch => {
 
   try {
     const res = await axios.post('/api/v1/crushes', crush, config);
+
     if (!res.data.data.match)
       dispatch({ type: ADD_CRUSH, payload: res.data.data });
     else dispatch({ type: MATCH_FOUND, payload: res.data.data });
@@ -56,6 +59,12 @@ export const clearCrushes = () => ({ type: CLEAR_CRUSHES });
 
 // Set Crush Loading
 export const setLoading = () => ({ type: SET_CRUSH_LOADING });
+
+// Open Add Crush Form
+export const setAddCrush = () => ({ type: SET_ADD });
+
+// Open Add Crush Form
+export const closeAddCrush = () => ({ type: CLOSE_ADD });
 
 // Set Current Contact
 // export const setCurrent = contact => dispatch => {

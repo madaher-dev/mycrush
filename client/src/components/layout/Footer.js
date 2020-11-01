@@ -1,5 +1,5 @@
-import { Typography } from '@material-ui/core';
 import React from 'react';
+import { Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,7 +11,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
-import { setEvent } from '../../actions/userActions';
+import { useLocation } from 'react-router-dom';
+import { setAddCrush } from '../../actions/crushActions';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -48,42 +49,51 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Footer = ({ page, setEvent }) => {
+const Footer = ({ add, setAddCrush }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const addCrush = {
-    pathname: '/crushes',
-    addOpen: true
-  };
 
-  const networksLoc = event => {
-    setEvent(event.target);
+  const addCrush = {
+    pathname: '/crushes'
   };
 
   const addNetwork = {
     pathname: '/verify',
     addOpen: true
   };
+
   const transitionDuration = {
     enter: theme.transitions.duration.enteringScreen,
     exit: theme.transitions.duration.leavingScreen
   };
+
+  const location = useLocation();
+
+  const noClick = () => {
+    return;
+  };
   let page2;
-  if (page === 'Dashboard' || page === 'Crushes') page2 = 0;
-  else if (page === 'Networks') page2 = 1;
+  if (
+    location.pathname === '/welcome' ||
+    (location.pathname === '/crushes' && !add)
+  )
+    page2 = 0;
+  else if (location.pathname === '/verify') page2 = 1;
   const fabs = [
     {
       id: 0,
       className: classes.fabButton,
       dir: addCrush,
       color: 'secondary',
-      tip: 'Add Crush'
+      tip: 'Add Crush',
+      click: () => setAddCrush()
     },
     {
       id: 1,
       className: classes.netfabButton,
       dir: addNetwork,
-      tip: 'Add Network'
+      tip: 'Add Network',
+      click: () => noClick()
     }
   ];
 
@@ -110,9 +120,9 @@ const Footer = ({ page, setEvent }) => {
                 aria-label={fab.label}
                 className={fab.className}
                 component={Link}
-                onClick={networksLoc}
                 to={fab.dir}
                 color={fab.color}
+                onClick={fab.click}
               >
                 <AddIcon />
               </Fab>
@@ -134,11 +144,12 @@ const Footer = ({ page, setEvent }) => {
 
 Footer.propTypes = {
   page: PropTypes.string,
-  setEvent: PropTypes.func.isRequired
+  add: PropTypes.bool,
+  setAddCrush: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  page: state.users.page
+  add: state.crushes.addOpen
 });
 
-export default connect(mapStateToProps, { setEvent })(Footer);
+export default connect(mapStateToProps, { setAddCrush })(Footer);

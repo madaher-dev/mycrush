@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import CrushesBox from './CrushesBox';
@@ -7,7 +7,6 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { setPage } from '../../actions/userActions';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -22,13 +21,9 @@ const useStyles = makeStyles(theme => ({
     width: '100%'
   }
 }));
-const Welcome = ({ crushes, crushesLoaded, user, setPage }) => {
+const Welcome = ({ crushes, crushesLoaded, user }) => {
   const classes = useStyles();
 
-  useEffect(() => {
-    setPage('Dashboard');
-    // eslint-disable-next-line
-  }, []);
   return (
     <Grid container direction="column" alignItems="center">
       <Grid
@@ -89,8 +84,7 @@ const Welcome = ({ crushes, crushesLoaded, user, setPage }) => {
 Welcome.propTypes = {
   crushes: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   user: PropTypes.object,
-  crushesLoaded: PropTypes.bool.isRequired,
-  setPage: PropTypes.func.isRequired
+  crushesLoaded: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -99,4 +93,4 @@ const mapStateToProps = state => ({
   user: state.users.user
 });
 
-export default connect(mapStateToProps, { setPage })(Welcome);
+export default connect(mapStateToProps, {})(Welcome);

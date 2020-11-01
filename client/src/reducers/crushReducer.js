@@ -7,7 +7,9 @@ import {
   LOGOUT,
   CLEAR_ERRORS,
   SET_CRUSH_LOADING,
-  MATCH_FOUND
+  MATCH_FOUND,
+  SET_ADD,
+  CLOSE_ADD
 } from '../actions/Types';
 
 const initialState = {
@@ -17,7 +19,8 @@ const initialState = {
   loading: true,
   added: null,
   match: false,
-  crushesLoaded: false
+  crushesLoaded: false,
+  addOpen: false
 };
 
 export default (state = initialState, action) => {
@@ -27,14 +30,16 @@ export default (state = initialState, action) => {
         ...state,
         crushes: [action.payload, ...state.crushes],
         loading: false,
-        added: state.added + 1
+        added: state.added + 1,
+        addOpen: false
       };
     case MATCH_FOUND:
       return {
         ...state,
         current: action.payload,
         match: true,
-        loading: false
+        loading: false,
+        addOpen: false
       };
     case GET_CRUSHES:
       return {
@@ -65,6 +70,16 @@ export default (state = initialState, action) => {
         ...state,
         loading: true
       };
+    case SET_ADD:
+      return {
+        ...state,
+        addOpen: true
+      };
+    case CLOSE_ADD:
+      return {
+        ...state,
+        addOpen: false
+      };
     case CLEAR_CRUSHES:
     case LOGOUT:
       return {
@@ -72,7 +87,8 @@ export default (state = initialState, action) => {
         crushes: [],
         error: null,
         current: null,
-        crushesLoaded: false
+        crushesLoaded: false,
+        addOpen: false
       };
 
     default:

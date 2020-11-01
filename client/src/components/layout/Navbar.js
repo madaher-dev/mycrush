@@ -78,7 +78,8 @@ const Navbar = ({
   user,
   logout,
   points,
-  setMobileMenuOpen
+  setMobileMenuOpen,
+  notifications
 }) => {
   const classes = useStyles();
 
@@ -127,7 +128,7 @@ const Navbar = ({
             <MainMenu />
           </div>
 
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <Fragment>
               <div className={classes.sectionDesktop}>
                 <IconButton aria-label="show points web" color="inherit">
@@ -136,10 +137,12 @@ const Navbar = ({
                   </Badge>
                 </IconButton>
                 <IconButton
-                  aria-label="show 17 new notifications"
+                  aria-label="notifications"
                   color="inherit"
+                  component={Link}
+                  to="/notifications"
                 >
-                  <Badge badgeContent={0} color="secondary">
+                  <Badge badgeContent={notifications} color="secondary">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
@@ -152,7 +155,7 @@ const Navbar = ({
                   color="inherit"
                 >
                   {user.photo ? (
-                    <Avatar alt="Remy Sharp" src={user.photo} />
+                    <Avatar alt="user avatar" src={user.photo} />
                   ) : (
                     <AccountCircle />
                   )}
@@ -163,10 +166,12 @@ const Navbar = ({
               </div>
               <div className={classes.sectionMobile}>
                 <IconButton
-                  aria-label="show 17 new notifications"
+                  aria-label="notifications"
                   color="inherit"
+                  component={Link}
+                  to="/notifications"
                 >
-                  <Badge badgeContent={0} color="secondary">
+                  <Badge badgeContent={notifications} color="secondary">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
@@ -201,13 +206,15 @@ Navbar.propTypes = {
   user: PropTypes.object,
   logout: PropTypes.func.isRequired,
   points: PropTypes.number.isRequired,
-  setMobileMenuOpen: PropTypes.func.isRequired
+  setMobileMenuOpen: PropTypes.func.isRequired,
+  notifications: PropTypes.number
 };
 
 const mapStateToProps = state => ({
   isAuthenticated: state.users.isAuthenticated,
   user: state.users.user,
-  points: state.users.points
+  points: state.users.points,
+  notifications: state.users.newNotifications
 });
 
 export default connect(mapStateToProps, {

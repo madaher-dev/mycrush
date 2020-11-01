@@ -86,6 +86,13 @@ crushSchema.pre(/^find/, function(next) {
     select: '-__v -passwordChangedAt'
   });
 
+  crushSchema.post('save', function(next) {
+    this.populate({
+      path: 'sourceId targetId',
+      select: '-__v -passwordChangedAt'
+    });
+    next();
+  });
   next();
 });
 
