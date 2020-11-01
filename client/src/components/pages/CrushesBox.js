@@ -25,7 +25,6 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column'
   },
-
   title: {
     fontSize: 14
   },
@@ -84,10 +83,13 @@ const CrushesBox = ({
                   <ListItemAvatar>
                     <CrushAvatar name={crush.name} />
                   </ListItemAvatar>
-                  <ListItemText primary={crush.name} />
-                  <ListItemSecondaryAction>
+                  <ListItemText
+                    primary={crush.name}
+                    secondary={Moment(crush.createdAt).format('LLL')}
+                  />
+                  {/* <ListItemSecondaryAction>
                     {Moment(crush.createdAt).format('LLL')}
-                  </ListItemSecondaryAction>
+                  </ListItemSecondaryAction> */}
                 </ListItem>
               ))}
             </List>

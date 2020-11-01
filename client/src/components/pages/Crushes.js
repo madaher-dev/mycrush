@@ -41,7 +41,19 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const useStyles = makeStyles(theme => ({
   main: {
     paddingTop: 20,
-    paddingBottom: 100
+    // paddingBottom: 100,
+    width: '100%'
+    // paddingLeft: 20,
+    // paddingRight: 20
+  },
+  root: {
+    paddingTop: 20,
+    paddingBottom: 100,
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '100%'
+    // paddingLeft: 20,
+    // paddingRight: 20
   },
 
   fb: {
@@ -57,7 +69,8 @@ const useStyles = makeStyles(theme => ({
     color: '#C13584'
   },
   list: {
-    paddingTop: 20
+    paddingTop: 20,
+    width: '100%'
   },
   cancel: {
     marginLeft: 20
@@ -292,27 +305,30 @@ const Crushes = ({
     </Grid>
   );
   const listView = (
-    <Grid item container xs={11} sm={6} alignItems="center" justify="center">
-      <Typography>
-        Click on the <AddCircleOutlineIcon /> Button to add a new Crush. Your
-        crush will be notified that they have a secret crush but will never know
-        who it is unless you both match. Happy Crushing!
-      </Typography>
-
+    <Grid container item xs={12} alignItems="center">
+      <Grid item xs={12}>
+        <Typography>
+          Click on the <AddCircleOutlineIcon /> Button to add a new Crush. Your
+          crush will be notified that they have a secret crush but will never
+          know who it is unless you both match. Happy Crushing!
+        </Typography>
+      </Grid>
       {crushes !== [] && !loading ? (
         <Grid
           item
-          container
+          xs={12}
           spacing={2}
-          // direction="column"
+          container
+          direction="column"
           justify="center"
-          className={classes.list}
-          // alignItems="center"
+          className={classes.main}
+          //className={classes.list}
+          alignItems="center"
         >
           {crushes.map(crush => (
             //Looping through Crushes array and list Crush Item Component
 
-            <Grid item key={crush._id}>
+            <Grid item xs={12} sm={6} key={crush._id} className={classes.main}>
               <CrushCard crush={crush} />
             </Grid>
           ))}
@@ -327,11 +343,9 @@ const Crushes = ({
   return (
     <Grid
       container
-      spacing={0}
       direction="column"
       alignItems="center"
-      justify="center"
-      className={classes.main}
+      className={classes.root}
     >
       {add ? addView : listView}
       <Dialog

@@ -37,6 +37,8 @@ import Menu from '@material-ui/core/Menu';
 const useStyles = makeStyles(theme => ({
   main: {
     paddingTop: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
     paddingBottom: 100
   },
   anchor: {

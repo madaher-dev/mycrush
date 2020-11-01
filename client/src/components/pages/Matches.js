@@ -18,7 +18,19 @@ function Alert(props) {
 const useStyles = makeStyles(theme => ({
   main: {
     paddingTop: 20,
-    paddingBottom: 100
+    // paddingBottom: 100,
+    width: '100%'
+    // paddingLeft: 20,
+    // paddingRight: 20
+  },
+  root: {
+    paddingTop: 20,
+    paddingBottom: 100,
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '100%'
+    // paddingLeft: 20,
+    // paddingRight: 20
   }
 }));
 
@@ -43,27 +55,33 @@ const Matches = ({
   return (
     <Grid
       container
-      spacing={0}
       direction="column"
       alignItems="center"
-      justify="center"
-      className={classes.main}
+      className={classes.root}
     >
-      <Grid item container xs={11} sm={6} alignItems="center" justify="center">
+      <Grid container item xs={12} alignItems="center">
         {matches.length > 0 && !loading ? (
           <Grid
             item
-            container
+            xs={12}
             spacing={2}
-            // direction="column"
+            container
+            direction="column"
             justify="center"
-            // alignItems="center"
+            className={classes.main}
+            //className={classes.list}
+            alignItems="center"
           >
             <Typography>Happy Matching!</Typography>
             {matches.map(match => (
               //Looping through matches array and list Match Item Component
-
-              <Grid item key={match._id}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                key={match._id}
+                className={classes.main}
+              >
                 <MatchCard match={match} userId={user._id} />
               </Grid>
             ))}

@@ -34,8 +34,8 @@ import { deleteCrush } from '../../actions/crushActions';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    minWidth: 450,
-    maxWidth: 450,
+    //minWidth: 450,
+    // maxWidth: 450,
 
     [theme.breakpoints.up('sm')]: {
       maxWidth: 650,

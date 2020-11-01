@@ -21,8 +21,8 @@ import MatchAvatar from './MatchAvatar';
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
-    display: 'flex',
-    flexDirection: 'column',
+    // display: 'flex',
+    // flexDirection: 'column',
     height: '100%'
   },
 
@@ -86,14 +86,20 @@ const MatchesBox = ({
                     <MatchAvatar match={match} userId={user._id} />
                   </ListItemAvatar>
                   {match.sourceId._id === user._id ? (
-                    <ListItemText primary={match.targetId.name} />
+                    <ListItemText
+                      primary={match.targetId.name}
+                      secondary={Moment(match.createdAt).format('LLL')}
+                    />
                   ) : (
-                    <ListItemText primary={match.sourceId.name} />
+                    <ListItemText
+                      primary={match.sourceId.name}
+                      secondary={Moment(match.createdAt).format('LLL')}
+                    />
                   )}
 
-                  <ListItemSecondaryAction>
+                  {/* <ListItemSecondaryAction>
                     {Moment(match.createdAt).format('LLL')}
-                  </ListItemSecondaryAction>
+                  </ListItemSecondaryAction> */}
                 </ListItem>
               ))}
             </List>
