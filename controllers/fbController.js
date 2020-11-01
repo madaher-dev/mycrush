@@ -19,7 +19,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // Label self in all matching crushes - can be removed for reset password actions
   labelSelf(newUser);
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 exports.disconnect = catchAsync(async (req, res, next) => {
@@ -85,7 +85,7 @@ exports.connect = catchAsync(async (req, res, next) => {
   }
 });
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
@@ -93,7 +93,7 @@ const createSendToken = (user, statusCode, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
 
