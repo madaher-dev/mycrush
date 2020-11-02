@@ -40,8 +40,10 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 20,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingBottom: 100
+    paddingBottom: 100,
+    zIndex: 200
   },
+  indexing: {},
   anchor: {
     position: 'fixed',
     top: 'auto',
@@ -58,7 +60,8 @@ const useStyles = makeStyles(theme => ({
   },
 
   fbButton: {
-    backgroundColor: '#4267B2'
+    backgroundColor: '#4267B2',
+    width: '100%'
   },
   instaButton: {
     //backgroundColor: '#4267B2'
@@ -153,7 +156,7 @@ const Verify = ({
           paddingBottom: 50
         }
       }}
-      style={{ zIndex: -500 }}
+      style={{ zIndex: 1000 }}
     >
       <MenuItem>
         <Button
@@ -171,7 +174,7 @@ const Verify = ({
           <Fragment />
         ) : (
           <FacebookLogin
-            appId={process.env.FACEBOOK_APP_ID}
+            appId={'380772783291898'}
             fields="name,email,picture"
             //   scope="public_profile,user_link"
             //autoLoad
@@ -203,7 +206,7 @@ const Verify = ({
             startIcon={<InstagramIcon />}
             className={classes.instaButton}
           >
-            Connect new Email
+            Connect Instagram
           </Button>
         )}
       </MenuItem>
@@ -288,8 +291,8 @@ const Verify = ({
               <Fragment />
             )}
             <ListItem
-              button
-              // onClick={() => handleListItemClick(email)}
+            //button
+            // onClick={() => handleListItemClick(email)}
             >
               <ListItemAvatar>
                 <Avatar className={classes.avatar}>
@@ -312,7 +315,7 @@ const Verify = ({
             </ListItem>
             {user.otherEmails.map(email => (
               <ListItem
-                button
+                //button
                 // onClick={() => handleListItemClick(email)}
                 key={email._id}
               >
