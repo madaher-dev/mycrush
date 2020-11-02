@@ -29,7 +29,7 @@ const labelSelf = catchAsync(async user => {
     {
       $or: [
         { name },
-        { otherName: name },
+        { otherName: name }, //other names not implemented
         { email },
         { phone },
         { twitter },
@@ -40,6 +40,7 @@ const labelSelf = catchAsync(async user => {
     { targetId: user.id }
   );
 });
+exports.labelSelf = labelSelf;
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
@@ -49,7 +50,7 @@ const createSendToken = (user, statusCode, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -115,24 +116,7 @@ exports.signup = catchAsync(async (req, res, next) => {
       500
     );
   }
-  // } else {
-  // if (currentUser.email_verified) next();
-  // else {
-  //   return next(new AppError('User already exists!', 401));
-  // }
-  // }
 });
-
-// exports.signup = catchAsync(async (req, res, next) => {
-//   const newUser = await User.create({
-//     name: req.body.name,
-//     email: req.body.email,
-//     password: req.body.password,
-//     passwordConfirm: req.body.passwordConfirm
-//   });
-
-//   createSendToken(newUser, 201, res);
-// });
 
 exports.resendEmail = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
@@ -409,7 +393,7 @@ exports.deleteCookie = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + 1),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
   res.status(200).json({

@@ -2,6 +2,7 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const { Crush } = require('./../models/crushModel');
+const { labelSelf } = require('./authController');
 
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.findOneAndUpdate(
@@ -93,7 +94,7 @@ const createSendToken = (user, statusCode, req, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = false; //works only if production is https
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -105,32 +106,6 @@ const createSendToken = (user, statusCode, req, res) => {
     user
   });
 };
-
-const labelSelf = catchAsync(async user => {
-  let { name, email, phone, twitter, instagram, facebook } = user;
-
-  if (!name) name = 'empty';
-  if (!phone) phone = 0;
-  if (!email) email = 'empty';
-  if (!twitter) twitter = 'empty';
-  if (!instagram) instagram = 'empty';
-  if (!facebook) facebook = 'empty';
-
-  await Crush.updateMany(
-    {
-      $or: [
-        { name },
-        { otherName: name },
-        { email },
-        { phone },
-        { twitter },
-        { instagram },
-        { facebook }
-      ]
-    },
-    { targetId: user.id }
-  );
-});
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {

@@ -23,6 +23,8 @@ import Privacy from './components/layout/Privacy';
 import MobileMenu from './components/layout/MobileMenu';
 import Tutorial from './components/layout/Tutorial';
 
+//UA - 181830603 - 1;
+console.log(process.env.REACT_APP_API_URL);
 const theme = createMuiTheme({
   palette: {
     primary: {

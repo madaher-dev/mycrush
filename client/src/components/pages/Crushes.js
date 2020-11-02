@@ -163,14 +163,22 @@ const Crushes = ({
                 errors.email = 'Invalid email address';
               }
             }
+            if (
+              !values.email &&
+              !values.facebook &&
+              !values.instagram &&
+              !values.phone
+            ) {
+              errors.email = 'You need to enter at least one Network';
+            }
             //validate social media
 
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
+            addCrush(values);
             setTimeout(() => {
               setSubmitting(false);
-              addCrush(values);
             }, 500);
           }}
         >
@@ -183,6 +191,8 @@ const Crushes = ({
                   type="text"
                   label="Crush Name"
                   variant="outlined"
+                  // helperText="This is only a label. You will not be matched with your crush name!"
+                  // placeholder="You will not be matched with your crush name!"
                   fullWidth
                   InputProps={{
                     startAdornment: (
@@ -232,6 +242,7 @@ const Crushes = ({
                   component={TextField}
                   name="twitter"
                   type="text"
+                  placeholder="@crushtwitter"
                   label="Crush Twitter Account"
                   variant="outlined"
                   fullWidth
@@ -248,6 +259,7 @@ const Crushes = ({
                 <Field
                   component={TextField}
                   name="facebook"
+                  placeholder="www.facebook.com/crushprofile"
                   type="text"
                   label="Crush Facebook Account"
                   variant="outlined"
@@ -265,6 +277,7 @@ const Crushes = ({
                 <Field
                   component={TextField}
                   name="instagram"
+                  placeholder="@crushinsta"
                   type="text"
                   label="Crush Instagram Account"
                   variant="outlined"

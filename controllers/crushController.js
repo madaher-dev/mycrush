@@ -65,6 +65,25 @@ exports.checkSourceDup = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.checkOwn = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  //need to validate social media and pull IDs
+  let { name, phone, email, twitter, instagram, facebook } = req.body;
+
+  if (
+    user.name === name ||
+    user.phone === phone ||
+    user.email === email ||
+    user.twitter === twitter ||
+    user.instagram === instagram ||
+    user.facebook === facebook
+  ) {
+    return next(new AppError('Its nice to like yourself, but not here!', 404));
+  }
+
+  next();
+});
+
 // Calls Match after check found
 const checkUserCrushes = catchAsync(async (req, res, next) => {
   const crushFound = await Crush.findOne({

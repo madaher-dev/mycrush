@@ -16,6 +16,7 @@ router
   .post(
     authController.protect,
     crushController.setSourceIds, //adds sourceID to the stack - can be removed
+    crushController.checkOwn, // check if adding own networks
     crushController.checkSourceDup, //checks if user has crush with same entry
     crushController.checkPoints, // check if enough points
     crushController.checkUserExists, // check if crush in user DB - if exist check match -match will send notification and communication
