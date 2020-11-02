@@ -33,6 +33,7 @@ import FacebookIcon from '@material-ui/icons/Facebook';
 import EmailIcon from '@material-ui/icons/Email';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import InstagramIcon from '@material-ui/icons/Instagram';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -58,6 +59,9 @@ const useStyles = makeStyles(theme => ({
 
   fbButton: {
     backgroundColor: '#4267B2'
+  },
+  instaButton: {
+    //backgroundColor: '#4267B2'
   }
 }));
 
@@ -167,7 +171,7 @@ const Verify = ({
           <Fragment />
         ) : (
           <FacebookLogin
-            appId="380772783291898"
+            appId={process.env.FACEBOOK_APP_ID}
             fields="name,email,picture"
             //   scope="public_profile,user_link"
             //autoLoad
@@ -185,6 +189,22 @@ const Verify = ({
               </Button>
             )}
           />
+        )}
+      </MenuItem>
+      <MenuItem>
+        {user.instagram ? (
+          <Fragment />
+        ) : (
+          <Button
+            variant="contained"
+            color="secondary"
+            // disabled={isSubmitting}
+            //onClick={handleClickOpenConnectEmail}
+            startIcon={<InstagramIcon />}
+            className={classes.instaButton}
+          >
+            Connect new Email
+          </Button>
         )}
       </MenuItem>
     </Menu>

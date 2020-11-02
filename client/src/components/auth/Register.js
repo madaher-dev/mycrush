@@ -222,7 +222,7 @@ const Register = ({
           </Grid>
           <Grid item xs={12} sm={8} className={classes.social}>
             <FacebookLogin
-              appId="380772783291898"
+              appId={process.env.FACEBOOK_APP_ID}
               fields="name,email,picture"
               //   scope="public_profile,user_link"
               //autoLoad
