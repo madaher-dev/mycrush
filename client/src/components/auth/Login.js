@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%'
   }
 }));
-console.log(process.env.REACT_APP_FACEBOOK_APP_ID);
+
 //console.log(process.env.NODE_ENV);
 const Login = ({
   loginUser,
@@ -201,7 +201,7 @@ const Login = ({
           </Grid>
           <Grid item xs={12} sm={8}>
             <FacebookLogin
-              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+              appId={'380772783291898'}
               fields="name,email,picture"
               //   scope="public_profile,user_link"
               //autoLoad
