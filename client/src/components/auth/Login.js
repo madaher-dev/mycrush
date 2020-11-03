@@ -203,7 +203,7 @@ const Login = ({
             <FacebookLogin
               appId={process.env.REACT_APP_FACEBOOK_APP_ID}
               fields="name,email,picture"
-              //   scope="public_profile,user_link"
+              scope="public_profile, user_link"
               //autoLoad
               callback={responseFacebook}
               render={renderProps => (
