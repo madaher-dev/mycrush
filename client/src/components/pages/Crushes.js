@@ -163,14 +163,14 @@ const Crushes = ({
                 errors.email = 'Invalid email address';
               }
             }
-            if (
-              !values.email &&
-              !values.facebook &&
-              !values.instagram &&
-              !values.phone
-            ) {
-              errors.email = 'You need to enter at least one Network';
-            }
+            // if (
+            //   !values.email &&
+            //   !values.facebook &&
+            //   !values.instagram &&
+            //   !values.phone
+            // ) {
+            //   errors.email = 'You need to enter at least one Network';
+            // }
             //validate social media
 
             return errors;
