@@ -20,8 +20,8 @@ import MatchAvatar from './MatchAvatar';
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
-    // display: 'flex',
-    // flexDirection: 'column',
+    display: 'flex',
+    flexDirection: 'column',
     height: '100%'
   },
 

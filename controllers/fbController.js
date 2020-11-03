@@ -54,10 +54,11 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 exports.disconnect = catchAsync(async (req, res, next) => {
   const user = await User.findOneAndUpdate(
-    { facebook: req.params.id },
+    { facebookID: req.params.id },
     {
+      facebookID: undefined,
       facebook: null,
-      fbAccessToken: null
+      fbAccessToken: undefined
     },
     { new: true }
   );
@@ -79,7 +80,8 @@ exports.connect = catchAsync(async (req, res, next) => {
       req.params.id,
       {
         photo: req.body.picture.data.url,
-        facebook: req.body.id,
+        facebookID: req.body.id,
+        facebook: req.body.link,
         fbAccessToken: req.body.accessToken
       },
       { new: true }
@@ -97,7 +99,8 @@ exports.connect = catchAsync(async (req, res, next) => {
       { _id: req.params.id, 'otherEmails.email': { $ne: req.body.email } },
       {
         photo: req.body.picture.data.url,
-        facebook: req.body.id,
+        facebookID: req.body.id,
+        facebook: req.body.link,
         fbAccessToken: req.body.accessToken
       },
       { new: true }

@@ -21,12 +21,12 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   photo: String,
-  facebook: {
+  facebookID: {
     type: String,
     // `facebook` must be unique, unless it isn't defined
     index: { unique: true, sparse: true }
   },
-  facebookID: String,
+  facebook: String,
   twitter: String,
   instagram: String,
   role: {
