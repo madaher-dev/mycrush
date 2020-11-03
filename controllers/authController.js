@@ -25,6 +25,8 @@ const labelSelf = catchAsync(async user => {
   if (!instagram) instagram = 'empty';
   if (!facebook) facebook = 'empty';
 
+  console.log('This is the user being labeled');
+  console.log(user);
   await Crush.updateMany(
     {
       $or: [
@@ -37,8 +39,9 @@ const labelSelf = catchAsync(async user => {
         { facebook }
       ]
     },
-    { targetId: user.id }
+    { targetId: user._id }
   );
+  console.log('completed labeling self');
 });
 exports.labelSelf = labelSelf;
 
@@ -50,7 +53,8 @@ const createSendToken = (user, statusCode, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
+  if (process.env.SECURE_TOKEN === 'true') cookieOptions.secure = true;
+  else cookieOptions.secure = false;
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -393,7 +397,8 @@ exports.deleteCookie = catchAsync(async (req, res, next) => {
     expires: new Date(Date.now() + 1),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
+  if (process.env.SECURE_TOKEN === 'true') cookieOptions.secure = true;
+  else cookieOptions.secure = false;
 
   res.cookie('jwt', token, cookieOptions);
   res.status(200).json({

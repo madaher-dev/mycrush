@@ -5,6 +5,8 @@ const { Crush } = require('./../models/crushModel');
 const { labelSelf } = require('./authController');
 
 exports.signup = catchAsync(async (req, res, next) => {
+  console.log('This is the body received');
+  console.log(req.body);
   const newUser = await User.findOneAndUpdate(
     { email: req.body.email },
     {
@@ -16,10 +18,10 @@ exports.signup = catchAsync(async (req, res, next) => {
     },
     { upsert: true, new: true }
   );
-
+  console.log('New user created, entering labelSelf');
   // Label self in all matching crushes - can be removed for reset password actions
   labelSelf(newUser);
-
+  console.log('creating token');
   createSendToken(newUser, 201, req, res);
 });
 
@@ -87,6 +89,7 @@ exports.connect = catchAsync(async (req, res, next) => {
 });
 
 const createSendToken = (user, statusCode, req, res) => {
+  console.log('Signing Token');
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
@@ -94,8 +97,12 @@ const createSendToken = (user, statusCode, req, res) => {
     ),
     httpOnly: true
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //works only if production is https
-
+  if (process.env.SECURE_TOKEN === 'true') cookieOptions.secure = true;
+  else cookieOptions.secure = false;
+  console.log('This is the token');
+  console.log(token);
+  console.log('Token Secure');
+  console.log(process.env.SECURE_TOKEN);
   res.cookie('jwt', token, cookieOptions);
 
   // Remove password from output
