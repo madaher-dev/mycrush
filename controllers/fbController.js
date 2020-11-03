@@ -3,10 +3,15 @@ const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const { Crush } = require('./../models/crushModel');
 const { labelSelf } = require('./authController');
+const AppError = require('./../utils/appError');
 
 exports.signup = catchAsync(async (req, res, next) => {
   console.log('This is the body received');
   console.log(req.body);
+  if (req.body.status === 'not_authorized')
+    return next(
+      new AppError('You are trying to login with an unauthrized tester!', 401)
+    );
   const newUser = await User.findOneAndUpdate(
     { email: req.body.email },
     {
