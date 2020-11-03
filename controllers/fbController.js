@@ -6,12 +6,8 @@ const { labelSelf } = require('./authController');
 const AppError = require('./../utils/appError');
 
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log('This is the body received');
-  console.log(req.body);
   if (req.body.status === 'not_authorized')
-    return next(
-      new AppError('You are trying to login with an unauthrized tester!', 401)
-    );
+    return next(new AppError('Unuthorized facebook user!', 401));
   const newUser = await User.findOneAndUpdate(
     { email: req.body.email },
     {
@@ -23,10 +19,20 @@ exports.signup = catchAsync(async (req, res, next) => {
     },
     { upsert: true, new: true }
   );
-  console.log('New user created, entering labelSelf');
-  // Label self in all matching crushes - can be removed for reset password actions
+  // console.log(req.body.email);
+  // console.log('created at', newUser.createdAt);
+  // //console.log(newUser.createdAt.getTime());
+  // let date = new Date();
+  // console.log('date now', date);
+  // //const y = date.setDate(date.getTime() + 10000);
+  // const y = date.getTime();
+  // const x = newUser.createdAt.getTime();
+  // console.log;
+  // console.log(y);
+  // if (newUser.createdAt > date)
+
   labelSelf(newUser);
-  console.log('creating token');
+
   createSendToken(newUser, 201, req, res);
 });
 
@@ -104,10 +110,7 @@ const createSendToken = (user, statusCode, req, res) => {
   };
   if (process.env.SECURE_TOKEN === 'true') cookieOptions.secure = true;
   else cookieOptions.secure = false;
-  console.log('This is the token');
-  console.log(token);
-  console.log('Token Secure');
-  console.log(process.env.SECURE_TOKEN);
+
   res.cookie('jwt', token, cookieOptions);
 
   // Remove password from output

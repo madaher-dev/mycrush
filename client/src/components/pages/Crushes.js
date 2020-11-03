@@ -220,7 +220,7 @@ const Crushes = ({
                   }}
                 />
               </Box>
-              <Box margin={1}>
+              {/* <Box margin={1}>
                 <Field
                   component={TextField}
                   name="phone"
@@ -290,7 +290,7 @@ const Crushes = ({
                     )
                   }}
                 />
-              </Box>
+              </Box> */}
 
               <Box margin={1}>
                 <Button

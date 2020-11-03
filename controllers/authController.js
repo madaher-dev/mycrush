@@ -25,8 +25,6 @@ const labelSelf = catchAsync(async user => {
   if (!instagram) instagram = 'empty';
   if (!facebook) facebook = 'empty';
 
-  console.log('This is the user being labeled');
-  console.log(user);
   await Crush.updateMany(
     {
       $or: [
