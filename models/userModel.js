@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
     // `facebook` must be unique, unless it isn't defined
     index: { unique: true, sparse: true }
   },
+  facebookID: String,
   twitter: String,
   instagram: String,
   role: {

@@ -79,7 +79,19 @@ const Hooray = ({ match1 }) => {
       <Grid item>
         <FacebookIcon className={classes.fb} />
       </Grid>
-      <Grid item>{match1 ? match1.sourceId.facebook : <Fragment />}</Grid>
+      <Grid item>
+        {match1 ? (
+          <Typography
+            component="a"
+            href={match1.sourceId.facebook}
+            target="_new"
+          >
+            Visit Facebook Profile
+          </Typography>
+        ) : (
+          <Fragment />
+        )}
+      </Grid>
     </Grid>
   );
   const twitter = (
@@ -119,7 +131,7 @@ const Hooray = ({ match1 }) => {
             <Avatar
               aria-label="recipe"
               className={classes.avatar}
-              src={match1.sourceId.photo}
+              src={match1.targetId.photo}
             />
           ) : (
             <Avatar aria-label="recipe" className={classes.avatar}>
@@ -132,7 +144,7 @@ const Hooray = ({ match1 }) => {
       <Grid item xs={12} className={classes.main}>
         <Typography>
           You and <b>{match1 ? match1.sourceId.name : <Fragment />} </b>have a
-          crush on each others. Below are the contacts you can reach them on!
+          crush on each other. Below are the contacts you can reach them on!
         </Typography>
       </Grid>
       <Grid item container xs={12} className={classes.main}>

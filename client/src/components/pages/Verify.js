@@ -34,6 +34,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import InstagramIcon from '@material-ui/icons/Instagram';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -175,7 +176,7 @@ const Verify = ({
         ) : (
           <FacebookLogin
             appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-            fields="name,email,picture"
+            fields="name,email,picture, link"
             scope="public_profile,user_link"
             //autoLoad
             callback={responseFacebook}
@@ -267,20 +268,31 @@ const Verify = ({
         </Grid>
         <Grid item xs={12}>
           <List>
+            <ListItem
+            //button
+            // onClick={() => handleListItemClick(email)}
+            >
+              <ListItemAvatar color="primary">
+                <Avatar>
+                  <AccountCircleIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={user.name} />
+            </ListItem>
             {user.facebook ? (
-              <ListItem>
+              <ListItem button component="a" href={user.facebook} target="_new">
                 <ListItemAvatar>
                   <Avatar className={classes.fbavatar}>
                     <FacebookIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={user.facebook} />
+                <ListItemText primary={'Your Facebook Profile Page'} />
                 <ListItemSecondaryAction>
                   <Tooltip title="Disconnect" aria-label="disc">
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleDisconnectFB(user.facebook)}
+                      onClick={() => handleDisconnectFB(user.facebookID)}
                     >
                       <CancelIcon color="secondary" />
                     </IconButton>

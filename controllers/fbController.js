@@ -9,30 +9,45 @@ exports.signup = catchAsync(async (req, res, next) => {
   console.log(req.body);
   if (req.body.status === 'not_authorized')
     return next(new AppError('Unuthorized facebook user!', 401));
-  const newUser = await User.findOneAndUpdate(
-    { email: req.body.email },
-    {
-      name: req.body.name,
-      email_confirmed: true,
-      photo: req.body.picture.data.url,
-      facebook: req.body.id,
-      fbAccessToken: req.body.accessToken
-    },
-    { upsert: true, new: true }
-  );
-  // console.log(req.body.email);
-  // console.log('created at', newUser.createdAt);
-  // //console.log(newUser.createdAt.getTime());
-  // let date = new Date();
-  // console.log('date now', date);
-  // //const y = date.setDate(date.getTime() + 10000);
-  // const y = date.getTime();
-  // const x = newUser.createdAt.getTime();
-  // console.log;
-  // console.log(y);
-  // if (newUser.createdAt > date)
 
-  labelSelf(newUser);
+  let newUser;
+  if (!req.body.email) {
+    newUser = await User.findOneAndUpdate(
+      { facebookID: req.body.id },
+      {
+        name: req.body.name,
+        email: `${req.body.id}@facebook.com`,
+        facebookID: req.body.id,
+        email_confirmed: true,
+        photo: req.body.picture.data.url,
+        facebook: req.body.link,
+        fbAccessToken: req.body.accessToken
+      },
+      { upsert: true, new: true }
+    );
+  } else {
+    newUser = await User.findOneAndUpdate(
+      { email: req.body.email },
+      {
+        name: req.body.name,
+        email: req.body.email,
+        facebookID: req.body.id,
+        email_confirmed: true,
+        photo: req.body.picture.data.url,
+        facebook: req.body.link,
+        fbAccessToken: req.body.accessToken
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  console.log('created at:', newUser.createdAt);
+  let date = new Date();
+
+  const y = date.getTime();
+  const x = newUser.createdAt.getTime() + 100000;
+
+  if (x > y) labelSelf(newUser);
 
   createSendToken(newUser, 201, req, res);
 });

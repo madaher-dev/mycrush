@@ -116,10 +116,18 @@ let initials = null;
   );
   const facebook = (
     <Grid container>
+    
       <Grid item>
         <FacebookIcon className={classes.fb} />
       </Grid>
-      <Grid item>{match.[type].facebook}</Grid>
+      <Grid item>  <Typography
+            component="a"
+            href={match.[type].facebook}
+            target="_new"
+          >
+            Visit Facebook Profile
+          </Typography>
+        </Grid>
     </Grid>
   );
   const twitter = (

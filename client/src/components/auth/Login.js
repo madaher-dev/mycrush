@@ -202,7 +202,7 @@ const Login = ({
           <Grid item xs={12} sm={8}>
             <FacebookLogin
               appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-              fields="name,email,picture"
+              fields="name,email,picture, link"
               scope="public_profile, user_link"
               //autoLoad
               callback={responseFacebook}
