@@ -41,7 +41,6 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import InstagramLogin from 'react-instagram-login';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -170,11 +169,9 @@ const Verify = ({
 
   //Instagram - Connect
   const responseInstagram = response => {
-    if (!instaAdded) {
-      handleMenuClose();
-      setLoading();
-      connectInstagram(response);
-    }
+    handleMenuClose();
+    setLoading();
+    connectInstagram(response);
   };
   const responseInstagramError = error => {
     setAlert(error, 'error');

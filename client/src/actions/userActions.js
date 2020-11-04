@@ -271,7 +271,7 @@ export const connectInstagram = response => async dispatch => {
     client_id: process.env.REACT_APP_INSTA_CLIENT_ID,
     client_secret: process.env.REACT_APP_INSTA_CLIENT_SECRET,
     grant_type: 'authorization_code',
-    redirect_uri: 'https://mycrushapp.herokuapp.com/verify'
+    redirect_uri: 'https://mycrushapp.herokuapp.com/verify-insta'
   };
   try {
     const instaresToken = await axios.post(
