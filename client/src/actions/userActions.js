@@ -15,6 +15,7 @@ import {
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
+const querystring = require('querystring');
 
 // Register User
 
@@ -275,7 +276,7 @@ export const connectInstagram = response => async dispatch => {
   try {
     const instares = await axios.post(
       'https://api.instagram.com/oauth/access_token',
-      body
+      querystring.stringify(body)
     );
 
     const res = await axios.post('/api/v1/users/insta', instares);
