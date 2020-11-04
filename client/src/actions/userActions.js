@@ -296,7 +296,7 @@ export const connectInstagram = response => async dispatch => {
   }
 };
 
-export const disconnectInsta = id =>
+export const disconnectInsta = () =>
   factory.get(
     '/api/v1/users/instaDisc',
     'INSTA_DISCONNECTED',

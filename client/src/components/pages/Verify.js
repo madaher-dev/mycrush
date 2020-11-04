@@ -169,17 +169,18 @@ const Verify = ({
   };
 
   //Instagram - Connect
-  const responseInstagram = async response => {
-    handleMenuClose();
-    setLoading();
-    connectInstagram(response);
-    return () => <Redirect to="/welcome" />;
+  const responseInstagram = response => {
+    if (!instaAdded) {
+      handleMenuClose();
+      setLoading();
+      connectInstagram(response);
+    }
   };
   const responseInstagramError = error => {
     setAlert(error, 'error');
     clearErrors();
   };
-  const handleDisconnectInsta = id => {
+  const handleDisconnectInsta = () => {
     setLoading();
     disconnectInsta();
   };
