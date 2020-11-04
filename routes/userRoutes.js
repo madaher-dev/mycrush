@@ -20,6 +20,7 @@ router.post('/resendEmail', authController.resendEmail);
 
 router.post('/fb', fbController.signup);
 router.post('/insta', authController.protect, fbController.insta);
+router.post('/instaDisc', authController.protect, fbController.instaDisconnect);
 router.post('/fb/:id', fbController.connect);
 router.get('/fb/:id', fbController.disconnect);
 

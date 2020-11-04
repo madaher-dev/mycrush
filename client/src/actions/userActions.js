@@ -280,7 +280,7 @@ export const connectInstagram = response => async dispatch => {
     );
     console.log(instaresToken);
     const instares = await axios.get(
-      `https://graph.instagram.com/${instaresToken.data.user_id}?fields={username}&access_token=${instaresToken.data.access_token}`
+      `https://graph.instagram.com/${instaresToken.data.user_id}?fields='username'&access_token=${instaresToken.data.access_token}`
     );
     console.log(instares);
 

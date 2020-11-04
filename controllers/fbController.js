@@ -137,6 +137,24 @@ exports.insta = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.instaDisconnect = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      instagram: undefined
+    },
+    { new: true }
+  );
+
+  // Label self in all matching crushes - can be removed for reset password actions
+  //UnlabelSelf(user);
+
+  res.status('200').json({
+    status: 'success',
+    user
+  });
+});
+
 const createSendToken = (user, statusCode, req, res) => {
   console.log('Signing Token');
   const token = signToken(user._id);

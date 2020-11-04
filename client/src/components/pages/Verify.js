@@ -15,7 +15,8 @@ import {
   disconnectEmail,
   connectFB,
   disconnectFB,
-  connectInstagram
+  connectInstagram,
+  setLoading
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -37,6 +38,8 @@ import Menu from '@material-ui/core/Menu';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import InstagramLogin from 'react-instagram-login';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -69,6 +72,10 @@ const useStyles = makeStyles(theme => ({
   instaButton: {
     backgroundColor: '#e91e63',
     variant: 'contained'
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
   }
 }));
 
@@ -82,7 +89,9 @@ const Verify = ({
   connectFB,
   disconnectFB,
   location,
-  connectInstagram
+  connectInstagram,
+  setLoading,
+  loading
 }) => {
   const classes = useStyles();
 
@@ -131,6 +140,7 @@ const Verify = ({
 
   const responseInstagram = response => {
     handleMenuClose();
+    setLoading();
     connectInstagram(response);
   };
   const responseInstagramError = error => {
@@ -435,6 +445,9 @@ const Verify = ({
           </List>
         </Grid>
       </Grid>
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {renderNetworksMenu}
       <div className={classes.anchor} ref={divRef} />
     </Grid>
@@ -450,12 +463,15 @@ Verify.propTypes = {
   disconnectEmail: PropTypes.func.isRequired,
   connectFB: PropTypes.func.isRequired,
   disconnectFB: PropTypes.func.isRequired,
-  connectInstagram: PropTypes.func.isRequired
+  connectInstagram: PropTypes.func.isRequired,
+  loading: PropTypes.bool,
+  setLoading: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   user: state.users.user,
-  error: state.users.error
+  error: state.users.error,
+  loading: state.users.loading
 });
 
 export default connect(mapStateToProps, {
@@ -465,5 +481,6 @@ export default connect(mapStateToProps, {
   disconnectEmail,
   connectFB,
   disconnectFB,
-  connectInstagram
+  connectInstagram,
+  setLoading
 })(Verify);
