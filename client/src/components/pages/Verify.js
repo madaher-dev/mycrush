@@ -14,7 +14,8 @@ import {
   clearErrors,
   disconnectEmail,
   connectFB,
-  disconnectFB
+  disconnectFB,
+  connectInstagram
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -79,7 +80,8 @@ const Verify = ({
   disconnectEmail,
   connectFB,
   disconnectFB,
-  location
+  location,
+  connectInstagram
 }) => {
   const classes = useStyles();
 
@@ -429,7 +431,8 @@ Verify.propTypes = {
   setAlert: PropTypes.func.isRequired,
   disconnectEmail: PropTypes.func.isRequired,
   connectFB: PropTypes.func.isRequired,
-  disconnectFB: PropTypes.func.isRequired
+  disconnectFB: PropTypes.func.isRequired,
+  connectInstagram: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -443,5 +446,6 @@ export default connect(mapStateToProps, {
   setAlert,
   disconnectEmail,
   connectFB,
-  disconnectFB
+  disconnectFB,
+  connectInstagram
 })(Verify);
