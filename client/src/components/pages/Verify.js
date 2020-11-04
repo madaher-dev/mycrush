@@ -120,7 +120,8 @@ const Verify = ({
   connectInstagram,
   setLoading,
   loading,
-  disconnectInsta
+  disconnectInsta,
+  instaAdded
 }) => {
   const classes = useStyles();
 
@@ -171,7 +172,6 @@ const Verify = ({
     handleMenuClose();
     setLoading();
     connectInstagram(response);
-    return <Redirect to="/verify" />;
   };
   const responseInstagramError = error => {
     setAlert(error, 'error');
@@ -243,7 +243,6 @@ const Verify = ({
           // disabled={isSubmitting}
           onClick={handleClickOpenConnectEmail}
           startIcon={<EmailIcon />}
-          className={classes.fbButton}
         >
           Connect new Email
         </Button>
@@ -292,200 +291,212 @@ const Verify = ({
       </MenuItem>
     </Menu>
   );
-  return (
-    <Grid
-      container
-      spacing={0}
-      direction="row"
-      alignItems="center"
-      justify="center"
-    >
+
+  if (instaAdded) {
+    return <Redirect to="/verify" />;
+  } else {
+    return (
       <Grid
-        item
         container
-        xs={12}
-        sm={10}
-        className={classes.main}
+        spacing={0}
+        direction="row"
         alignItems="center"
         justify="center"
       >
-        <Grid item xs={12}>
-          <Typography>
-            Below are the networks that you have currently verified. Connect
-            more networks to increase your chances of a match!
-          </Typography>
-          <Dialog
-            open={openConnectEmail}
-            onClose={handleCloseConnectEmail}
-            aria-labelledby="form-dialog-title"
-          >
-            <DialogTitle id="form-dialog-title">Connect new Email</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                You can connect more emails to be matched with any of them! You
-                will need to verify the email after adding it.
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="email"
-                label="Email Address"
-                type="email"
-                onChange={onChange}
-                fullWidth
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseConnectEmail} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleSubmitConnectEmail} color="primary">
-                Connect
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Grid>
-        <Grid item xs={12}>
-          <List>
-            <ListItem
-            //button
-            // onClick={() => handleListItemClick(email)}
+        <Grid
+          item
+          container
+          xs={12}
+          sm={10}
+          className={classes.main}
+          alignItems="center"
+          justify="center"
+        >
+          <Grid item xs={12}>
+            <Typography>
+              Below are the networks that you have currently verified. Connect
+              more networks to increase your chances of a match!
+            </Typography>
+            <Dialog
+              open={openConnectEmail}
+              onClose={handleCloseConnectEmail}
+              aria-labelledby="form-dialog-title"
             >
-              <ListItemAvatar color="primary">
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={user.name} />
-            </ListItem>
-            {user.facebook ? (
-              <ListItem button component="a" href={user.facebook} target="_new">
-                <ListItemAvatar>
-                  <Avatar className={classes.fbavatar}>
-                    <FacebookIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={'Your Facebook Profile Page'} />
-                <ListItemSecondaryAction>
-                  <Tooltip title="Disconnect" aria-label="disc">
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDisconnectFB(user.facebookID)}
-                    >
-                      <CancelIcon color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                </ListItemSecondaryAction>
-              </ListItem>
-            ) : (
-              <Fragment />
-            )}
-            {user.instagram ? (
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar className={classes.instavatar}>
-                    <InstagramIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={user.instagram} />
-                <ListItemSecondaryAction>
-                  <Tooltip title="Disconnect" aria-label="disc">
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDisconnectInsta()}
-                    >
-                      <CancelIcon color="secondary" />
-                    </IconButton>
-                  </Tooltip>
-                </ListItemSecondaryAction>
-              </ListItem>
-            ) : (
-              <Fragment />
-            )}
-            <ListItem
-            //button
-            // onClick={() => handleListItemClick(email)}
-            >
-              <ListItemAvatar>
-                <Avatar className={classes.avatar}>
-                  <EmailIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={user.email} />
-              <ListItemSecondaryAction>
-                <Tooltip title="Confirmed" aria-label="confirmed">
-                  <IconButton
-                    edge="end"
-                    aria-label="status"
-                    disableRipple
-                    // onClick={() => handleDelete(email._id)}
-                  >
-                    <VerifiedUserIcon color="primary" />
-                  </IconButton>
-                </Tooltip>
-              </ListItemSecondaryAction>
-            </ListItem>
-            {user.otherEmails.map(email => (
+              <DialogTitle id="form-dialog-title">
+                Connect new Email
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  You can connect more emails to be matched with any of them!
+                  You will need to verify the email after adding it.
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="email"
+                  label="Email Address"
+                  type="email"
+                  onChange={onChange}
+                  fullWidth
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseConnectEmail} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleSubmitConnectEmail} color="primary">
+                  Connect
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Grid>
+          <Grid item xs={12}>
+            <List>
               <ListItem
-                //button
-                // onClick={() => handleListItemClick(email)}
-                key={email._id}
+              //button
+              // onClick={() => handleListItemClick(email)}
+              >
+                <ListItemAvatar color="primary">
+                  <Avatar>
+                    <AccountCircleIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={user.name} />
+              </ListItem>
+              {user.facebook ? (
+                <ListItem
+                  button
+                  component="a"
+                  href={user.facebook}
+                  target="_new"
+                >
+                  <ListItemAvatar>
+                    <Avatar className={classes.fbavatar}>
+                      <FacebookIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={'Your Facebook Profile Page'} />
+                  <ListItemSecondaryAction>
+                    <Tooltip title="Disconnect" aria-label="disc">
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleDisconnectFB(user.facebookID)}
+                      >
+                        <CancelIcon color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ) : (
+                <Fragment />
+              )}
+              {user.instagram ? (
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar className={classes.instavatar}>
+                      <InstagramIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={user.instagram} />
+                  <ListItemSecondaryAction>
+                    <Tooltip title="Disconnect" aria-label="disc">
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleDisconnectInsta()}
+                      >
+                        <CancelIcon color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ) : (
+                <Fragment />
+              )}
+              <ListItem
+              //button
+              // onClick={() => handleListItemClick(email)}
               >
                 <ListItemAvatar>
                   <Avatar className={classes.avatar}>
                     <EmailIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={email.email} />
+                <ListItemText primary={user.email} />
                 <ListItemSecondaryAction>
-                  <Tooltip title="Disconnect" aria-label="disc">
+                  <Tooltip title="Confirmed" aria-label="confirmed">
                     <IconButton
                       edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDisconnectEmail(email._id)}
+                      aria-label="status"
+                      disableRipple
+                      // onClick={() => handleDelete(email._id)}
                     >
-                      <CancelIcon color="secondary" />
+                      <VerifiedUserIcon color="primary" />
                     </IconButton>
                   </Tooltip>
-
-                  {email.confirmed ? (
-                    <Tooltip title="Confirmed" aria-label="confirmed">
-                      <IconButton
-                        edge="end"
-                        aria-label="status"
-                        disableRipple
-                        // onClick={() => handleDelete(email._id)}
-                      >
-                        <VerifiedUserIcon color="primary" />
-                      </IconButton>
-                    </Tooltip>
-                  ) : (
-                    <Tooltip title="Not Confirmed" aria-label="notconfirmed">
-                      <IconButton
-                        edge="end"
-                        aria-label="status"
-                        disableRipple
-                        // onClick={() => handleDelete(email._id)}
-                      >
-                        <BlockIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
                 </ListItemSecondaryAction>
               </ListItem>
-            ))}
-          </List>
+              {user.otherEmails.map(email => (
+                <ListItem
+                  //button
+                  // onClick={() => handleListItemClick(email)}
+                  key={email._id}
+                >
+                  <ListItemAvatar>
+                    <Avatar className={classes.avatar}>
+                      <EmailIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={email.email} />
+                  <ListItemSecondaryAction>
+                    <Tooltip title="Disconnect" aria-label="disc">
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleDisconnectEmail(email._id)}
+                      >
+                        <CancelIcon color="secondary" />
+                      </IconButton>
+                    </Tooltip>
+
+                    {email.confirmed ? (
+                      <Tooltip title="Confirmed" aria-label="confirmed">
+                        <IconButton
+                          edge="end"
+                          aria-label="status"
+                          disableRipple
+                          // onClick={() => handleDelete(email._id)}
+                        >
+                          <VerifiedUserIcon color="primary" />
+                        </IconButton>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title="Not Confirmed" aria-label="notconfirmed">
+                        <IconButton
+                          edge="end"
+                          aria-label="status"
+                          disableRipple
+                          // onClick={() => handleDelete(email._id)}
+                        >
+                          <BlockIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
         </Grid>
+        <Backdrop className={classes.backdrop} open={loading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        {renderNetworksMenu}
+        <div className={classes.anchor} ref={divRef} />
       </Grid>
-      <Backdrop className={classes.backdrop} open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
-      {renderNetworksMenu}
-      <div className={classes.anchor} ref={divRef} />
-    </Grid>
-  );
+    );
+  }
 };
 
 Verify.propTypes = {
@@ -500,13 +511,15 @@ Verify.propTypes = {
   connectInstagram: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   setLoading: PropTypes.func.isRequired,
-  disconnectInsta: PropTypes.func.isRequired
+  disconnectInsta: PropTypes.func.isRequired,
+  instaAdded: PropTypes.bool
 };
 
 const mapStateToProps = state => ({
   user: state.users.user,
   error: state.users.error,
-  loading: state.users.loading
+  loading: state.users.loading,
+  instaAdded: state.users.instaAdded
 });
 
 export default connect(mapStateToProps, {
