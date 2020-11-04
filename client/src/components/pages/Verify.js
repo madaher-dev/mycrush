@@ -35,6 +35,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import InstagramLogin from 'react-instagram-login';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -125,6 +126,11 @@ const Verify = ({
     connectFB(response, user._id);
   };
 
+  const responseInstagram = response => {
+    handleMenuClose();
+    console.log(response);
+  };
+
   // Networks Menu
 
   const [menu, setMenuOpen] = React.useState(false);
@@ -141,6 +147,26 @@ const Verify = ({
     setAnchorEl(divRef.current);
     location.addOpen = false;
   }
+  // useEffect(() => {
+  //   if (user) {
+  //     testRedirect(user.facebook);
+  //   }
+  // }, [user]);
+
+  // function testRedirect(url) {
+  //   var xhr = new XMLHttpRequest();
+  //   xhr.onreadystatechange = function(e) {
+  //     if (xhr.status == 200 && xhr.readyState == 4) {
+  //       if (url != xhr.responseURL) {
+  //         alert('redirect detected to: ' + xhr.responseURL);
+  //       } else {
+  //         alert('no redirect detected');
+  //       }
+  //     }
+  //   };
+  //   xhr.open('GET', url, true);
+  //   xhr.send();
+  // }
 
   const renderNetworksMenu = (
     <Menu
@@ -199,16 +225,22 @@ const Verify = ({
         {user.instagram ? (
           <Fragment />
         ) : (
-          <Button
-            variant="contained"
-            color="secondary"
-            // disabled={isSubmitting}
-            //onClick={handleClickOpenConnectEmail}
-            startIcon={<InstagramIcon />}
-            className={classes.instaButton}
-          >
-            Connect Instagram
-          </Button>
+          <InstagramLogin
+            clientId="731545520907253"
+            buttonText="Login"
+            onSuccess={responseInstagram}
+            onFailure={responseInstagram}
+          />
+          // <Button
+          //   variant="contained"
+          //   color="secondary"
+          //   // disabled={isSubmitting}
+          //   //onClick={handleClickOpenConnectEmail}
+          //   startIcon={<InstagramIcon />}
+          //   className={classes.instaButton}
+          // >
+          //   Connect Instagram
+          // </Button>
         )}
       </MenuItem>
     </Menu>
