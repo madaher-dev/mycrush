@@ -280,7 +280,7 @@ export const connectInstagram = response => async dispatch => {
     );
 
     const res = await axios.post('/api/v1/users/insta', instares);
-
+    console.log(res);
     dispatch({
       type: INSTA_LOADED,
       payload: res.data

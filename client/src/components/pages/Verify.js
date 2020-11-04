@@ -130,7 +130,6 @@ const Verify = ({
 
   const responseInstagram = response => {
     handleMenuClose();
-    console.log(response);
     connectInstagram(response);
   };
   const responseInstagramError = error => {
@@ -234,21 +233,21 @@ const Verify = ({
         ) : (
           <InstagramLogin
             clientId={process.env.REACT_APP_INSTA_CLIENT_ID}
-            buttonText="Login"
-            scope="user_profile"
             onSuccess={responseInstagram}
+            scope="user_profile"
             onFailure={responseInstagramError}
-          />
-          // <Button
-          //   variant="contained"
-          //   color="secondary"
-          //   // disabled={isSubmitting}
-          //   //onClick={handleClickOpenConnectEmail}
-          //   startIcon={<InstagramIcon />}
-          //   className={classes.instaButton}
-          // >
-          //   Connect Instagram
-          // </Button>
+          >
+            <Button
+              variant="contained"
+              color="secondary"
+              //disabled={isSubmitting}
+              //onClick={handleClickOpenConnectEmail}
+              startIcon={<InstagramIcon />}
+              className={classes.instaButton}
+            >
+              Connect Instagram
+            </Button>
+          </InstagramLogin>
         )}
       </MenuItem>
     </Menu>
