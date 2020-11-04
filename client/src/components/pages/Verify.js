@@ -67,7 +67,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%'
   },
   instaButton: {
-    backgroundColor: '#4267B2'
+    backgroundColor: '#e91e63',
+    variant: 'contained'
   }
 }));
 
@@ -236,18 +237,8 @@ const Verify = ({
             onSuccess={responseInstagram}
             scope="user_profile"
             onFailure={responseInstagramError}
-            render={renderProps => (
-              <Button
-                variant="contained"
-                color="secondary"
-                // disabled={isSubmitting}
-                onClick={renderProps.onClick}
-                className={classes.instaButton}
-                startIcon={<InstagramIcon />}
-              >
-                Connect Instagram
-              </Button>
-            )}
+            cssClass={classes.instaButton}
+            buttonText="Connect Instagram"
           />
         )}
       </MenuItem>
