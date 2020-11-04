@@ -280,7 +280,7 @@ export const connectInstagram = response => async dispatch => {
     );
     console.log(instaresToken);
     const instares = await axios.get(
-      `https://graph.instagram.com/${instaresToken.data.user_id}?fields='username'&access_token=${instaresToken.data.access_token}`
+      `https://graph.instagram.com/${instaresToken.data.user_id}?fields=username&access_token=${instaresToken.data.access_token}`
     );
     console.log(instares);
 
@@ -296,3 +296,10 @@ export const connectInstagram = response => async dispatch => {
     });
   }
 };
+
+export const disconnectInsta = id =>
+  factory.get(
+    `/api/v1/users/instaDisc`,
+    'INSTA_DISCONNECTED',
+    'INSTA_DISCONNECT_FAIL'
+  );

@@ -16,7 +16,8 @@ import {
   connectFB,
   disconnectFB,
   connectInstagram,
-  setLoading
+  setLoading,
+  disconnectInsta
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -91,7 +92,8 @@ const Verify = ({
   location,
   connectInstagram,
   setLoading,
-  loading
+  loading,
+  disconnectInsta
 }) => {
   const classes = useStyles();
 
@@ -146,6 +148,9 @@ const Verify = ({
   const responseInstagramError = error => {
     setAlert(error, 'error');
     clearErrors();
+  };
+  const handleDisconnectInsta = id => {
+    disconnectInsta();
   };
 
   // Networks Menu
@@ -360,7 +365,7 @@ const Verify = ({
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleDisconnectFB(user.facebookID)}
+                      onClick={() => handleDisconnectInsta()}
                     >
                       <CancelIcon color="secondary" />
                     </IconButton>
@@ -465,7 +470,8 @@ Verify.propTypes = {
   disconnectFB: PropTypes.func.isRequired,
   connectInstagram: PropTypes.func.isRequired,
   loading: PropTypes.bool,
-  setLoading: PropTypes.func.isRequired
+  setLoading: PropTypes.func.isRequired,
+  disconnectInsta: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -482,5 +488,6 @@ export default connect(mapStateToProps, {
   connectFB,
   disconnectFB,
   connectInstagram,
-  setLoading
+  setLoading,
+  disconnectInsta
 })(Verify);

@@ -29,7 +29,9 @@ import {
   CLEAR_NOTIFICATIONS,
   MATCH_FOUND,
   INSTA_LOADED,
-  INSTA_FAILED
+  INSTA_FAILED,
+  INSTA_DISCONNECTED,
+  INSTA_DISCONNECT_FAIL
 } from '../actions/Types';
 
 const initialState = {
@@ -71,6 +73,7 @@ export default (state = initialState, action) => {
     case FB_LOADED:
     case INSTA_LOADED:
     case FB_DISCONNECTED:
+    case INSTA_DISCONNECTED:
       return {
         ...state,
         user: action.payload.user,
@@ -82,6 +85,7 @@ export default (state = initialState, action) => {
     case FB_FAILED:
     case INSTA_FAILED:
     case FB_DISCONNECT_FAIL:
+    case INSTA_DISCONNECT_FAIL:
       return {
         ...state,
         error: action.payload,
