@@ -274,11 +274,16 @@ export const connectInstagram = response => async dispatch => {
     redirect_uri: 'https://mycrushapp.herokuapp.com/verify'
   };
   try {
-    const instares = await axios.post(
+    const instaresToken = await axios.post(
       'https://api.instagram.com/oauth/access_token',
       querystring.stringify(body)
     );
+    console.log(instaresToken);
+    const instares = await axios.get(
+      `https://graph.instagram.com/${instaresToken.data.user_id}?fields={username}&access_token=${instaresToken.data.access_token}`
+    );
     console.log(instares);
+
     const res = await axios.post('/api/v1/users/insta', instares.data);
 
     dispatch({

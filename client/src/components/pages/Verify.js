@@ -237,9 +237,13 @@ const Verify = ({
             onSuccess={responseInstagram}
             scope="user_profile"
             onFailure={responseInstagramError}
-            cssClass={classes.instaButton}
-            buttonText="Connect Instagram"
-          />
+            buttonTheme="simple"
+            //cssClass={classes.instaButton}
+            //buttonText="Connect Instagram"
+          >
+            <InstagramIcon />
+            <span> Connect Instagram</span>
+          </InstagramLogin>
         )}
       </MenuItem>
     </Menu>

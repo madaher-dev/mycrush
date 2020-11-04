@@ -123,7 +123,7 @@ exports.insta = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      instagram: req.body.user_id
+      instagram: req.body.username
     },
     { new: true }
   );
