@@ -342,6 +342,29 @@ const Verify = ({
             ) : (
               <Fragment />
             )}
+            {user.instagram ? (
+              <ListItem>
+                <ListItemAvatar>
+                  <Avatar className={classes.fbavatar}>
+                    <InstagramIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={user.instagram} />
+                <ListItemSecondaryAction>
+                  <Tooltip title="Disconnect" aria-label="disc">
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => handleDisconnectFB(user.facebookID)}
+                    >
+                      <CancelIcon color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ) : (
+              <Fragment />
+            )}
             <ListItem
             //button
             // onClick={() => handleListItemClick(email)}
