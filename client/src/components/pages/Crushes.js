@@ -163,15 +163,10 @@ const Crushes = ({
                 errors.email = 'Invalid email address';
               }
             }
-            // if (
-            //   !values.email &&
-            //   !values.facebook &&
-            //   !values.instagram &&
-            //   !values.phone
-            // ) {
-            //   errors.email = 'You need to enter at least one Network';
-            // }
-            //validate social media
+            if (!values.email && !values.instagram && !values.phone) {
+              errors.email = 'You need to enter at least one Network';
+            }
+            //  validate social media
 
             return errors;
           }}
@@ -220,7 +215,7 @@ const Crushes = ({
                   }}
                 />
               </Box>
-              {/* <Box margin={1}>
+              <Box margin={1}>
                 <Field
                   component={TextField}
                   name="phone"
@@ -255,7 +250,7 @@ const Crushes = ({
                   }}
                 />
               </Box>
-              <Box margin={1}>
+              {/* <Box margin={1}>
                 <Field
                   component={TextField}
                   name="facebook"
@@ -272,7 +267,7 @@ const Crushes = ({
                     )
                   }}
                 />
-              </Box>
+              </Box> */}
               <Box margin={1}>
                 <Field
                   component={TextField}
@@ -290,7 +285,7 @@ const Crushes = ({
                     )
                   }}
                 />
-              </Box> */}
+              </Box>
 
               <Box margin={1}>
                 <Button

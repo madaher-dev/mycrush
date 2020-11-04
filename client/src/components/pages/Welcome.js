@@ -36,7 +36,7 @@ const Welcome = ({ crushes, crushesLoaded, user }) => {
         <Grid item xs={12}>
           Welcome to MyCrush
         </Grid>
-        {user && !user.facebook ? (
+        {/* {user && !user.facebook ? (
           <Grid item xs={12}>
             <Alert severity="info">
               Your facebook account is not connected! Go to{' '}
@@ -51,7 +51,7 @@ const Welcome = ({ crushes, crushesLoaded, user }) => {
           </Grid>
         ) : (
           <Fragment />
-        )}
+        )} */}
         {user && !user.instagram ? (
           <Grid item xs={12}>
             <Alert severity="info">
