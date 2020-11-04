@@ -9,7 +9,9 @@ import {
   EMAIL_CONFIRMED,
   SET_MOBILE_MENU,
   CLOSE_MOBILE_MENU,
-  CLEAR_NOTIFICATIONS
+  CLEAR_NOTIFICATIONS,
+  INSTA_LOADED,
+  INSTA_FAILED
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -259,3 +261,32 @@ export const disconnectFB = id =>
     'FB_DISCONNECTED',
     'FB_DISCONNECT_FAIL'
   );
+
+// Connect Instagram
+
+export const connectInstagram = response => async dispatch => {
+  let body = {
+    code: response,
+    client_id: process.env.REACT_APP_INSTA_CLIENT_ID,
+    client_secret: process.env.REACT_APP_INSTA_CLIENT_SECRET,
+    grant_type: 'authorization_code',
+    redirect_uri: 'https://mycrushapp.herokuapp.com/verify'
+  };
+  try {
+    const instares = await axios.post(
+      'https://api.instagram.com/oauth/access_token',
+      body
+    );
+
+    const res = await axios.post('/api/v1/users/insta', instares);
+
+    dispatch({
+      type: INSTA_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: INSTA_FAILED
+    });
+  }
+};

@@ -129,6 +129,11 @@ const Verify = ({
   const responseInstagram = response => {
     handleMenuClose();
     console.log(response);
+    connectInstagram(response);
+  };
+  const responseInstagramError = error => {
+    setAlert(error, 'error');
+    clearErrors();
   };
 
   // Networks Menu
@@ -226,11 +231,11 @@ const Verify = ({
           <Fragment />
         ) : (
           <InstagramLogin
-            clientId="731545520907253"
+            clientId={process.env.REACT_APP_INSTA_CLIENT_ID}
             buttonText="Login"
             scope="user_profile"
             onSuccess={responseInstagram}
-            onFailure={responseInstagram}
+            onFailure={responseInstagramError}
           />
           // <Button
           //   variant="contained"

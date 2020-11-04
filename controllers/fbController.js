@@ -6,7 +6,6 @@ const { labelSelf } = require('./authController');
 const AppError = require('./../utils/appError');
 
 exports.signup = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   if (req.body.status === 'not_authorized')
     return next(new AppError('Unuthorized facebook user!', 401));
 
@@ -116,6 +115,26 @@ exports.connect = catchAsync(async (req, res, next) => {
       user
     });
   }
+});
+
+exports.insta = catchAsync(async (req, res, next) => {
+  //check if facebook emails same
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      instagram: req.body.user_id
+    },
+    { new: true }
+  );
+  // Label self in all matching crushes - can be removed for reset password actions
+  labelSelf(user);
+  //newUser.password = undefined;
+
+  res.status('200').json({
+    status: 'success',
+    user
+  });
 });
 
 const createSendToken = (user, statusCode, req, res) => {

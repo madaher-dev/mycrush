@@ -27,7 +27,9 @@ import {
   GET_NOTIFICATIONS,
   NOTIFICATIONS_ERROR,
   CLEAR_NOTIFICATIONS,
-  MATCH_FOUND
+  MATCH_FOUND,
+  INSTA_LOADED,
+  INSTA_FAILED
 } from '../actions/Types';
 
 const initialState = {
@@ -67,6 +69,7 @@ export default (state = initialState, action) => {
         loading: false
       };
     case FB_LOADED:
+    case INSTA_LOADED:
     case FB_DISCONNECTED:
       return {
         ...state,
@@ -77,6 +80,7 @@ export default (state = initialState, action) => {
         newNotifications: action.payload.user.notifications
       };
     case FB_FAILED:
+    case INSTA_FAILED:
     case FB_DISCONNECT_FAIL:
       return {
         ...state,
