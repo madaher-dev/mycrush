@@ -228,6 +228,7 @@ const Verify = ({
           <InstagramLogin
             clientId="731545520907253"
             buttonText="Login"
+            scope="user_profile"
             onSuccess={responseInstagram}
             onFailure={responseInstagram}
           />
