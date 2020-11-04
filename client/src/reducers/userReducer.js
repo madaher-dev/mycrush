@@ -80,8 +80,7 @@ export default (state = initialState, action) => {
         isAuthenticated: true,
         loading: false,
         points: action.payload.user.points,
-        newNotifications: action.payload.user.notifications,
-        instaAdded: false
+        newNotifications: action.payload.user.notifications
       };
     case INSTA_LOADED:
       return {
