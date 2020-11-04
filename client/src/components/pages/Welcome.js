@@ -52,6 +52,22 @@ const Welcome = ({ crushes, crushesLoaded, user }) => {
         ) : (
           <Fragment />
         )}
+        {user && !user.instagram ? (
+          <Grid item xs={12}>
+            <Alert severity="info">
+              Your Instagram account is not connected! Go to{' '}
+              <Link
+                style={{ color: 'inherit', textDecoration: 'underline' }}
+                to={'/verify'}
+              >
+                Networks
+              </Link>{' '}
+              and connect it to add your chances for a match!
+            </Alert>
+          </Grid>
+        ) : (
+          <Fragment />
+        )}
         {crushesLoaded && crushes.length === 0 ? (
           <Grid item xs={12}>
             <Alert severity="warning">
