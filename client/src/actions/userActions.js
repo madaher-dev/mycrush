@@ -278,9 +278,9 @@ export const connectInstagram = response => async dispatch => {
       'https://api.instagram.com/oauth/access_token',
       querystring.stringify(body)
     );
-
+    console.log(instares);
     const res = await axios.post('/api/v1/users/insta', instares);
-    console.log(res);
+
     dispatch({
       type: INSTA_LOADED,
       payload: res.data
