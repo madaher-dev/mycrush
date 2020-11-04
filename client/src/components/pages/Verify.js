@@ -41,6 +41,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import InstagramLogin from 'react-instagram-login';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -65,25 +66,34 @@ const useStyles = makeStyles(theme => ({
   fbavatar: {
     backgroundColor: '#4267B2'
   },
+  instavatar: {
+    backgroundColor: '#C13584'
+  },
 
   fbButton: {
     backgroundColor: '#4267B2',
     width: '100%'
   },
+  instaIcon: {
+    padding: 5
+  },
   instaButton: {
-    alignItems: 'start',
-    backgroundColor: '#e91e63',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#E1306C',
     width: '100%',
     color: 'white',
-    padding: 0,
     borderRadius: 5,
+    border: 'none',
     marginTop: 0,
     outline: 0,
     boxShadow: 'lightgray',
     cursor: 'pointer',
     transition: 'ease',
     '&:hover': {
-      backgroundColor: '#b0003a'
+      backgroundColor: '#C13584'
     },
 
     '&:disabled': {
@@ -161,12 +171,14 @@ const Verify = ({
     handleMenuClose();
     setLoading();
     connectInstagram(response);
+    return <Redirect to="/verify" />;
   };
   const responseInstagramError = error => {
     setAlert(error, 'error');
     clearErrors();
   };
   const handleDisconnectInsta = id => {
+    setLoading();
     disconnectInsta();
   };
 
@@ -231,6 +243,7 @@ const Verify = ({
           // disabled={isSubmitting}
           onClick={handleClickOpenConnectEmail}
           startIcon={<EmailIcon />}
+          className={classes.fbButton}
         >
           Connect new Email
         </Button>
@@ -272,8 +285,8 @@ const Verify = ({
             cssClass={classes.instaButton}
             // buttonText="Connect Instagram"
           >
-            <InstagramIcon />
-            <span> Connect Instagram</span>
+            <InstagramIcon className={classes.instaIcon} />
+            <span className={classes.instaText}> Connect Instagram</span>
           </InstagramLogin>
         )}
       </MenuItem>
@@ -371,7 +384,7 @@ const Verify = ({
             {user.instagram ? (
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar className={classes.fbavatar}>
+                  <Avatar className={classes.instavatar}>
                     <InstagramIcon />
                   </Avatar>
                 </ListItemAvatar>

@@ -1,7 +1,6 @@
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
-const { Crush } = require('./../models/crushModel');
 const { labelSelf } = require('./authController');
 const AppError = require('./../utils/appError');
 
@@ -55,9 +54,10 @@ exports.disconnect = catchAsync(async (req, res, next) => {
   const user = await User.findOneAndUpdate(
     { facebookID: req.params.id },
     {
-      facebookID: undefined,
+      $unset: { facebookID: 1 },
+
       facebook: null,
-      fbAccessToken: undefined
+      fbAccessToken: null
     },
     { new: true }
   );
@@ -141,7 +141,7 @@ exports.instaDisconnect = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
-      instagram: undefined
+      $unset: { instagram: 1 }
     },
     { new: true }
   );

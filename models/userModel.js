@@ -22,13 +22,17 @@ const userSchema = new mongoose.Schema({
   },
   photo: String,
   facebookID: {
-    type: String,
     // `facebook` must be unique, unless it isn't defined
-    index: { unique: true, sparse: true }
+    index: { unique: true, sparse: true },
+    type: String
   },
   facebook: String,
   twitter: String,
-  instagram: String,
+  instagram: {
+    // `instagram` must be unique, unless it isn't defined
+    index: { unique: true, sparse: true },
+    type: String
+  },
   role: {
     type: String,
     enum: ['user', 'support', 'admin'],

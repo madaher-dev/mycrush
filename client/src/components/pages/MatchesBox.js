@@ -84,7 +84,7 @@ const MatchesBox = ({
                   <ListItemAvatar>
                     <MatchAvatar match={match} userId={user._id} />
                   </ListItemAvatar>
-                  {match.sourceId._id === user._id ? (
+                  {match.sourceId._id === user._id && match.targetId.name ? (
                     <ListItemText
                       primary={match.targetId.name}
                       secondary={Moment(match.createdAt).format('LLL')}
