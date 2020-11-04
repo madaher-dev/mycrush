@@ -71,8 +71,25 @@ const useStyles = makeStyles(theme => ({
     width: '100%'
   },
   instaButton: {
+    alignItems: 'start',
     backgroundColor: '#e91e63',
-    variant: 'contained'
+    width: '100%',
+    color: 'white',
+    padding: 0,
+    borderRadius: 5,
+    marginTop: 0,
+    outline: 0,
+    boxShadow: 'lightgray',
+    cursor: 'pointer',
+    transition: 'ease',
+    '&:hover': {
+      backgroundColor: '#b0003a'
+    },
+
+    '&:disabled': {
+      cursor: 'default',
+      opacity: 1
+    }
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -252,9 +269,8 @@ const Verify = ({
             onSuccess={responseInstagram}
             scope="user_profile"
             onFailure={responseInstagramError}
-            buttonTheme="simple"
-            //cssClass={classes.instaButton}
-            //buttonText="Connect Instagram"
+            cssClass={classes.instaButton}
+            // buttonText="Connect Instagram"
           >
             <InstagramIcon />
             <span> Connect Instagram</span>
