@@ -236,7 +236,7 @@ const Verify = ({
             fields="name,email,picture, link"
             scope="public_profile, user_link"
             authType="https"
-            redirectUri="https://mycrushapp.herokuapp.com/login"
+            //redirectUri="https://mycrushapp.herokuapp.com/verify"
             //autoLoad
             callback={responseFacebook}
             render={renderProps => (

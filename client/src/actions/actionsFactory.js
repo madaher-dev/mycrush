@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const post = (body, url, type, typeFail) => async dispatch => {
+  console.log(body);
   const config = {
     headers: {
       'Content-Type': 'application/json'

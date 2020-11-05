@@ -226,7 +226,7 @@ const Register = ({
               fields="name,email,picture, link"
               scope="public_profile, user_link"
               authType="https"
-              redirectUri="https://mycrushapp.herokuapp.com/login"
+              redirectUri="https://mycrushapp.herokuapp.com/register"
               //autoLoad
               callback={responseFacebook}
               render={renderProps => (

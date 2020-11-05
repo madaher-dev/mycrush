@@ -205,8 +205,8 @@ const Login = ({
               appId={process.env.REACT_APP_FACEBOOK_APP_ID}
               fields="name,email,picture, link"
               scope="public_profile, user_link"
-              authType="https"
-              redirectUri="https://mycrushapp.herokuapp.com/login"
+              //authType="https"
+              //redirectUri="https://mycrushapp.herokuapp.com/login"
               //autoLoad
               callback={responseFacebook}
               render={renderProps => (
