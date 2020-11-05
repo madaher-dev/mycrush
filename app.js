@@ -9,10 +9,13 @@ const hpp = require('hpp');
 const path = require('path');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const pino = require('express-pino-logger')();
+const bodyParser = require('body-parser');
 
 const crushRouter = require('./routes/crushRoutes');
 const userRouter = require('./routes/userRoutes');
 const networkRouter = require('./routes/networkRoutes');
+const twilioRouter = require('./routes/twilioRoutes');
 
 // 1- Global Middleware
 
@@ -66,12 +69,18 @@ app.use((req, res, next) => {
   next();
 });
 
+//Twilio Integration
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(pino);
+
 // 2-Routes
 
 app.use('/api/v1/crushes', crushRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/networks', networkRouter);
-// app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/twilio', twilioRouter);
 
 // 3-Serving static assets in production
 if (process.env.NODE_ENV === 'production') {

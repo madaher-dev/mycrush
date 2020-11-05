@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button, Grid, Typography } from '@material-ui/core';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -228,10 +228,9 @@ const Verify = ({
           Connect new Email
         </Button>
       </MenuItem>
-      <MenuItem>
-        {user.facebook ? (
-          <Fragment />
-        ) : (
+
+      {!user.facebook && (
+        <MenuItem>
           <FacebookLogin
             appId={process.env.REACT_APP_FACEBOOK_APP_ID}
             fields="name,email,picture, link"
@@ -251,12 +250,11 @@ const Verify = ({
               </Button>
             )}
           />
-        )}
-      </MenuItem>
-      <MenuItem>
-        {user.instagram ? (
-          <Fragment />
-        ) : (
+        </MenuItem>
+      )}
+
+      {!user.instagram && (
+        <MenuItem>
           <InstagramLogin
             clientId={process.env.REACT_APP_INSTA_CLIENT_ID}
             onSuccess={responseInstagram}
@@ -268,8 +266,8 @@ const Verify = ({
             <InstagramIcon className={classes.instaIcon} />
             <span className={classes.instaText}> Connect Instagram</span>
           </InstagramLogin>
-        )}
-      </MenuItem>
+        </MenuItem>
+      )}
     </Menu>
   );
 
@@ -339,7 +337,7 @@ const Verify = ({
               </ListItemAvatar>
               <ListItemText primary={user.name} />
             </ListItem>
-            {user.facebook ? (
+            {user.facebook && (
               <ListItem button component="a" href={user.facebook} target="_new">
                 <ListItemAvatar>
                   <Avatar className={classes.fbavatar}>
@@ -359,10 +357,8 @@ const Verify = ({
                   </Tooltip>
                 </ListItemSecondaryAction>
               </ListItem>
-            ) : (
-              <Fragment />
             )}
-            {user.instagram ? (
+            {user.instagram && (
               <ListItem>
                 <ListItemAvatar>
                   <Avatar className={classes.instavatar}>
@@ -382,8 +378,6 @@ const Verify = ({
                   </Tooltip>
                 </ListItemSecondaryAction>
               </ListItem>
-            ) : (
-              <Fragment />
             )}
             <ListItem
             //button

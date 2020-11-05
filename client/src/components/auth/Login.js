@@ -59,6 +59,7 @@ const Login = ({
   const classes = useStyles();
 
   const responseFacebook = response => {
+    console.log(response);
     checkFB(response);
   };
 

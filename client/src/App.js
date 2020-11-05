@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import Navbar from './components/layout/Navbar';
 import Crushes from './components/pages/Crushes';
 import Verify from './components/pages/Verify';
-import VerifyInsta from './components/pages/VerifyInsta';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Forgot from './components/auth/Forgot';
@@ -59,11 +58,6 @@ const App = () => {
                 <PrivateRoute exact path="/welcome" component={Welcome} />
                 <PrivateRoute exact path="/crushes" component={Crushes} />
                 <PrivateRoute exact path="/verify" component={Verify} />
-                <PrivateRoute
-                  exact
-                  path="/verify-insta"
-                  component={VerifyInsta}
-                />
                 <PrivateRoute exact path="/matches" component={Match} />
                 <PrivateRoute
                   exact

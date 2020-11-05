@@ -34,7 +34,7 @@ const labelSelf = catchAsync(async user => {
         { phone },
         { twitter },
         { instagram },
-        { facebook }
+        { facebook } //facebook removed
       ]
     },
     { targetId: user._id }
