@@ -93,7 +93,7 @@ export default (state = initialState, action) => {
         instaAdded: true
       };
     case FB_FAILED:
-
+    case INSTA_FAILED:
     case FB_DISCONNECT_FAIL:
     case INSTA_DISCONNECT_FAIL:
       return {
@@ -101,12 +101,7 @@ export default (state = initialState, action) => {
         error: action.payload,
         loading: false
       };
-    case INSTA_FAILED:
-      return {
-        ...state,
-        error: action.payload,
-        loading: false
-      };
+
     case TOKEN_CONFIRMED:
       return {
         ...state,
