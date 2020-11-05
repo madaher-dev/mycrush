@@ -1,9 +1,9 @@
-const express = require('express');
+// const express = require('express');
 
-const router = express.Router();
+// const router = express.Router();
 
-const twilioController = require('../controllers/twilioController');
+// const twilioController = require('../controllers/twilioController');
 
-router.post('/verify', twilioController.verify);
+// router.post('/verify', twilioController.verify);
 
-module.exports = router;
+// module.exports = router;

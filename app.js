@@ -80,7 +80,7 @@ app.use((req, res, next) => {
 app.use('/api/v1/crushes', crushRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/networks', networkRouter);
-app.use('/api/v1/twilio', twilioRouter);
+// app.use('/api/v1/twilio', twilioRouter);
 
 // 3-Serving static assets in production
 if (process.env.NODE_ENV === 'production') {
