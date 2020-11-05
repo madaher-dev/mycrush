@@ -41,7 +41,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import InstagramLogin from 'react-instagram-login';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { withRouter } from 'react-router-dom';
+//import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -121,13 +121,9 @@ const Verify = ({
   setLoading,
   loading,
   disconnectInsta,
-  instaAdded,
   history
 }) => {
   const classes = useStyles();
-  // let search = window.location.search;
-  // let params = new URLSearchParams(search);
-  // let code = params.get('code');
 
   useEffect(() => {
     if (error) {
@@ -203,26 +199,6 @@ const Verify = ({
     setAnchorEl(divRef.current);
     location.addOpen = false;
   }
-  // useEffect(() => {
-  //   if (user) {
-  //     testRedirect(user.facebook);
-  //   }
-  // }, [user]);
-
-  // function testRedirect(url) {
-  //   var xhr = new XMLHttpRequest();
-  //   xhr.onreadystatechange = function(e) {
-  //     if (xhr.status == 200 && xhr.readyState == 4) {
-  //       if (url != xhr.responseURL) {
-  //         alert('redirect detected to: ' + xhr.responseURL);
-  //       } else {
-  //         alert('no redirect detected');
-  //       }
-  //     }
-  //   };
-  //   xhr.open('GET', url, true);
-  //   xhr.send();
-  // }
 
   const renderNetworksMenu = (
     <Menu
@@ -296,8 +272,7 @@ const Verify = ({
       </MenuItem>
     </Menu>
   );
-  // if (code) return <Redirect to="/verify" />;
-  // else {
+
   return (
     <Grid
       container
@@ -492,7 +467,6 @@ const Verify = ({
       <div className={classes.anchor} ref={divRef} />
     </Grid>
   );
-  // }
 };
 
 Verify.propTypes = {
@@ -507,15 +481,13 @@ Verify.propTypes = {
   connectInstagram: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   setLoading: PropTypes.func.isRequired,
-  disconnectInsta: PropTypes.func.isRequired,
-  instaAdded: PropTypes.bool
+  disconnectInsta: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   user: state.users.user,
   error: state.users.error,
-  loading: state.users.loading,
-  instaAdded: state.users.instaAdded
+  loading: state.users.loading
 });
 
 export default connect(mapStateToProps, {

@@ -47,8 +47,7 @@ const initialState = {
   email_added: false,
   mobileMenu: false,
   notifications: [{}],
-  newNotifications: null,
-  instaAdded: false
+  newNotifications: null
 };
 
 export default (state = initialState, action) => {
@@ -74,6 +73,7 @@ export default (state = initialState, action) => {
     case FB_LOADED:
     case FB_DISCONNECTED:
     case INSTA_DISCONNECTED:
+    case INSTA_LOADED:
       return {
         ...state,
         user: action.payload.user,
@@ -82,16 +82,7 @@ export default (state = initialState, action) => {
         points: action.payload.user.points,
         newNotifications: action.payload.user.notifications
       };
-    case INSTA_LOADED:
-      return {
-        ...state,
-        user: action.payload.user,
-        isAuthenticated: true,
-        loading: false,
-        points: action.payload.user.points,
-        newNotifications: action.payload.user.notifications,
-        instaAdded: true
-      };
+
     case FB_FAILED:
     case INSTA_FAILED:
     case FB_DISCONNECT_FAIL:
