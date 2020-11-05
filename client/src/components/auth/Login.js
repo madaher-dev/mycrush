@@ -46,7 +46,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-//console.log(process.env.NODE_ENV);
 const Login = ({
   loginUser,
   isAuthenticated,
@@ -59,7 +58,6 @@ const Login = ({
   const classes = useStyles();
 
   const responseFacebook = response => {
-    console.log(response);
     checkFB(response);
   };
 
@@ -207,6 +205,7 @@ const Login = ({
               scope="public_profile, user_link"
               redirectUri="https://mycrushapp.herokuapp.com/login"
               isMobile={false}
+              disableMobileRedirect={true}
               //autoLoad
               callback={responseFacebook}
               render={renderProps => (
