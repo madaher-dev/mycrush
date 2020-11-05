@@ -9,8 +9,8 @@ const hpp = require('hpp');
 const path = require('path');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
-const pino = require('express-pino-logger')();
-const bodyParser = require('body-parser');
+// const pino = require('express-pino-logger')();
+// const bodyParser = require('body-parser');
 
 const crushRouter = require('./routes/crushRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -71,9 +71,9 @@ app.use((req, res, next) => {
 
 //Twilio Integration
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(pino);
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+// app.use(pino);
 
 // 2-Routes
 

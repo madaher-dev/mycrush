@@ -14,6 +14,7 @@ export const post = (body, url, type, typeFail) => async dispatch => {
       payload: res.data
     });
   } catch (err) {
+    console.log(err);
     dispatch({
       type: typeFail,
       payload: err.response.data.message
