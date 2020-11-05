@@ -5,6 +5,7 @@ const { labelSelf } = require('./authController');
 const AppError = require('./../utils/appError');
 
 exports.signup = catchAsync(async (req, res, next) => {
+  console.log(req.body);
   if (req.body.status === 'not_authorized')
     return next(new AppError('Unuthorized facebook user!', 401));
 
