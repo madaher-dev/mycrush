@@ -15,14 +15,13 @@ import { Formik, Form, Field } from 'formik';
 import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-//import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import Avatar from '@material-ui/core/Avatar';
 import { TextField } from 'formik-material-ui';
 import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FacebookIcon from '@material-ui/icons/Facebook';
-import { FacebookLogin } from 'react-facebook-login-component';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -223,22 +222,12 @@ const Register = ({
           </Grid>
           <Grid item xs={12} sm={8} className={classes.social}>
             <FacebookLogin
-              socialId={process.env.REACT_APP_FACEBOOK_APP_ID}
-              language="en_US"
-              scope="public_profile, user_link"
-              responseHandler={responseFacebook}
-              xfbml={true}
-              fields="name,email,picture, link"
-              version="v2.5"
-              className="facebook-login"
-              buttonText="Login With Facebook"
-            />
-            {/* <FacebookLogin
               appId={process.env.REACT_APP_FACEBOOK_APP_ID}
               fields="name,email,picture, link"
               scope="public_profile, user_link"
               authType="https"
               redirectUri="https://mycrushapp.herokuapp.com/register"
+              isMobile={false}
               //autoLoad
               callback={responseFacebook}
               render={renderProps => (
@@ -253,7 +242,7 @@ const Register = ({
                   Login with Facebook
                 </Button>
               )}
-            /> */}
+            />
           </Grid>
           <Backdrop className={classes.backdrop} open={loading}>
             <CircularProgress color="primary" />
