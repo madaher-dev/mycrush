@@ -31,7 +31,14 @@ import {
   INSTA_LOADED,
   INSTA_FAILED,
   INSTA_DISCONNECTED,
-  INSTA_DISCONNECT_FAIL
+  INSTA_DISCONNECT_FAIL,
+  PHONE_DISCONNECTED_FAIL,
+  PHONE_DISCONNECTED,
+  CONNECT_PHONE_SUCCESSS,
+  CONNECT_PHONE_FAIL,
+  PHONE_VALIDATED,
+  PHONE_VALIDATE_FAIL,
+  CLEAR_PHONE_STATUS
 } from '../actions/Types';
 
 const initialState = {
@@ -47,28 +54,35 @@ const initialState = {
   email_added: false,
   mobileMenu: false,
   notifications: [{}],
-  newNotifications: null
+  newNotifications: null,
+  phoneConnected: false,
+  phoneValidated: false
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case EMAIL_CONFIRMED:
-    case RESET_PASS_SUCCESSS: //check if not email confirmed
+    case EMAIL_CONFIRMED: //Login for confirmed email users
+
+    case RESET_PASS_SUCCESSS: //check/test if not email confirmed
       return {
         ...state,
         user: action.payload.data.user,
         isAuthenticated: true,
         loading: false,
         points: action.payload.data.user.points,
-        newNotifications: action.payload.data.user.notifications
+        newNotifications: action.payload.data.user.notifications,
+        phoneConnected: false,
+        phoneValidated: false
       };
 
     case REGISTER_SUCCESS:
-    case LOGIN_SUCCESS:
+    case LOGIN_SUCCESS: //Will Login Unconfirmed email
       return {
         ...state,
         user: action.payload.data.user,
-        loading: false
+        loading: false,
+        phoneConnected: false,
+        phoneValidated: false
       };
     case FB_LOADED:
     case FB_DISCONNECTED:
@@ -80,17 +94,39 @@ export default (state = initialState, action) => {
         isAuthenticated: true,
         loading: false,
         points: action.payload.user.points,
-        newNotifications: action.payload.user.notifications
+        newNotifications: action.payload.user.notifications,
+        phoneConnected: false,
+        phoneValidated: false
       };
-
+    case CONNECT_PHONE_SUCCESSS:
+      return {
+        ...state,
+        user: action.payload.data.user,
+        phoneConnected: true,
+        phoneValidated: false,
+        points: action.payload.data.user.points,
+        newNotifications: action.payload.data.user.notifications
+      };
+    case PHONE_VALIDATED:
+      return {
+        ...state,
+        user: action.payload.data.user,
+        phoneConnected: false,
+        phoneValidated: true,
+        loading: false
+      };
     case FB_FAILED:
     case INSTA_FAILED:
     case FB_DISCONNECT_FAIL:
     case INSTA_DISCONNECT_FAIL:
+    case PHONE_VALIDATE_FAIL:
+    case CONNECT_PHONE_FAIL:
       return {
         ...state,
         error: action.payload,
-        loading: false
+        loading: false,
+        phoneConnected: false,
+        phoneValidated: false
       };
 
     case TOKEN_CONFIRMED:
@@ -106,7 +142,9 @@ export default (state = initialState, action) => {
         email_added: true,
         loading: false,
         user: action.payload.data.user,
-        error: null
+        error: null,
+        phoneConnected: false,
+        phoneValidated: false
       };
     case CONNECT_EMAIL_FAIL:
       return {
@@ -115,6 +153,31 @@ export default (state = initialState, action) => {
         loading: false,
         error: action.payload
       };
+    case PHONE_DISCONNECTED:
+      return {
+        ...state,
+        loading: false,
+        user: action.payload.data.user,
+        error: null,
+        phoneConnected: false,
+        phoneValidated: false
+      };
+    case CLEAR_PHONE_STATUS:
+      return {
+        ...state,
+        phoneConnected: false,
+        phoneValidated: false
+      };
+    case PHONE_DISCONNECTED_FAIL:
+      return {
+        ...state,
+
+        loading: false,
+        phoneConnected: false,
+        phoneValidated: false,
+        error: action.payload
+      };
+
     case EMAIL_DISCONNECTED:
       return {
         ...state,
@@ -143,6 +206,7 @@ export default (state = initialState, action) => {
         loading: false,
         user: action.payload.data.doc,
         points: action.payload.data.doc.points,
+        newNotifications: action.payload.data.doc.notifications,
         email_added: false
       };
     case REGISTER_FAIL:

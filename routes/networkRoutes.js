@@ -1,4 +1,6 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+// const pino = require('express-pino-logger')();
 
 const router = express.Router();
 
@@ -11,11 +13,25 @@ router.get('/confirm/:token', networksController.confirmNetwork);
 router.use(authController.protect);
 
 router.patch('/connectEmail', networksController.connectEmail);
+router.patch(
+  '/connectPhone',
+  bodyParser.urlencoded({ extended: false }),
+  bodyParser.json(),
+  // pino,
+  networksController.connectPhone
+);
+router.get('/validatePhone/:token', networksController.confirmPhone);
+router.patch(
+  '/disconnectPhone',
+
+  networksController.disconnectPhone
+);
 
 // Delete Network by ID
 router
   .route('/disconnectEmail')
   .patch(networksController.privateNetwork, networksController.disconnectEmail);
+
 //.patch(networksController.privateNetwork, networksController.disconnectEmail);
 
 module.exports = router;

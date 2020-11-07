@@ -6,6 +6,7 @@ const APIFeatures = require('../utils/APIFeatures');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 const sendEmail = require('../utils/email');
+const sendSMS = require('../utils/twilio');
 
 //CRUD
 exports.getAllCrushes = catchAsync(async (req, res, next) => {
@@ -107,7 +108,7 @@ exports.checkUserExists = catchAsync(async (req, res, next) => {
 
   let { name, phone, email, twitter, instagram, facebook } = req.body;
   if (!name) name = 'empty';
-  if (!phone) phone = 0;
+  if (!phone) phone = 'empty';
   if (!email) email = 'empty';
   if (!twitter) twitter = 'empty';
   if (!instagram) instagram = 'empty';
@@ -120,8 +121,8 @@ exports.checkUserExists = catchAsync(async (req, res, next) => {
     $or: [
       { name },
       { otherName: name },
-      { email },
-      { phone },
+      { 'otherEmails.email': email }, //need to check other emails
+      { 'phones.number': phone }, //need to check all verified phones
       { twitter },
       { instagram },
       { facebook }
@@ -281,11 +282,21 @@ exports.sendNotification = sendNotification;
 
 const sendCommunication = type =>
   catchAsync(async (req, res, next) => {
+    const URL = process.env.WEBSITE_URL;
+
+    const sms = `Something is cooking! Someone seems to have a crush on you. Visit ${URL} , add a new crush and try to match with your secret admirer. Happy matching!`;
+
     if (type === 'new-crush') {
       if (req.userFoundEmail) {
         constructEmail('new-crush', req.userFoundEmail);
       } else if (req.crush.email) {
         constructEmail('new-crush', req.crush.email);
+      } else if (!req.userFound && req.body.phone) {
+        sendSMS({
+          number: req.body.phone,
+          message: sms
+        });
+        console.log('SMS sent');
       }
     } else if (type === 'new-match') {
       constructEmail('new-match', req.userFoundEmail);
@@ -306,7 +317,7 @@ exports.sendResult = (req, res) => {
 const constructEmail = catchAsync(async (type, email) => {
   // const URL = `${req.protocol}://${req.get('host')}/`;
 
-  const URL = `https://www.mycrush.ws`;
+  const URL = process.env.WEBSITE_URL;
 
   if (type === 'new-crush') {
     const message = `Something is cooking! Someone seems to have a crush on you. Visit ${URL} , add a new crush and try to match with your secret admirer. Happy matching!`;

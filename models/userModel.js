@@ -76,7 +76,19 @@ const userSchema = new mongoose.Schema({
       token: String
     }
   ],
-
+  phones: [
+    {
+      confirmed: {
+        type: Boolean,
+        default: false
+      },
+      number: {
+        type: String,
+        unique: true
+      },
+      token: String
+    }
+  ],
   active: {
     type: Boolean,
     default: true

@@ -11,7 +11,8 @@ import {
   CLOSE_MOBILE_MENU,
   CLEAR_NOTIFICATIONS,
   INSTA_LOADED,
-  INSTA_FAILED
+  INSTA_FAILED,
+  CLEAR_PHONE_STATUS
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -99,6 +100,34 @@ export const disconnectEmail = emailId =>
     'EMAIL_DISCONNECT_FAIL'
   );
 
+// Connect Phone
+
+export const connectPhone = number =>
+  factory.patch(
+    { number },
+    '/api/v1/networks/connectPhone',
+    'CONNECT_PHONE_SUCCESSS',
+    'CONNECT_PHONE_FAIL'
+  );
+
+// Disconnect PHONE
+
+export const disconnectPhone = phoneID =>
+  factory.patch(
+    { phoneID },
+    '/api/v1/networks/disconnectPhone',
+    'PHONE_DISCONNECTED',
+    'PHONE_DISCONNECT_FAIL'
+  );
+
+//Validate Phone
+export const validatePhone = token =>
+  factory.get(
+    `/api/v1/networks/validatePhone/${token}`,
+    'PHONE_VALIDATED',
+    'PHONE_VALIDATE_FAIL'
+  );
+
 // //Disconnect Email
 // export const disconnectEmail = emailId => async dispatch => {
 //   try {
@@ -143,6 +172,9 @@ export const setMobileMenuOpen = () => ({ type: SET_MOBILE_MENU });
 // Set Mobile Menu Open
 export const setMobileMenuClose = () => ({ type: CLOSE_MOBILE_MENU });
 
+//Clear phone connected and validated
+export const clearPhoneStatus = () => ({ type: CLEAR_PHONE_STATUS });
+
 // Login User
 
 export const loginUser = user => async dispatch => {
@@ -153,6 +185,7 @@ export const loginUser = user => async dispatch => {
   };
   try {
     const res = await axios.post('/api/v1/users/login', user, config);
+
     if (res.data.token) {
       dispatch({
         type: EMAIL_CONFIRMED,
@@ -189,7 +222,7 @@ export const checkUser = () => async dispatch => {
   }
 };
 
-// Confirm other Emails
+// Get Notifications
 
 export const getNotifications = () =>
   factory.get(

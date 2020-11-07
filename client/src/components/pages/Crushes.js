@@ -33,6 +33,7 @@ import Slide from '@material-ui/core/Slide';
 import { Redirect } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Hooray from './Hooray';
+import MuiPhoneNumber from 'material-ui-phone-number';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -163,7 +164,12 @@ const Crushes = ({
                 errors.email = 'Invalid email address';
               }
             }
-            if (!values.email && !values.instagram && !values.phone) {
+            if (
+              !values.email &&
+              !values.instagram &&
+              !values.phone &&
+              !values.twitter
+            ) {
               errors.email = 'You need to enter at least one Network';
             }
             //  validate social media
@@ -177,7 +183,7 @@ const Crushes = ({
             }, 500);
           }}
         >
-          {({ submitForm, isSubmitting, touched, errors }) => (
+          {({ setFieldValue, submitForm, isSubmitting, touched, errors }) => (
             <Form>
               <Box margin={1}>
                 <Field
@@ -216,10 +222,26 @@ const Crushes = ({
                 />
               </Box>
               <Box margin={1}>
-                <Field
+                <MuiPhoneNumber
+                  defaultCountry={'us'}
+                  name="phone"
+                  variant="outlined"
+                  label="Crush Phone Number"
+                  onChange={v => setFieldValue('phone', v)}
+                  //value={values.phone}
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PhoneIcon className={classes.phone} />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+                {/* <Field
                   component={TextField}
                   name="phone"
-                  type="number"
+                  type="text"
                   label="Crush Phone Number"
                   variant="outlined"
                   fullWidth
@@ -230,7 +252,7 @@ const Crushes = ({
                       </InputAdornment>
                     )
                   }}
-                />
+                /> */}
               </Box>
               <Box margin={1}>
                 <Field

@@ -11,13 +11,17 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {
   connectEmail,
+  connectPhone,
+  validatePhone,
   clearErrors,
   disconnectEmail,
+  disconnectPhone,
   connectFB,
   disconnectFB,
   connectInstagram,
   setLoading,
-  disconnectInsta
+  disconnectInsta,
+  clearPhoneStatus
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -41,7 +45,14 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import InstagramLogin from 'react-instagram-login';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+// import 'react-phone-number-input/style.css';
+// import PhoneInput from 'react-phone-number-input';
 //import { withRouter } from 'react-router-dom';
+
+//import ReactPhoneInput from 'react-phone-input-mui';
+
+import MuiPhoneNumber from 'material-ui-phone-number';
+import PhoneIcon from '@material-ui/icons/Phone';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -51,7 +62,6 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 100,
     zIndex: 200
   },
-  indexing: {},
   anchor: {
     position: 'fixed',
     top: 'auto',
@@ -63,6 +73,9 @@ const useStyles = makeStyles(theme => ({
   avatar: {
     backgroundColor: '#e91e63'
   },
+  avatarPhone: {
+    backgroundColor: '#25D366'
+  },
   fbavatar: {
     backgroundColor: '#4267B2'
   },
@@ -72,10 +85,33 @@ const useStyles = makeStyles(theme => ({
 
   fbButton: {
     backgroundColor: '#4267B2',
-    width: '100%'
+    display: 'flex',
+    width: '100%',
+    alignItems: 'flex-start',
+    justifyContent: 'start'
   },
+  mailButton: {
+    display: 'flex',
+    width: '100%',
+    alignItems: 'flex-start',
+    justifyContent: 'start'
+  },
+  phoneButton: {
+    width: '100%',
+    backgroundColor: '#25D366',
+    '&:hover': {
+      backgroundColor: '#128C7E'
+    }
+  },
+
   instaIcon: {
     padding: 5
+  },
+  field: {
+    margin: '10px 0'
+  },
+  countryList: {
+    ...theme.typography.body1
   },
   instaButton: {
     fontWeight: 'bold',
@@ -114,6 +150,7 @@ const Verify = ({
   setAlert,
   error,
   disconnectEmail,
+  disconnectPhone,
   connectFB,
   disconnectFB,
   location,
@@ -121,6 +158,11 @@ const Verify = ({
   setLoading,
   loading,
   disconnectInsta,
+  connectPhone,
+  validatePhone,
+  phoneConnected,
+  phoneValidated,
+  clearPhoneStatus,
   history
 }) => {
   const classes = useStyles();
@@ -134,6 +176,7 @@ const Verify = ({
 
   // Connect Email Dialog
   const [openConnectEmail, setOpen] = React.useState(false);
+
   const [email, setEmail] = React.useState('');
 
   const handleCloseConnectEmail = () => {
@@ -144,6 +187,9 @@ const Verify = ({
     setEmail(e.target.value);
   };
 
+  // const onChangePhone = e => {
+  //   setePhone(e.target.value);
+  // };
   const handleDisconnectEmail = id => {
     disconnectEmail(id);
   };
@@ -156,6 +202,59 @@ const Verify = ({
   const handleClickOpenConnectEmail = () => {
     handleMenuClose();
     setOpen(true);
+  };
+
+  //Phone Connect
+
+  const [phone, setPhone] = React.useState('');
+  const [openConnectPhone, setOpenPhone] = React.useState(false);
+  const [openValidatePhone, setValidatePhone] = React.useState(false);
+  const [token, setTokenValue] = React.useState('');
+
+  useEffect(() => {
+    if (phoneConnected) setValidatePhone(true);
+  }, [phoneConnected]);
+
+  useEffect(() => {
+    if (phoneValidated) {
+      setAlert('Phone Successfully Validated', 'success');
+      clearPhoneStatus();
+    }
+  }, [phoneValidated]);
+
+  const handleClickOpenConnectPhone = () => {
+    handleMenuClose();
+    setOpenPhone(true);
+  };
+
+  const handleCloseConnectPhone = () => {
+    setOpenPhone(false);
+    setValidatePhone(false);
+    clearPhoneStatus();
+  };
+
+  const handleSubmitConnectPhone = async () => {
+    setOpenPhone(false);
+    await connectPhone(phone);
+    setValidatePhone(true);
+  };
+
+  const setToken = e => {
+    setTokenValue(e.target.value);
+  };
+
+  const handleValidatePhone = async () => {
+    await validatePhone(token);
+    setValidatePhone(false);
+  };
+
+  const handleCloseValidatePhone = async () => {
+    setValidatePhone(false);
+    clearPhoneStatus();
+  };
+
+  const handleDisconnectPhone = phoneID => {
+    disconnectPhone(phoneID);
   };
 
   // FB connect - disconnect
@@ -221,11 +320,22 @@ const Verify = ({
         <Button
           variant="contained"
           color="primary"
+          className={classes.mailButton}
           // disabled={isSubmitting}
           onClick={handleClickOpenConnectEmail}
           startIcon={<EmailIcon />}
         >
           Connect new Email
+        </Button>
+      </MenuItem>
+      <MenuItem>
+        <Button
+          variant="contained"
+          className={classes.phoneButton}
+          onClick={handleClickOpenConnectPhone}
+          startIcon={<PhoneIcon />}
+        >
+          Connect Phone Number
         </Button>
       </MenuItem>
 
@@ -321,6 +431,70 @@ const Verify = ({
               </Button>
               <Button onClick={handleSubmitConnectEmail} color="primary">
                 Connect
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog
+            open={openConnectPhone}
+            onClose={handleCloseConnectPhone}
+            aria-labelledby="phone-dialog-title"
+          >
+            <DialogTitle id="phone-dialog-title">
+              Connect a Phone Number
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                You can connect a phone number to be matched with! You will need
+                to verify the phone after adding it. This will cost you one
+                point!
+              </DialogContentText>
+
+              <MuiPhoneNumber
+                defaultCountry={'us'}
+                onChange={setPhone}
+                fullWidth
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseConnectPhone} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitConnectPhone} color="primary">
+                Connect
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={openValidatePhone && phoneConnected}
+            onClose={handleCloseValidatePhone}
+            aria-labelledby="validate-phone"
+          >
+            <DialogTitle id="phone-dialog-title">
+              Validate Phone Number
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Please enter the code you received by SMS to validate your phone
+                number. If you did not reveive the code you can try to validate
+                again!
+              </DialogContentText>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="token"
+                label="Validation Code"
+                type="number"
+                onChange={setToken}
+                fullWidth
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseValidatePhone} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleValidatePhone} color="primary">
+                Validate
               </Button>
             </DialogActions>
           </Dialog>
@@ -452,6 +626,55 @@ const Verify = ({
                 </ListItemSecondaryAction>
               </ListItem>
             ))}
+            {user.phones.map(phone => (
+              <ListItem
+                //button
+                // onClick={() => handleListItemClick(email)}
+                key={phone._id}
+              >
+                <ListItemAvatar>
+                  <Avatar className={classes.avatarPhone}>
+                    <PhoneIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={phone.number} />
+                <ListItemSecondaryAction>
+                  <Tooltip title="Disconnect" aria-label="disc">
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => handleDisconnectPhone(phone._id)}
+                    >
+                      <CancelIcon color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+
+                  {phone.confirmed ? (
+                    <Tooltip title="Confirmed" aria-label="confirmed">
+                      <IconButton
+                        edge="end"
+                        aria-label="status"
+                        disableRipple
+                        // onClick={() => handleDelete(email._id)}
+                      >
+                        <VerifiedUserIcon color="primary" />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Not Verified" aria-label="notconfirmed">
+                      <IconButton
+                        edge="end"
+                        aria-label="status"
+                        disableRipple
+                        // onClick={() => handleDelete(email._id)}
+                      >
+                        <BlockIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
           </List>
         </Grid>
       </Grid>
@@ -476,23 +699,35 @@ Verify.propTypes = {
   connectInstagram: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   setLoading: PropTypes.func.isRequired,
-  disconnectInsta: PropTypes.func.isRequired
+  disconnectInsta: PropTypes.func.isRequired,
+  connectPhone: PropTypes.func.isRequired,
+  disconnectPhone: PropTypes.func.isRequired,
+  validatePhone: PropTypes.func.isRequired,
+  phoneConnected: PropTypes.bool,
+  phoneValidated: PropTypes.bool,
+  clearPhoneStatus: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   user: state.users.user,
   error: state.users.error,
-  loading: state.users.loading
+  loading: state.users.loading,
+  phoneConnected: state.users.phoneConnected,
+  phoneValidated: state.users.phoneValidated
 });
 
 export default connect(mapStateToProps, {
   connectEmail,
+  connectPhone,
+  validatePhone,
   clearErrors,
   setAlert,
   disconnectEmail,
+  disconnectPhone,
   connectFB,
   disconnectFB,
   connectInstagram,
   setLoading,
-  disconnectInsta
+  disconnectInsta,
+  clearPhoneStatus
 })(Verify);

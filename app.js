@@ -15,7 +15,6 @@ const globalErrorHandler = require('./controllers/errorController');
 const crushRouter = require('./routes/crushRoutes');
 const userRouter = require('./routes/userRoutes');
 const networkRouter = require('./routes/networkRoutes');
-const twilioRouter = require('./routes/twilioRoutes');
 
 // 1- Global Middleware
 

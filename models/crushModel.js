@@ -10,7 +10,7 @@ const crushSchema = mongoose.Schema(
       maxlength: [40, 'A Crush name must be less than 40 characters!'],
       minlength: [5, 'A Crush name must have more than 5 characters!']
     },
-    phone: Number,
+    phone: String,
     facebook: {
       type: String,
       lowercase: true
