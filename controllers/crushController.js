@@ -121,14 +121,18 @@ exports.checkUserExists = catchAsync(async (req, res, next) => {
     $or: [
       { name },
       { otherName: name },
-      { 'otherEmails.email': email }, //need to check other emails
-      { 'phones.number': phone }, //need to check all verified phones
+      { email },
+      // { 'otherEmails.email': email }, //need to check other emails
+      { otherEmails: { $elemMatch: { email, confirmed: true } } },
+      { phones: { $elemMatch: { number: phone, confirmed: true } } },
+      // { $and: [{ 'phones.confirmed': true }, { 'phones.number': phone }] }, //need to check all verified phones
       { twitter },
       { instagram },
       { facebook }
     ]
   });
 
+  console.log(userFound);
   if (userFound) {
     req.userFound = userFound;
 
@@ -296,10 +300,9 @@ const sendCommunication = type =>
           number: req.body.phone,
           message: sms
         });
-        console.log('SMS sent');
       }
     } else if (type === 'new-match') {
-      constructEmail('new-match', req.userFoundEmail);
+      constructEmail('new-match', req.userFoundEmail, next);
     }
     next();
   });
@@ -314,7 +317,7 @@ exports.sendResult = (req, res) => {
   });
 };
 
-const constructEmail = catchAsync(async (type, email) => {
+const constructEmail = catchAsync(async (type, email, next) => {
   // const URL = `${req.protocol}://${req.get('host')}/`;
 
   const URL = process.env.WEBSITE_URL;
