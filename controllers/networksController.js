@@ -261,6 +261,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   const oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
+  const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
@@ -279,57 +280,12 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     oauth_version: '1.0'
   };
 
-  const sortString = requiredParameters => {
-    var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
-    var requiredParameterKeys = Object.keys(requiredParameters);
-    for (var i = 0; i < requiredParameterKeys.length; i++) {
-      if (i == requiredParameterKeys.length - 1) {
-        base_signature_string += encodeURIComponent(
-          requiredParameterKeys[i] +
-            '=' +
-            requiredParameters[requiredParameterKeys[i]]
-        );
-      } else {
-        base_signature_string += encodeURIComponent(
-          requiredParameterKeys[i] +
-            '=' +
-            requiredParameters[requiredParameterKeys[i]] +
-            '&'
-        );
-      }
-    }
-    return base_signature_string;
-  };
+ 
 
   const sorted_string = sortString(requiredParameters);
   console.log(sorted_string);
 
-  const signing = (signature_string, consumer_secret, token) => {
-    let hmac;
-    if (
-      typeof signature_string !== 'undefined' &&
-      signature_string.length > 0
-    ) {
-      //console.log('String OK');
-      if (
-        typeof consumer_secret !== 'undefined' &&
-        consumer_secret.length > 0
-      ) {
-        // console.log('Secret Ok');
 
-        const secret =
-          encodeURIComponent(consumer_secret) + '&' + encodeURIComponent(token);
-
-        var shaObj = new jsSHA('SHA-1', 'TEXT', {
-          hmacKey: { value: secret, format: 'TEXT' }
-        });
-        shaObj.update(signature_string);
-
-        hmac = encodeURIComponent(shaObj.getHash('B64'));
-      }
-    }
-    return hmac;
-  };
 
   const signed = signing(sorted_string, oauth_consumer_secret, oauth_token);
   //console.log(signed);
@@ -343,6 +299,8 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     },
     data
   };
+
+ 
   try {
     const response = await axios(config);
 
@@ -360,7 +318,30 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
     req.body['user_id'] = parsedBody.user_id;
 
-    res.send(JSON.parse(parsedBody));
+
+    
+   
+   
+    requiredParameters.oauth_token = parsedBody.oauth_token
+   
+    const sorted_string2 =  sortString(requiredParameters);
+ 
+  const signed2 = signing(sorted_string2, oauth_consumer_secret, parsedBody.oauth_token_secret);
+   
+  var config2 = {
+    method: 'get',
+    url: endpoint2,
+    headers: {
+      Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed2},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${parsedBody.oauth_token},oauth_version="1.0"`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  };
+  const response2 = await axios(config2);
+   
+   console.log(response2)
+
+    next();
+   // res.send(JSON.parse(parsedBody));
   } catch (err) {
     console.log(err.response);
     next();
@@ -385,7 +366,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   //   req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
   //   req.body['user_id'] = parsedBody.user_id;
 
-  next();
+  
   // console.log(req);
   // next();
 });
@@ -413,56 +394,11 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     oauth_version: '1.0'
   };
 
-  const sortString = requiredParameters => {
-    var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
-    var requiredParameterKeys = Object.keys(requiredParameters);
-    for (var i = 0; i < requiredParameterKeys.length; i++) {
-      if (i == requiredParameterKeys.length - 1) {
-        base_signature_string += encodeURIComponent(
-          requiredParameterKeys[i] +
-            '=' +
-            requiredParameters[requiredParameterKeys[i]]
-        );
-      } else {
-        base_signature_string += encodeURIComponent(
-          requiredParameterKeys[i] +
-            '=' +
-            requiredParameters[requiredParameterKeys[i]] +
-            '&'
-        );
-      }
-    }
-    return base_signature_string;
-  };
+
 
   const sorted_string = sortString(requiredParameters);
   //console.log('Sorted string:', sorted_string);
 
-  const signing = (signature_string, consumer_secret) => {
-    let hmac;
-    if (
-      typeof signature_string !== 'undefined' &&
-      signature_string.length > 0
-    ) {
-      //console.log('String OK');
-      if (
-        typeof consumer_secret !== 'undefined' &&
-        consumer_secret.length > 0
-      ) {
-        // console.log('Secret Ok');
-
-        const secret = encodeURIComponent(consumer_secret) + '&';
-
-        var shaObj = new jsSHA('SHA-1', 'TEXT', {
-          hmacKey: { value: secret, format: 'TEXT' }
-        });
-        shaObj.update(signature_string);
-
-        hmac = encodeURIComponent(shaObj.getHash('B64'));
-      }
-    }
-    return hmac;
-  };
 
   const signed = signing(sorted_string, oauth_consumer_secret);
   //console.log(signed);
@@ -546,3 +482,53 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
 // );
 // console.log(result);
 // });
+const sortString = requiredParameters => {
+  var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
+  var requiredParameterKeys = Object.keys(requiredParameters);
+  for (var i = 0; i < requiredParameterKeys.length; i++) {
+    if (i == requiredParameterKeys.length - 1) {
+      base_signature_string += encodeURIComponent(
+        requiredParameterKeys[i] +
+          '=' +
+          requiredParameters[requiredParameterKeys[i]]
+      );
+    } else {
+      base_signature_string += encodeURIComponent(
+        requiredParameterKeys[i] +
+          '=' +
+          requiredParameters[requiredParameterKeys[i]] +
+          '&'
+      );
+    }
+  }
+  return base_signature_string;
+};
+
+const signing = (signature_string, consumer_secret, token) => {
+  let hmac;
+  let secret
+  if (
+    typeof signature_string !== 'undefined' &&
+    signature_string.length > 0
+  ) {
+    //console.log('String OK');
+    if (
+      typeof consumer_secret !== 'undefined' &&
+      consumer_secret.length > 0
+    ) {
+      // console.log('Secret Ok');
+if(!token)
+      {secret =encodeURIComponent(consumer_secret) + '&' } else {
+        {secret =encodeURIComponent(consumer_secret) + '&' + encodeURIComponent(token)
+      };
+
+      var shaObj = new jsSHA('SHA-1', 'TEXT', {
+        hmacKey: { value: secret, format: 'TEXT' }
+      });
+      shaObj.update(signature_string);
+
+      hmac = encodeURIComponent(shaObj.getHash('B64'));
+    }
+  }
+  return hmac;
+};
