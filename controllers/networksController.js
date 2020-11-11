@@ -12,6 +12,7 @@ const jsSHA = require('jssha/sha1');
 //var passport = require('passport');
 //var Strategy = require('passport-twitter').Strategy;
 const { labelSelf } = require('./authController');
+var Twitter = require('twitter');
 
 exports.privateNetwork = catchAsync(async (req, res, next) => {
   if (req.user.type === 'admin' || req.user.type === 'support') next();
@@ -328,31 +329,46 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     requiredParameters.oauth_timestamp = oauth_timestamp;
     requiredParameters.oauth_nonce = oauth_nonce;
     //console.log('parameters', requiredParameters);
-    const sorted_string2 = await sortString(
-      requiredParameters,
-      endpoint2_full,
-      'GET'
-    );
 
-    console.log('soreted string:', sorted_string2);
-    const signed2 = await signing(
-      sorted_string2,
-      oauth_consumer_secret,
-      parsedBody.oauth_token_secret
-    );
-    console.log('signature', signed2);
-
-    var config2 = {
-      method: 'get',
-      url: endpoint2_full,
-      headers: {
-        Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed2},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${parsedBody.oauth_token},oauth_version="1.0"`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+    const params1 = {
+      Name: 'Test',
+      include_email: true
     };
-    const response2 = await axios(config2);
+    var client = new Twitter({
+      consumer_key: process.env.TWITTER_API_KEY,
+      consumer_secret: process.env.TWITTER_API_SECRET,
+      access_token_key: parsedBody.oauth_token,
+      access_token_secret: parsedBody.oauth_token_secret
+    });
 
-    console.log(response2.data);
+    const result = await client.get(endpoint2, params1);
+    console.log(result);
+
+    // const sorted_string2 = await sortString(
+    //   requiredParameters,
+    //   endpoint2_full,
+    //   'GET'
+    // );
+
+    // console.log('soreted string:', sorted_string2);
+    // const signed2 = await signing(
+    //   sorted_string2,
+    //   oauth_consumer_secret,
+    //   parsedBody.oauth_token_secret
+    // );
+    // console.log('signature', signed2);
+
+    // var config2 = {
+    //   method: 'get',
+    //   url: endpoint2_full,
+    //   headers: {
+    //     Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed2},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${parsedBody.oauth_token},oauth_version="1.0"`,
+    //     'Content-Type': 'application/x-www-form-urlencoded'
+    //   }
+    // };
+    // const response2 = await axios(config2);
+
+    // console.log(response2.data);
 
     next();
     // res.send(JSON.parse(parsedBody));
