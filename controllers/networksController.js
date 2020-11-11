@@ -502,14 +502,13 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
 
         twitter: req.body.screen_name,
         twitterAccessToken: req.body.oauth_token,
-        twitterTokenSecret: req.body.oauth_token_secret
-      },
-      {
+        twitterTokenSecret: req.body.oauth_token_secret,
         $setOnInsert: {
           name: req.body.name,
           photo: req.body.profile_image_url_https
         }
       },
+
       { upsert: true, new: true }
     );
   } else {
@@ -521,14 +520,13 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
         email_confirmed: true,
         twitter: req.body.screen_name,
         twitterAccessToken: req.body.oauth_token,
-        twitterTokenSecret: req.body.oauth_token_secret
-      },
-      {
+        twitterTokenSecret: req.body.oauth_token_secret,
         $setOnInsert: {
           name: req.body.name,
           photo: req.body.profile_image_url_https
         }
       },
+
       { upsert: true, new: true }
     );
   }
