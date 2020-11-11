@@ -64,7 +64,7 @@ const Login = ({
   const twitterOnFailed = response => {
     console.log('fail:', response);
   };
-  const [tiwtterAuth, loginTwitter] = React.useState(false);
+  const [twitterAuth, loginTwitter] = React.useState(false);
   const twitterOnSuccess = response => {
     // history.push('/welcome');
     loginTwitter(true);
@@ -77,7 +77,7 @@ const Login = ({
     }
   }, [error, setAlert, clearErrors]);
   console.log(twitterAuth);
-  if (isAuthenticated || tiwtterAuth) {
+  if (isAuthenticated || twitterAuth) {
     return <Redirect to="/welcome" />;
   } else if (user && !user.email_confirmed) {
     return <Redirect to="/notconfirmed" />;
