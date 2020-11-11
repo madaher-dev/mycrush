@@ -84,6 +84,7 @@ const userSchema = new mongoose.Schema({
       },
       number: {
         type: String,
+        index: true,
         unique: true
       },
       token: String

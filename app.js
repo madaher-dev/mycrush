@@ -9,6 +9,7 @@ const hpp = require('hpp');
 const path = require('path');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const cors = require('cors');
 // const pino = require('express-pino-logger')();
 // const bodyParser = require('body-parser');
 
@@ -67,6 +68,15 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
+
+// enable cors
+var corsOption = {
+  origin: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  exposedHeaders: ['x-auth-token']
+};
+app.use(cors(corsOption));
 
 //Twilio Integration
 

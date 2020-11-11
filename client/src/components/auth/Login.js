@@ -14,6 +14,7 @@ import Box from '@material-ui/core/Box';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import Avatar from '@material-ui/core/Avatar';
 import FacebookIcon from '@material-ui/icons/Facebook';
+import TwitterLogin from 'react-twitter-auth';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -60,7 +61,16 @@ const Login = ({
   const responseFacebook = response => {
     checkFB(response);
   };
+  const twitterOnFailed = response => {
+    console.log('fail:', response);
+  };
 
+  const twitterOnSuccess = response => {
+    response.json().then(body => {
+      alert(JSON.stringify(body));
+    });
+    console.log('success:', response);
+  };
   useEffect(() => {
     if (error) {
       setAlert(error, 'error');
@@ -220,6 +230,14 @@ const Login = ({
                   Login with Facebook
                 </Button>
               )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            <TwitterLogin
+              loginUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter"
+              onFailure={twitterOnFailed}
+              onSuccess={twitterOnSuccess}
+              requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/reverse"
             />
           </Grid>
         </Grid>

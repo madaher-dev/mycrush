@@ -5,6 +5,12 @@ const AppError = require('./../utils/appError');
 const crypto = require('crypto');
 const sendEmail = require('./../utils/email');
 const sendSMS = require('./../utils/twilio');
+// const OAuth = require('oauth');
+// const { promisify } = require('util');
+var axios = require('axios');
+const jsSHA = require('jssha/sha1');
+//var passport = require('passport');
+//var Strategy = require('passport-twitter').Strategy;
 
 exports.privateNetwork = catchAsync(async (req, res, next) => {
   if (req.user.type === 'admin' || req.user.type === 'support') next();
@@ -239,3 +245,238 @@ exports.disconnectPhone = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+exports.checkPoints = (req, res, next) => {
+  if (req.user.points < 2) {
+    return next(
+      new AppError('You do not have enough points to connect this phone!', 404)
+    );
+  }
+  next();
+};
+
+exports.twitterAuth = (req, res, next) => {
+  var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
+  const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
+  nonceObj.update(Math.round(new Date().getTime() / 1000.0));
+  const oauth_nonce = nonceObj.getHash('HEX');
+  const endpoint = 'https://api.twitter.com/oauth/access_token';
+  //const oauth_consumer_key = process.env.TWITTER_API_KEY;
+  //const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
+
+  //oauth_consumer_key,
+  // oauth_nonce,
+
+  var requiredParameters = {
+    oauth_nonce,
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp,
+    oauth_token: req.query.oauth_token,
+    oauth_version: '1.0'
+  };
+
+  const sortString = requiredParameters => {
+    var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
+    var requiredParameterKeys = Object.keys(requiredParameters);
+    for (var i = 0; i < requiredParameterKeys.length; i++) {
+      if (i == requiredParameterKeys.length - 1) {
+        base_signature_string += encodeURIComponent(
+          requiredParameterKeys[i] +
+            '=' +
+            requiredParameters[requiredParameterKeys[i]]
+        );
+      } else {
+        base_signature_string += encodeURIComponent(
+          requiredParameterKeys[i] +
+            '=' +
+            requiredParameters[requiredParameterKeys[i]] +
+            '&'
+        );
+      }
+    }
+    return base_signature_string;
+  };
+
+  const sorted_string = sortString(requiredParameters);
+  console.log(sorted_string);
+  // request.post({
+  //   url: `https://api.twitter.com/oauth/access_token?oauth_verifier`,
+  //   oauth: {
+  //     consumer_key: twitterConfig.consumerKey,
+  //     consumer_secret: twitterConfig.consumerSecret,
+  //     token: req.query.oauth_token
+  //   },
+  //   form: { oauth_verifier: req.query.oauth_verifier }
+  // }, function (err, r, body) {
+  //   if (err) {
+  //     return res.send(500, { message: err.message });
+  //   }
+
+  //   const bodyString = '{ "' + body.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
+  //   const parsedBody = JSON.parse(bodyString);
+
+  //   req.body['oauth_token'] = parsedBody.oauth_token;
+  //   req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
+  //   req.body['user_id'] = parsedBody.user_id;
+
+  next();
+  // console.log(req);
+  // next();
+};
+
+exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
+  //const callBackUL = 'https%3A%2F%2F127.0.0.1%3A3000%2Flogin';
+
+  const callBackUL = encodeURIComponent(
+    'https://mycrushapp.herokuapp.com/login'
+  );
+  var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
+  const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
+  nonceObj.update(Math.round(new Date().getTime() / 1000.0));
+  const oauth_nonce = nonceObj.getHash('HEX');
+  const endpoint = 'https://api.twitter.com/oauth/request_token';
+  const oauth_consumer_key = process.env.TWITTER_API_KEY;
+  const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
+
+  var requiredParameters = {
+    oauth_callback: callBackUL,
+    oauth_consumer_key,
+    oauth_nonce,
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp,
+    oauth_version: '1.0'
+  };
+
+  const sortString = requiredParameters => {
+    var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
+    var requiredParameterKeys = Object.keys(requiredParameters);
+    for (var i = 0; i < requiredParameterKeys.length; i++) {
+      if (i == requiredParameterKeys.length - 1) {
+        base_signature_string += encodeURIComponent(
+          requiredParameterKeys[i] +
+            '=' +
+            requiredParameters[requiredParameterKeys[i]]
+        );
+      } else {
+        base_signature_string += encodeURIComponent(
+          requiredParameterKeys[i] +
+            '=' +
+            requiredParameters[requiredParameterKeys[i]] +
+            '&'
+        );
+      }
+    }
+    return base_signature_string;
+  };
+
+  const sorted_string = sortString(requiredParameters);
+  //console.log('Sorted string:', sorted_string);
+
+  const signing = (signature_string, consumer_secret) => {
+    let hmac;
+    if (
+      typeof signature_string !== 'undefined' &&
+      signature_string.length > 0
+    ) {
+      //console.log('String OK');
+      if (
+        typeof consumer_secret !== 'undefined' &&
+        consumer_secret.length > 0
+      ) {
+        // console.log('Secret Ok');
+
+        const secret = encodeURIComponent(consumer_secret) + '&';
+
+        var shaObj = new jsSHA('SHA-1', 'TEXT', {
+          hmacKey: { value: secret, format: 'TEXT' }
+        });
+        shaObj.update(signature_string);
+
+        hmac = encodeURIComponent(shaObj.getHash('B64'));
+      }
+    }
+    return hmac;
+  };
+
+  const signed = signing(sorted_string, oauth_consumer_secret);
+  //console.log(signed);
+
+  var data = {};
+  var config = {
+    method: 'post',
+    url: endpoint,
+    headers: {
+      Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_version="1.0",oauth_callback=${callBackUL}`,
+      'Content-Type': 'application/json'
+    },
+    data: data
+  };
+  try {
+    const response = await axios(config);
+
+    var params = new URLSearchParams(response.data);
+    var token = params.get('oauth_token');
+
+    console.log(token);
+
+    var jsonStr =
+      '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
+    res.send(JSON.parse(jsonStr));
+
+    // res.status('200').json({
+    //   status: 'success',
+    //   data: {
+    //     body: token
+    //   }
+    // });
+  } catch (err) {
+    console.log(err.response.data);
+    next();
+  }
+});
+
+// try {
+//   const body = await post(`https://api.twitter.com/oauth/request_token`, {});
+//   console.log(body);
+//   return JSON.parse(body);
+//   // res.status('200').json({
+//   //   status: 'success',
+//   //   data: {
+//   //     body
+//   //   }
+//   // });
+// } catch (err) {
+//   console.log(err);
+//   res.status(500).send(err);
+// }
+
+// const consumer = new oauth.OAuth(
+//   'https://twitter.com/oauth/request_token',
+//   'https://twitter.com/oauth/access_token',
+//   _twitterConsumerKey,
+//   _twitterConsumerSecret,
+//   '1.0A',
+//   twitterCallbackUrl,
+//   'HMAC-SHA1'
+// );
+// router.get('/connect', (req, res) => {
+//   consumer.getOAuthRequestToken(function (error, oauthToken,   oauthTokenSecret, results) {
+//     if (error) {
+//       res.send(error, 500);
+//     } else {
+//       req.session.oauthRequestToken = oauthToken;
+//       req.session.oauthRequestTokenSecret = oauthTokenSecret;
+//       const redirect = {
+// redirectUrl: `https://twitter.com/oauth/authorize?  oauth_token=${req.session.oauthRequestToken}`
+//     }
+//       res.send(redirect);
+//     }
+//   });
+// });
+// const result = consumer.getOAuthAccessToken(
+//   req.query.oauth_token,
+//   req.session.oauthRequestTokenSecret,
+//   req.query.oauth_verifier
+// );
+// console.log(result);
+// });
