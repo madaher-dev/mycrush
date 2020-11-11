@@ -280,7 +280,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     oauth_version: '1.0'
   };
 
-  const sorted_string = sortString(requiredParameters);
+  const sorted_string = sortString(requiredParameters, endpoint);
   console.log(sorted_string);
 
   const signed = signing(sorted_string, oauth_consumer_secret, oauth_token);
@@ -315,7 +315,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
     requiredParameters.oauth_token = parsedBody.oauth_token;
 
-    const sorted_string2 = sortString(requiredParameters);
+    const sorted_string2 = sortString(requiredParameters, endpoint2);
 
     const signed2 = signing(
       sorted_string2,
@@ -390,7 +390,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     oauth_version: '1.0'
   };
 
-  const sorted_string = await sortString(requiredParameters);
+  const sorted_string = await sortString(requiredParameters, endpoint);
   console.log('Sorted string:', sorted_string);
 
   const signed = await signing(sorted_string, oauth_consumer_secret);
@@ -475,7 +475,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
 // );
 // console.log(result);
 // });
-const sortString = async requiredParameters => {
+const sortString = async (requiredParameters, endoint) => {
   var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
   var requiredParameterKeys = Object.keys(requiredParameters);
   for (var i = 0; i < requiredParameterKeys.length; i++) {
