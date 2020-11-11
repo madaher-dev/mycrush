@@ -317,21 +317,24 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
     req.body['user_id'] = parsedBody.user_id;
 
-    requiredParameters.oauth_token = parsedBody.oauth_token;
+    oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
 
+    nonceObj.update(Math.round(new Date().getTime() / 1000.0));
+    oauth_nonce = nonceObj.getHash('HEX');
+
+    requiredParameters.oauth_token = parsedBody.oauth_token;
+    requiredParameters.oauth_timestamp = oauth_timestamp;
+    requiredParameters.oauth_nonce = oauth_nonce;
     //console.log('parameters', requiredParameters);
     const sorted_string2 = await sortString(requiredParameters, endpoint2);
 
+    console.log('soreted string:', sorted_string2);
     const signed2 = await signing(
       sorted_string2,
       oauth_consumer_secret,
       parsedBody.oauth_token_secret
     );
-
-    oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
-
-    nonceObj.update(Math.round(new Date().getTime() / 1000.0));
-    oauth_nonce = nonceObj.getHash('HEX');
+    console.log('signature', signed2);
 
     var config2 = {
       method: 'get',
