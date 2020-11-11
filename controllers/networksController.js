@@ -255,7 +255,7 @@ exports.checkPoints = (req, res, next) => {
   next();
 };
 
-exports.twitterAuth = (req, res, next) => {
+exports.twitterAuth = catchAsync(async (req, res, next) => {
   var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
@@ -331,7 +331,7 @@ exports.twitterAuth = (req, res, next) => {
 
   const signed = signing(sorted_string, oauth_consumer_secret, oauth_token);
   //console.log(signed);
-  var data = {oauth_verifier: req.query.oauth_verifier};
+  var data = { oauth_verifier: req.query.oauth_verifier };
   var config = {
     method: 'post',
     url: endpoint,
@@ -349,13 +349,14 @@ exports.twitterAuth = (req, res, next) => {
 
     // console.log(token);
 
-    const bodyString = '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
-     const parsedBody = JSON.parse(bodyString);
-     console.log(parsedBody)
+    const bodyString =
+      '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
+    const parsedBody = JSON.parse(bodyString);
+    console.log(parsedBody);
 
     req.body['oauth_token'] = parsedBody.oauth_token;
-     req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
-     req.body['user_id'] = parsedBody.user_id;
+    req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
+    req.body['user_id'] = parsedBody.user_id;
 
     res.send(JSON.parse(parsedBody));
   } catch (err) {
@@ -385,7 +386,7 @@ exports.twitterAuth = (req, res, next) => {
   next();
   // console.log(req);
   // next();
-};
+});
 
 exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   //const callBackUL = 'https%3A%2F%2F127.0.0.1%3A3000%2Flogin';
