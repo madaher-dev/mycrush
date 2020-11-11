@@ -262,8 +262,8 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   var oauth_nonce = nonceObj.getHash('HEX');
-  //const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
-  const endpoint = `https://api.twitter.com/oauth/access_token`;
+  const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
+  //const endpoint = `https://api.twitter.com/oauth/access_token`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
   const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Test&include_email=true&include_entities=false&skip_status=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
@@ -275,52 +275,52 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   //oauth_consumer_key,
   // oauth_nonce,
 
-  var client2 = new Twitter({
-    consumer_key: process.env.TWITTER_API_KEY,
-    consumer_secret: process.env.TWITTER_API_SECRET,
-    access_token_key: oauth_token,
-    access_token_secret: null
-  });
+  // var client2 = new Twitter({
+  //   consumer_key: process.env.TWITTER_API_KEY,
+  //   consumer_secret: process.env.TWITTER_API_SECRET,
+  //   access_token_key: oauth_token,
+  //   access_token_secret: null
+  // });
 
-  const params2 = {
-    oauth_verifier: req.query.oauth_verifier
+  // const params2 = {
+  //   oauth_verifier: req.query.oauth_verifier
+  // };
+
+  var requiredParameters = {
+    oauth_consumer_key,
+    oauth_nonce,
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp,
+    oauth_token,
+    oauth_version: '1.0'
   };
 
-  // var requiredParameters = {
-  //   oauth_consumer_key,
-  //   oauth_nonce,
-  //   oauth_signature_method: 'HMAC-SHA1',
-  //   oauth_timestamp,
-  //   oauth_token,
-  //   oauth_version: '1.0'
-  // };
+  const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
+  console.log(sorted_string);
 
-  // const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
-  // console.log(sorted_string);
-
-  // const signed = await signing(
-  //   sorted_string,
-  //   oauth_consumer_secret,
-  //   oauth_token
-  // );
-  //console.log(signed);
+  const signed = await signing(
+    sorted_string,
+    oauth_consumer_secret,
+    oauth_token
+  );
+  console.log(signed);
 
   //here
-  // var data = { oauth_verifier: req.query.oauth_verifier };
-  // var config = {
-  //   method: 'post',
-  //   url: endpoint,
-  //   headers: {
-  //     Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //   },
-  //   data
-  // };
+  var data = { oauth_verifier: req.query.oauth_verifier };
+  var config = {
+    method: 'post',
+    url: endpoint,
+    headers: {
+      Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data
+  };
 
   try {
     console.log('trying...');
-    const response = await client2.post(endpoint, params2);
-    // const response = await axios(config);
+    // const response = await client2.post(endpoint, params2);
+    const response = await axios(config);
 
     // var params = new URLSearchParams(response.data);
     // var token = params.get('oauth_token');
