@@ -277,7 +277,8 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   var client2 = new Twitter({
     consumer_key: process.env.TWITTER_API_KEY,
     consumer_secret: process.env.TWITTER_API_SECRET,
-    access_token_key: oauth_token
+    access_token_key: oauth_token,
+    access_token_secret: ''
   });
 
   // var requiredParameters = {
