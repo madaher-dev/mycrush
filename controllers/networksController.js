@@ -262,7 +262,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   var oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
-  const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Get User Email&include_email=true&include_entities=false&skip_status=true`;
+  const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Get_User_Email&include_email=true&include_entities=false&skip_status=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
@@ -329,7 +329,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     //console.log('parameters', requiredParameters);
     const sorted_string2 = await sortString(
       requiredParameters,
-      endpoint2,
+      endpoint2_full,
       'GET'
     );
 
@@ -359,28 +359,6 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     console.log(err.response.data);
     next();
   }
-  // request.post({
-  //   url: `https://api.twitter.com/oauth/access_token?oauth_verifier`,
-  //   oauth: {
-  //     consumer_key: twitterConfig.consumerKey,
-  //     consumer_secret: twitterConfig.consumerSecret,
-  //     token: req.query.oauth_token
-  //   },
-  //   form: { oauth_verifier: req.query.oauth_verifier }
-  // }, function (err, r, body) {
-  //   if (err) {
-  //     return res.send(500, { message: err.message });
-  //   }
-
-  //   const bodyString = '{ "' + body.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
-  //   const parsedBody = JSON.parse(bodyString);
-
-  //   req.body['oauth_token'] = parsedBody.oauth_token;
-  //   req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
-  //   req.body['user_id'] = parsedBody.user_id;
-
-  // console.log(req);
-  // next();
 });
 
 exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
@@ -446,51 +424,6 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   }
 });
 
-// try {
-//   const body = await post(`https://api.twitter.com/oauth/request_token`, {});
-//   console.log(body);
-//   return JSON.parse(body);
-//   // res.status('200').json({
-//   //   status: 'success',
-//   //   data: {
-//   //     body
-//   //   }
-//   // });
-// } catch (err) {
-//   console.log(err);
-//   res.status(500).send(err);
-// }
-
-// const consumer = new oauth.OAuth(
-//   'https://twitter.com/oauth/request_token',
-//   'https://twitter.com/oauth/access_token',
-//   _twitterConsumerKey,
-//   _twitterConsumerSecret,
-//   '1.0A',
-//   twitterCallbackUrl,
-//   'HMAC-SHA1'
-// );
-// router.get('/connect', (req, res) => {
-//   consumer.getOAuthRequestToken(function (error, oauthToken,   oauthTokenSecret, results) {
-//     if (error) {
-//       res.send(error, 500);
-//     } else {
-//       req.session.oauthRequestToken = oauthToken;
-//       req.session.oauthRequestTokenSecret = oauthTokenSecret;
-//       const redirect = {
-// redirectUrl: `https://twitter.com/oauth/authorize?  oauth_token=${req.session.oauthRequestToken}`
-//     }
-//       res.send(redirect);
-//     }
-//   });
-// });
-// const result = consumer.getOAuthAccessToken(
-//   req.query.oauth_token,
-//   req.session.oauthRequestTokenSecret,
-//   req.query.oauth_verifier
-// );
-// console.log(result);
-// });
 const sortString = async (requiredParameters, endpoint, type) => {
   var base_signature_string = `${type}&` + encodeURIComponent(endpoint) + '&';
   var requiredParameterKeys = Object.keys(requiredParameters);
@@ -538,4 +471,79 @@ const signing = async (signature_string, consumer_secret, token) => {
     }
   }
   return hmac;
+};
+
+exports.signup = catchAsync(async (req, res, next) => {
+  if (req.body.status === 'not_authorized')
+    return next(new AppError('Unuthorized facebook user!', 401));
+
+  let newUser;
+  if (!req.body.email) {
+    newUser = await User.findOneAndUpdate(
+      { facebookID: req.body.id },
+      {
+        name: req.body.name,
+        email: `${req.body.id}@facebook.com`,
+        facebookID: req.body.id,
+        email_confirmed: true,
+        photo: req.body.picture.data.url,
+        facebook: req.body.link,
+        fbAccessToken: req.body.accessToken
+      },
+      { upsert: true, new: true }
+    );
+  } else {
+    newUser = await User.findOneAndUpdate(
+      { email: req.body.email },
+      {
+        name: req.body.name,
+        email: req.body.email,
+        facebookID: req.body.id,
+        email_confirmed: true,
+        photo: req.body.picture.data.url,
+        facebook: req.body.link,
+        fbAccessToken: req.body.accessToken
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  console.log('created at:', newUser.createdAt);
+  let date = new Date();
+
+  const y = date.getTime();
+  const x = newUser.createdAt.getTime() + 100000;
+
+  if (x > y) labelSelf(newUser);
+
+  createSendToken(newUser, 201, req, res);
+});
+
+const createSendToken = (user, statusCode, req, res) => {
+  console.log('Signing Token');
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  };
+  if (process.env.SECURE_TOKEN === 'true') cookieOptions.secure = true;
+  else cookieOptions.secure = false;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  // Remove password from output
+  user.password = undefined;
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    user
+  });
+};
+
+const signToken = id => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN
+  });
 };
