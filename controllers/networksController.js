@@ -318,7 +318,6 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   };
 
   try {
-    console.log('trying...');
     // const response = await client2.post(endpoint, params2);
     const response = await axios(config);
 
@@ -332,9 +331,9 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     const parsedBody = JSON.parse(bodyString);
     console.log(parsedBody);
 
-    req.body['oauth_token'] = parsedBody.oauth_token;
-    req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
-    req.body['user_id'] = parsedBody.user_id;
+    // req.body['oauth_token'] = parsedBody.oauth_token;
+    // req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
+    // req.body['user_id'] = parsedBody.user_id;
 
     oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
 
@@ -358,33 +357,13 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     });
 
     const result = await client.get(endpoint2, params1);
-    console.log('email:', result.email);
+    console.log(result);
 
-    // const sorted_string2 = await sortString(
-    //   requiredParameters,
-    //   endpoint2_full,
-    //   'GET'
-    // );
-
-    // console.log('soreted string:', sorted_string2);
-    // const signed2 = await signing(
-    //   sorted_string2,
-    //   oauth_consumer_secret,
-    //   parsedBody.oauth_token_secret
-    // );
-    // console.log('signature', signed2);
-
-    // var config2 = {
-    //   method: 'get',
-    //   url: endpoint2_full,
-    //   headers: {
-    //     Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed2},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${parsedBody.oauth_token},oauth_version="1.0"`,
-    //     'Content-Type': 'application/x-www-form-urlencoded'
-    //   }
-    // };
-    // const response2 = await axios(config2);
-
-    // console.log(response2.data);
+    req.body.oauth_token = parsedBody.oauth_token;
+    req.bod.oauth_token_secret = parsedBody.oauth_token_secret;
+    req.body.user_id = parsedBody.user_id;
+    req.body.email = result.email;
+    req.body.photo = result.photo_url;
 
     next();
     // res.send(JSON.parse(parsedBody));
