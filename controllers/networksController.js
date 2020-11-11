@@ -491,14 +491,6 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
   if (req.body.status === 'not_authorized')
     return next(new AppError('Unuthorized twitter user!', 401));
 
-  req.body.oauth_token = parsedBody.oauth_token;
-  req.body.oauth_token_secret = parsedBody.oauth_token_secret;
-  req.body.user_id = parsedBody.user_id;
-  req.body.email = result.email;
-  req.body.name = result.name;
-  req.body.screen_name = result.screen_name;
-  req.body.profile_image_url_https = result.profile_image_url_https;
-
   let newUser;
   if (!req.body.email) {
     newUser = await User.findOneAndUpdate(
