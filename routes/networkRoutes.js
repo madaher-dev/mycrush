@@ -8,7 +8,11 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const networksController = require('../controllers/networksController');
 
-router.post('/twitter', networksController.twitterAuth);
+router.post(
+  '/twitter',
+  networksController.twitterAuth,
+  networksController.signupTwitter
+);
 router.post('/twitter/reverse', networksController.twitterAuthReverse);
 router.get('/confirm/:token', networksController.confirmNetwork);
 

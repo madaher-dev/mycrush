@@ -360,10 +360,12 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     console.log(result);
 
     req.body.oauth_token = parsedBody.oauth_token;
-    req.bod.oauth_token_secret = parsedBody.oauth_token_secret;
+    req.body.oauth_token_secret = parsedBody.oauth_token_secret;
     req.body.user_id = parsedBody.user_id;
     req.body.email = result.email;
-    req.body.photo = result.photo_url;
+    req.body.name = result.name;
+    req.body.screen_name = result.screen_name;
+    req.body.profile_image_url_https = result.profile_image_url_https;
 
     next();
     // res.send(JSON.parse(parsedBody));
@@ -485,22 +487,36 @@ const signing = async (signature_string, consumer_secret, token) => {
   return hmac;
 };
 
-exports.signup = catchAsync(async (req, res, next) => {
+exports.signupTwitter = catchAsync(async (req, res, next) => {
   if (req.body.status === 'not_authorized')
-    return next(new AppError('Unuthorized facebook user!', 401));
+    return next(new AppError('Unuthorized twitter user!', 401));
+
+  req.body.oauth_token = parsedBody.oauth_token;
+  req.body.oauth_token_secret = parsedBody.oauth_token_secret;
+  req.body.user_id = parsedBody.user_id;
+  req.body.email = result.email;
+  req.body.name = result.name;
+  req.body.screen_name = result.screen_name;
+  req.body.profile_image_url_https = result.profile_image_url_https;
 
   let newUser;
   if (!req.body.email) {
     newUser = await User.findOneAndUpdate(
-      { facebookID: req.body.id },
+      { twitterID: req.body.user_id },
       {
-        name: req.body.name,
-        email: `${req.body.id}@facebook.com`,
-        facebookID: req.body.id,
+        email: `${req.body.user_id}@twitter.com`,
+        twitterID: req.body.user_id,
         email_confirmed: true,
-        photo: req.body.picture.data.url,
-        facebook: req.body.link,
-        fbAccessToken: req.body.accessToken
+
+        twitter: req.body.screen_name,
+        twitterAccessToken: req.body.oauth_token,
+        twitterTokenSecret: req.body.oauth_token_secret
+      },
+      {
+        $setOnInsert: {
+          name: req.body.name,
+          photo: req.body.profile_image_url_https
+        }
       },
       { upsert: true, new: true }
     );
@@ -508,13 +524,18 @@ exports.signup = catchAsync(async (req, res, next) => {
     newUser = await User.findOneAndUpdate(
       { email: req.body.email },
       {
-        name: req.body.name,
         email: req.body.email,
-        facebookID: req.body.id,
+        twitterID: req.body.user_id,
         email_confirmed: true,
-        photo: req.body.picture.data.url,
-        facebook: req.body.link,
-        fbAccessToken: req.body.accessToken
+        twitter: req.body.screen_name,
+        twitterAccessToken: req.body.oauth_token,
+        twitterTokenSecret: req.body.oauth_token_secret
+      },
+      {
+        $setOnInsert: {
+          name: req.body.name,
+          photo: req.body.profile_image_url_https
+        }
       },
       { upsert: true, new: true }
     );
