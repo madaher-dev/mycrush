@@ -274,37 +274,46 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   //oauth_consumer_key,
   // oauth_nonce,
 
-  var requiredParameters = {
-    oauth_consumer_key,
-    oauth_nonce,
-    oauth_signature_method: 'HMAC-SHA1',
-    oauth_timestamp,
-    oauth_token,
-    oauth_version: '1.0'
-  };
+  var client2 = new Twitter({
+    consumer_key: process.env.TWITTER_API_KEY,
+    consumer_secret: process.env.TWITTER_API_SECRET,
+    access_token_key: oauth_token
+  });
 
-  const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
-  console.log(sorted_string);
+  // var requiredParameters = {
+  //   oauth_consumer_key,
+  //   oauth_nonce,
+  //   oauth_signature_method: 'HMAC-SHA1',
+  //   oauth_timestamp,
+  //   oauth_token,
+  //   oauth_version: '1.0'
+  // };
 
-  const signed = await signing(
-    sorted_string,
-    oauth_consumer_secret,
-    oauth_token
-  );
+  // const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
+  // console.log(sorted_string);
+
+  // const signed = await signing(
+  //   sorted_string,
+  //   oauth_consumer_secret,
+  //   oauth_token
+  // );
   //console.log(signed);
-  var data = { oauth_verifier: req.query.oauth_verifier };
-  var config = {
-    method: 'post',
-    url: endpoint,
-    headers: {
-      Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data
-  };
+
+  //here
+  // var data = { oauth_verifier: req.query.oauth_verifier };
+  // var config = {
+  //   method: 'post',
+  //   url: endpoint,
+  //   headers: {
+  //     Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
+  //     'Content-Type': 'application/x-www-form-urlencoded'
+  //   },
+  //   data
+  // };
 
   try {
-    const response = await axios(config);
+    const response = await client2.post(endpoint);
+    // const response = await axios(config);
 
     // var params = new URLSearchParams(response.data);
     // var token = params.get('oauth_token');
@@ -342,7 +351,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     });
 
     const result = await client.get(endpoint2, params1);
-    console.log(result);
+    console.log(result.email);
 
     // const sorted_string2 = await sortString(
     //   requiredParameters,
