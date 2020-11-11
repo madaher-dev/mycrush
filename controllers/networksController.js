@@ -11,6 +11,7 @@ var axios = require('axios');
 const jsSHA = require('jssha/sha1');
 //var passport = require('passport');
 //var Strategy = require('passport-twitter').Strategy;
+const { labelSelf } = require('./authController');
 
 exports.privateNetwork = catchAsync(async (req, res, next) => {
   if (req.user.type === 'admin' || req.user.type === 'support') next();
@@ -262,7 +263,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   var oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
-  const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Get_User_Email&include_email=true&include_entities=false&skip_status=true`;
+  const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
