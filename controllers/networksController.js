@@ -313,7 +313,9 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
   try {
     console.log('trying...');
-    const response = await client2.post(endpoint);
+    const response = await client2.post(endpoint, {
+      oauth_verifier: req.query.oauth_verifier
+    });
     // const response = await axios(config);
 
     // var params = new URLSearchParams(response.data);
@@ -383,7 +385,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     next();
     // res.send(JSON.parse(parsedBody));
   } catch (err) {
-    console.log(err.response);
+    console.log(err);
     next();
   }
 });
