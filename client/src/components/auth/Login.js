@@ -76,7 +76,7 @@ const Login = ({
       clearErrors();
     }
   }, [error, setAlert, clearErrors]);
-
+  console.log(twitterAuth);
   if (isAuthenticated || tiwtterAuth) {
     return <Redirect to="/welcome" />;
   } else if (user && !user.email_confirmed) {
