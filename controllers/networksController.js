@@ -357,7 +357,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     next();
     // res.send(JSON.parse(parsedBody));
   } catch (err) {
-    console.log(err.response.data);
+    console.log(err.response);
     next();
   }
 });
