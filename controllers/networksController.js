@@ -260,11 +260,13 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   const oauth_nonce = nonceObj.getHash('HEX');
-  const endpoint = `https://api.twitter.com/oauth/access_token`;
+  const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
-  //console.log('token:', req.query.oauth_token);
+
+  console.log('token:', req.query.oauth_token);
+  console.log('verifier:', req.query.oauth_verifier);
   //oauth_consumer_key,
   // oauth_nonce,
 
@@ -308,12 +310,12 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
       typeof signature_string !== 'undefined' &&
       signature_string.length > 0
     ) {
-      console.log('String OK');
+      //console.log('String OK');
       if (
         typeof consumer_secret !== 'undefined' &&
         consumer_secret.length > 0
       ) {
-        console.log('Secret Ok');
+        // console.log('Secret Ok');
 
         const secret =
           encodeURIComponent(consumer_secret) + '&' + encodeURIComponent(token);
