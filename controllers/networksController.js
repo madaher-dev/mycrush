@@ -382,7 +382,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   //const callBackUL = 'https%3A%2F%2F127.0.0.1%3A3000%2Flogin';
 
   const callBackUL = encodeURIComponent(
-    'https://mycrushapp.herokuapp.com/login'
+    'https://mycrushapp.herokuapp.com/welcome'
   );
   var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
