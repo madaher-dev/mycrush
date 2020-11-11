@@ -280,7 +280,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     oauth_version: '1.0'
   };
 
-  const sorted_string = sortString(requiredParameters, endpoint);
+  const sorted_string = await sortString(requiredParameters, endpoint);
   console.log(sorted_string);
 
   const signed = signing(sorted_string, oauth_consumer_secret, oauth_token);
@@ -302,7 +302,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     // var params = new URLSearchParams(response.data);
     // var token = params.get('oauth_token');
 
-    console.log('response:', response);
+    console.log('response:', response.data);
 
     const bodyString =
       '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
@@ -315,7 +315,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
     requiredParameters.oauth_token = parsedBody.oauth_token;
 
-    const sorted_string2 = sortString(requiredParameters, endpoint2);
+    const sorted_string2 = await sortString(requiredParameters, endpoint2);
 
     const signed2 = signing(
       sorted_string2,
@@ -333,7 +333,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     };
     const response2 = await axios(config2);
 
-    console.log(response2);
+    console.log(response2.data);
 
     next();
     // res.send(JSON.parse(parsedBody));
@@ -375,12 +375,10 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   const oauth_nonce = nonceObj.getHash('HEX');
-  console.log('hello');
   const endpoint = 'https://api.twitter.com/oauth/request_token';
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
 
-  console.log('hello 2');
   var requiredParameters = {
     oauth_callback: callBackUL,
     oauth_consumer_key,
