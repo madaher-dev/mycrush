@@ -312,6 +312,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   // };
 
   try {
+    console.log('trying...');
     const response = await client2.post(endpoint);
     // const response = await axios(config);
 
@@ -351,7 +352,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     });
 
     const result = await client.get(endpoint2, params1);
-    console.log(result.email);
+    console.log('email:', result.email);
 
     // const sorted_string2 = await sortString(
     //   requiredParameters,
