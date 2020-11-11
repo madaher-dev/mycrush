@@ -283,7 +283,11 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   const sorted_string = await sortString(requiredParameters, endpoint);
   console.log(sorted_string);
 
-  const signed = signing(sorted_string, oauth_consumer_secret, oauth_token);
+  const signed = await signing(
+    sorted_string,
+    oauth_consumer_secret,
+    oauth_token
+  );
   //console.log(signed);
   var data = { oauth_verifier: req.query.oauth_verifier };
   var config = {
@@ -317,7 +321,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
     const sorted_string2 = await sortString(requiredParameters, endpoint2);
 
-    const signed2 = signing(
+    const signed2 = await signing(
       sorted_string2,
       oauth_consumer_secret,
       parsedBody.oauth_token_secret
