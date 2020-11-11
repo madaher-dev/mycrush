@@ -260,18 +260,20 @@ exports.twitterAuth = (req, res, next) => {
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   const oauth_nonce = nonceObj.getHash('HEX');
-  const endpoint = 'https://api.twitter.com/oauth/access_token';
-  //const oauth_consumer_key = process.env.TWITTER_API_KEY;
-  //const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
-  console.log('token:', req.query.oauth_token);
+  const endpoint = `https://api.twitter.com/oauth/access_token`;
+  const oauth_consumer_key = process.env.TWITTER_API_KEY;
+  const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
+  const oauth_token = req.query.oauth_token;
+  //console.log('token:', req.query.oauth_token);
   //oauth_consumer_key,
   // oauth_nonce,
 
   var requiredParameters = {
+    oauth_consumer_key,
     oauth_nonce,
     oauth_signature_method: 'HMAC-SHA1',
     oauth_timestamp,
-    oauth_token: req.query.oauth_token,
+    oauth_token,
     oauth_version: '1.0'
   };
 
@@ -299,6 +301,67 @@ exports.twitterAuth = (req, res, next) => {
 
   const sorted_string = sortString(requiredParameters);
   console.log(sorted_string);
+
+  const signing = (signature_string, consumer_secret, token) => {
+    let hmac;
+    if (
+      typeof signature_string !== 'undefined' &&
+      signature_string.length > 0
+    ) {
+      console.log('String OK');
+      if (
+        typeof consumer_secret !== 'undefined' &&
+        consumer_secret.length > 0
+      ) {
+        console.log('Secret Ok');
+
+        const secret =
+          encodeURIComponent(consumer_secret) + '&' + encodeURIComponent(token);
+
+        var shaObj = new jsSHA('SHA-1', 'TEXT', {
+          hmacKey: { value: secret, format: 'TEXT' }
+        });
+        shaObj.update(signature_string);
+
+        hmac = encodeURIComponent(shaObj.getHash('B64'));
+      }
+    }
+    return hmac;
+  };
+
+  const signed = signing(sorted_string, oauth_consumer_secret, oauth_token);
+  //console.log(signed);
+  var data = {oauth_verifier: req.query.oauth_verifier};
+  var config = {
+    method: 'post',
+    url: endpoint,
+    headers: {
+      Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data
+  };
+  try {
+    const response = await axios(config);
+
+    // var params = new URLSearchParams(response.data);
+    // var token = params.get('oauth_token');
+
+    // console.log(token);
+
+    const bodyString = '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
+     const parsedBody = JSON.parse(bodyString);
+     console.log(parsedBody)
+
+    req.body['oauth_token'] = parsedBody.oauth_token;
+     req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
+     req.body['user_id'] = parsedBody.user_id;
+
+    res.send(JSON.parse(parsedBody));
+  } catch (err) {
+    console.log(err.response.data);
+    next();
+  }
   // request.post({
   //   url: `https://api.twitter.com/oauth/access_token?oauth_verifier`,
   //   oauth: {
