@@ -262,6 +262,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   var oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
+  const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Get User Email&include_email=true&include_entities=false&skip_status=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
@@ -342,7 +343,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
     var config2 = {
       method: 'get',
-      url: endpoint2,
+      url: endpoint2_full,
       headers: {
         Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed2},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${parsedBody.oauth_token},oauth_version="1.0"`,
         'Content-Type': 'application/x-www-form-urlencoded'
