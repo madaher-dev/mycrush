@@ -367,7 +367,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
 exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   //const callBackUL = 'https%3A%2F%2F127.0.0.1%3A3000%2Flogin';
-
+  console.log('hello');
   const callBackUL = encodeURIComponent(
     'https://mycrushapp.herokuapp.com/login'
   );
