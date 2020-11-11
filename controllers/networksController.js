@@ -475,7 +475,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
 // );
 // console.log(result);
 // });
-const sortString = async (requiredParameters, endoint) => {
+const sortString = async (requiredParameters, endpoint) => {
   var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
   var requiredParameterKeys = Object.keys(requiredParameters);
   for (var i = 0; i < requiredParameterKeys.length; i++) {
