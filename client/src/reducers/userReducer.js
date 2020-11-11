@@ -62,7 +62,6 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case EMAIL_CONFIRMED: //Login for confirmed email users
-
     case RESET_PASS_SUCCESSS: //check/test if not email confirmed
       return {
         ...state,

@@ -220,7 +220,7 @@ const Verify = ({
       setAlert('Phone Successfully Validated', 'success');
       clearPhoneStatus();
     }
-  }, [phoneValidated]);
+  }, [phoneValidated, setAlert, clearPhoneStatus]);
 
   const handleClickOpenConnectPhone = () => {
     handleMenuClose();

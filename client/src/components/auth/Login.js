@@ -54,7 +54,8 @@ const Login = ({
   clearErrors,
   setAlert,
   user,
-  checkFB
+  checkFB,
+  history
 }) => {
   const classes = useStyles();
 
@@ -66,9 +67,7 @@ const Login = ({
   };
 
   const twitterOnSuccess = response => {
-    response.json().then(body => {
-      alert(JSON.stringify(body));
-    });
+    history.push('/verify');
     console.log('success:', response);
   };
   useEffect(() => {
