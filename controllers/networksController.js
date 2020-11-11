@@ -262,7 +262,8 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   var oauth_nonce = nonceObj.getHash('HEX');
-  const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
+  //const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
+  const endpoint = `https://api.twitter.com/oauth/access_token`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
   const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Test&include_email=true&include_entities=false&skip_status=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
@@ -280,6 +281,10 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     access_token_key: oauth_token,
     access_token_secret: ''
   });
+
+  const params2 = {
+    oauth_verifier: req.query.oauth_verifier
+  };
 
   // var requiredParameters = {
   //   oauth_consumer_key,
@@ -314,9 +319,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
   try {
     console.log('trying...');
-    const response = await client2.post(endpoint, {
-      oauth_verifier: req.query.oauth_verifier
-    });
+    const response = await client2.post(endpoint, params2);
     // const response = await axios(config);
 
     // var params = new URLSearchParams(response.data);
