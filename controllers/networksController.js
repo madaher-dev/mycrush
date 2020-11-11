@@ -349,7 +349,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     // var params = new URLSearchParams(response.data);
     // var token = params.get('oauth_token');
 
-    // console.log(token);
+    console.log('response:', response);
 
     const bodyString =
       '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
@@ -362,7 +362,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
     res.send(JSON.parse(parsedBody));
   } catch (err) {
-    console.log(err.response.data);
+    console.log(err.response);
     next();
   }
   // request.post({
