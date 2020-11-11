@@ -11,7 +11,10 @@ var axios = require('axios');
 const jsSHA = require('jssha/sha1');
 //var passport = require('passport');
 //var Strategy = require('passport-twitter').Strategy;
+
+const jwt = require('jsonwebtoken');
 const { labelSelf } = require('./authController');
+
 var Twitter = require('twitter');
 
 exports.privateNetwork = catchAsync(async (req, res, next) => {
