@@ -263,7 +263,7 @@ exports.twitterAuth = (req, res, next) => {
   const endpoint = 'https://api.twitter.com/oauth/access_token';
   //const oauth_consumer_key = process.env.TWITTER_API_KEY;
   //const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
-
+  console.log('token:', req.query.oauth_token);
   //oauth_consumer_key,
   // oauth_nonce,
 
