@@ -261,7 +261,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   const oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
-  const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
+  const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json?Name="Get User Email"&include_email=true&include_entities=false&skip_status=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
@@ -319,6 +319,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
     requiredParameters.oauth_token = parsedBody.oauth_token;
 
+    console.log('parameters', requiredParameters);
     const sorted_string2 = await sortString(requiredParameters, endpoint2);
 
     const signed2 = await signing(
@@ -342,7 +343,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     next();
     // res.send(JSON.parse(parsedBody));
   } catch (err) {
-    console.log(err.response);
+    console.log(err.response.data);
     next();
   }
   // request.post({
