@@ -367,7 +367,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
 exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   //const callBackUL = 'https%3A%2F%2F127.0.0.1%3A3000%2Flogin';
-  console.log('hello');
+
   const callBackUL = encodeURIComponent(
     'https://mycrushapp.herokuapp.com/login'
   );
@@ -388,11 +388,11 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     oauth_version: '1.0'
   };
 
-  const sorted_string = sortString(requiredParameters);
-  //console.log('Sorted string:', sorted_string);
+  const sorted_string = await sortString(requiredParameters);
+  console.log('Sorted string:', sorted_string);
 
-  const signed = signing(sorted_string, oauth_consumer_secret);
-  //console.log(signed);
+  const signed = await signing(sorted_string, oauth_consumer_secret);
+  console.log('signed:', signed);
 
   var data = {};
   var config = {
@@ -473,7 +473,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
 // );
 // console.log(result);
 // });
-const sortString = requiredParameters => {
+const sortString = async requiredParameters => {
   var base_signature_string = 'POST&' + encodeURIComponent(endpoint) + '&';
   var requiredParameterKeys = Object.keys(requiredParameters);
   for (var i = 0; i < requiredParameterKeys.length; i++) {
@@ -495,18 +495,20 @@ const sortString = requiredParameters => {
   return base_signature_string;
 };
 
-const signing = (signature_string, consumer_secret, token) => {
+const signing = async (signature_string, consumer_secret, token) => {
   let hmac;
   let secret;
   if (typeof signature_string !== 'undefined' && signature_string.length > 0) {
-    //console.log('String OK');
+    console.log('String OK');
     if (typeof consumer_secret !== 'undefined' && consumer_secret.length > 0) {
-      // console.log('Secret Ok');
+      console.log('Secret Ok');
       if (!token) {
         secret = encodeURIComponent(consumer_secret) + '&';
+        console.log('No TOken');
       } else {
         secret =
           encodeURIComponent(consumer_secret) + '&' + encodeURIComponent(token);
+        console.log('Token OK');
       }
 
       var shaObj = new jsSHA('SHA-1', 'TEXT', {
