@@ -54,8 +54,7 @@ const Login = ({
   clearErrors,
   setAlert,
   user,
-  checkFB,
-  history
+  checkFB
 }) => {
   const classes = useStyles();
 
@@ -65,9 +64,10 @@ const Login = ({
   const twitterOnFailed = response => {
     console.log('fail:', response);
   };
-
+  const [tiwtterAuth, loginTwitter] = React.useState(false);
   const twitterOnSuccess = response => {
-    history.push('/verify');
+    // history.push('/welcome');
+    loginTwitter(true);
     console.log('success:', response);
   };
   useEffect(() => {
@@ -77,7 +77,7 @@ const Login = ({
     }
   }, [error, setAlert, clearErrors]);
 
-  if (isAuthenticated) {
+  if (isAuthenticated || tiwtterAuth) {
     return <Redirect to="/welcome" />;
   } else if (user && !user.email_confirmed) {
     return <Redirect to="/notconfirmed" />;
