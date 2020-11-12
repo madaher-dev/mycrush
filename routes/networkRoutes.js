@@ -14,6 +14,10 @@ router.post(
   networksController.signupTwitter
 );
 router.post('/twitter/reverse', networksController.twitterAuthReverse);
+
+router.post('/twitter2', networksController.twitterAuth);
+router.post('/twitter2/reverse', networksController.twitterAuthReverse);
+
 router.get('/confirm/:token', networksController.confirmNetwork);
 
 //Protect all routes after this middleware
