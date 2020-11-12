@@ -6,7 +6,7 @@ import {
   loginUser,
   clearErrors,
   checkFB,
-  loginTwitter
+  checkUser
 } from '../../actions/userActions';
 import { Redirect, Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
 
 const Login = ({
   loginUser,
-  loginTwitter,
+  checkUser,
   isAuthenticated,
   error,
   clearErrors,
@@ -73,7 +73,7 @@ const Login = ({
   // const [twitterAuth, loginTwitter] = React.useState(false);
   const twitterOnSuccess = response => {
     // history.push('/welcome');
-    loginTwitter();
+    checkUser();
     console.log('success:', response);
   };
   useEffect(() => {
@@ -257,7 +257,7 @@ Login.propTypes = {
   setAlert: PropTypes.func.isRequired,
   user: PropTypes.object,
   checkFB: PropTypes.func.isRequired,
-  loginTwitter: PropTypes.func.isRequired
+  checkUser: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -268,7 +268,7 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   loginUser,
-  loginTwitter,
+  checkUser,
   clearErrors,
   setAlert,
   checkFB
