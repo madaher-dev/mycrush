@@ -266,28 +266,11 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   var oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
-  //const endpoint = `https://api.twitter.com/oauth/access_token`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
   const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Test&include_email=true&include_entities=false&skip_status=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
-
-  console.log('token:', req.query.oauth_token);
-  console.log('verifier:', req.query.oauth_verifier);
-  //oauth_consumer_key,
-  // oauth_nonce,
-
-  // var client2 = new Twitter({
-  //   consumer_key: process.env.TWITTER_API_KEY,
-  //   consumer_secret: process.env.TWITTER_API_SECRET,
-  //   access_token_key: oauth_token,
-  //   access_token_secret: null
-  // });
-
-  // const params2 = {
-  //   oauth_verifier: req.query.oauth_verifier
-  // };
 
   var requiredParameters = {
     oauth_consumer_key,
@@ -299,14 +282,12 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   };
 
   const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
-  console.log(sorted_string);
 
   const signed = await signing(
     sorted_string,
     oauth_consumer_secret,
     oauth_token
   );
-  console.log(signed);
 
   //here
   var data = { oauth_verifier: req.query.oauth_verifier };
@@ -327,16 +308,9 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     // var params = new URLSearchParams(response.data);
     // var token = params.get('oauth_token');
 
-    console.log('response:', response.data);
-
     const bodyString =
       '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
     const parsedBody = JSON.parse(bodyString);
-    console.log(parsedBody);
-
-    // req.body['oauth_token'] = parsedBody.oauth_token;
-    // req.body['oauth_token_secret'] = parsedBody.oauth_token_secret;
-    // req.body['user_id'] = parsedBody.user_id;
 
     oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
 
@@ -346,7 +320,6 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     requiredParameters.oauth_token = parsedBody.oauth_token;
     requiredParameters.oauth_timestamp = oauth_timestamp;
     requiredParameters.oauth_nonce = oauth_nonce;
-    //console.log('parameters', requiredParameters);
 
     const params1 = {
       Name: 'Test',
@@ -360,7 +333,6 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     });
 
     const result = await client.get(endpoint2, params1);
-    console.log(result);
 
     req.body.oauth_token = parsedBody.oauth_token;
     req.body.oauth_token_secret = parsedBody.oauth_token_secret;
@@ -379,8 +351,6 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 });
 
 exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
-  //const callBackUL = 'https%3A%2F%2F127.0.0.1%3A3000%2Flogin';
-
   const callBackUL = encodeURIComponent(
     'https://mycrushapp.herokuapp.com/login'
   );
@@ -402,10 +372,8 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   };
 
   const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
-  console.log('Sorted string:', sorted_string);
 
   const signed = await signing(sorted_string, oauth_consumer_secret);
-  console.log('signed:', signed);
 
   var data = {};
   var config = {
@@ -428,13 +396,6 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     var jsonStr =
       '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
     res.send(JSON.parse(jsonStr));
-
-    // res.status('200').json({
-    //   status: 'success',
-    //   data: {
-    //     body: token
-    //   }
-    // });
   } catch (err) {
     console.log(err.response.data);
     next();

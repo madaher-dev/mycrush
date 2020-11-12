@@ -38,8 +38,7 @@ import {
   CONNECT_PHONE_FAIL,
   PHONE_VALIDATED,
   PHONE_VALIDATE_FAIL,
-  CLEAR_PHONE_STATUS,
-  LOGIN_TWITTER
+  CLEAR_PHONE_STATUS
 } from '../actions/Types';
 
 const initialState = {
@@ -73,13 +72,6 @@ export default (state = initialState, action) => {
         newNotifications: action.payload.data.user.notifications,
         phoneConnected: false,
         phoneValidated: false
-      };
-    case LOGIN_TWITTER:
-      return {
-        ...state,
-
-        isAuthenticated: true,
-        loading: false
       };
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS: //Will Login Unconfirmed email

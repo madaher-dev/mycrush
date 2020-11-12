@@ -70,11 +70,9 @@ const Login = ({
   const twitterOnFailed = response => {
     console.log('fail:', response);
   };
-  // const [twitterAuth, loginTwitter] = React.useState(false);
+
   const twitterOnSuccess = response => {
-    // history.push('/welcome');
-    checkUser();
-    console.log('success:', response);
+    if (response.ok) checkUser();
   };
   useEffect(() => {
     if (error) {

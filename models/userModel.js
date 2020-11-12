@@ -30,8 +30,14 @@ const userSchema = new mongoose.Schema({
   facebook: String,
   twitter: String,
   twitterID: String,
-  twitterAccessToken: String,
-  twitterTokenSecret: String,
+  twitterAccessToken: {
+    type: String,
+    select: false
+  },
+  twitterTokenSecret: {
+    type: String,
+    select: false
+  },
   instagram: {
     // `instagram` must be unique, unless it isn't defined
     index: { unique: true, sparse: true },
