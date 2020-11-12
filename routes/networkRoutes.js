@@ -15,8 +15,8 @@ router.post(
 );
 router.post('/twitter/reverse', networksController.twitterAuthReverse);
 
-router.post('/twitter2', networksController.twitterAuth);
-router.post('/twitter2/reverse', networksController.twitterAuthReverse);
+router.post('/twitter2', networksController.twitterAuth2);
+router.post('/twitter2/reverse', networksController.twitterAuthReverse2);
 
 router.get('/confirm/:token', networksController.confirmNetwork);
 
