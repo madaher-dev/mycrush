@@ -13,13 +13,17 @@ exports.signup = catchAsync(async (req, res, next) => {
     newUser = await User.findOneAndUpdate(
       { facebookID: req.body.id },
       {
-        name: req.body.name,
-        email: `${req.body.id}@facebook.com`,
-        facebookID: req.body.id,
-        email_confirmed: true,
-        photo: req.body.picture.data.url,
-        facebook: req.body.link,
-        fbAccessToken: req.body.accessToken
+        $set: {
+          //facebookID: req.body.id,
+          email_confirmed: true
+        },
+        $setOnInsert: {
+          name: req.body.name,
+          email: `${req.body.id}@facebook.com`,
+          photo: req.body.picture.data.url,
+          facebook: req.body.link,
+          fbAccessToken: req.body.accessToken
+        }
       },
       { upsert: true, new: true }
     );
@@ -27,13 +31,15 @@ exports.signup = catchAsync(async (req, res, next) => {
     newUser = await User.findOneAndUpdate(
       { email: req.body.email },
       {
-        name: req.body.name,
-        email: req.body.email,
-        facebookID: req.body.id,
-        email_confirmed: true,
-        photo: req.body.picture.data.url,
-        facebook: req.body.link,
-        fbAccessToken: req.body.accessToken
+        $set: {
+          name: req.body.name,
+          email: req.body.email,
+          facebookID: req.body.id,
+          email_confirmed: true,
+          photo: req.body.picture.data.url,
+          facebook: req.body.link,
+          fbAccessToken: req.body.accessToken
+        }
       },
       { upsert: true, new: true }
     );
@@ -97,10 +103,12 @@ exports.connect = catchAsync(async (req, res, next) => {
     const user = await User.findOneAndUpdate(
       { _id: req.params.id, 'otherEmails.email': { $ne: req.body.email } },
       {
-        photo: req.body.picture.data.url,
-        facebookID: req.body.id,
-        facebook: req.body.link,
-        fbAccessToken: req.body.accessToken
+        $set: {
+          photo: req.body.picture.data.url,
+          facebookID: req.body.id,
+          facebook: req.body.link,
+          fbAccessToken: req.body.accessToken
+        }
       },
       { new: true }
     );

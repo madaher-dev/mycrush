@@ -352,7 +352,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
 
 exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   const callBackUL = encodeURIComponent(
-    'https://mycrushapp.herokuapp.com/login'
+    'https://mycrushapp.herokuapp.com/welcome'
   );
   var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
   const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
@@ -388,11 +388,12 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   try {
     const response = await axios(config);
 
-    var params = new URLSearchParams(response.data);
-    var token = params.get('oauth_token');
+    // var params = new URLSearchParams(response.data);
+    // var token = params.get('oauth_token');
 
     var jsonStr =
       '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
+    console.log(JSON.parse(jsonStr));
     res.send(JSON.parse(jsonStr));
   } catch (err) {
     console.log(err.response.data);
@@ -454,14 +455,17 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
     newUser = await User.findOneAndUpdate(
       { twitterID: req.body.user_id },
       {
-        email: `${req.body.user_id}@twitter.com`,
-        twitterID: req.body.user_id,
-        email_confirmed: true,
+        $set: {
+          email: `${req.body.user_id}@twitter.com`,
+          twitterID: req.body.user_id,
+          email_confirmed: true,
 
-        twitter: req.body.screen_name,
-        twitterAccessToken: req.body.oauth_token,
-        twitterTokenSecret: req.body.oauth_token_secret,
+          twitter: req.body.screen_name
+        },
+
         $setOnInsert: {
+          twitterAccessToken: req.body.oauth_token,
+          twitterTokenSecret: req.body.oauth_token_secret,
           name: req.body.name,
           photo: req.body.profile_image_url_https
         }
@@ -473,15 +477,16 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
     newUser = await User.findOneAndUpdate(
       { email: req.body.email },
       {
-        email: req.body.email,
-        twitterID: req.body.user_id,
-        email_confirmed: true,
-        twitter: req.body.screen_name,
-        twitterAccessToken: req.body.oauth_token,
-        twitterTokenSecret: req.body.oauth_token_secret,
+        $set: {
+          twitterID: req.body.user_id,
+          email_confirmed: true,
+          twitter: req.body.screen_name
+        },
         $setOnInsert: {
           name: req.body.name,
-          photo: req.body.profile_image_url_https
+          photo: req.body.profile_image_url_https,
+          twitterAccessToken: req.body.oauth_token,
+          twitterTokenSecret: req.body.oauth_token_secret
         }
       },
 
