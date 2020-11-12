@@ -12,7 +12,8 @@ import {
   CLEAR_NOTIFICATIONS,
   INSTA_LOADED,
   INSTA_FAILED,
-  CLEAR_PHONE_STATUS
+  CLEAR_PHONE_STATUS,
+  LOGIN_TWITTER
 } from './Types';
 import axios from 'axios';
 const factory = require('./actionsFactory');
@@ -174,6 +175,9 @@ export const setMobileMenuClose = () => ({ type: CLOSE_MOBILE_MENU });
 
 //Clear phone connected and validated
 export const clearPhoneStatus = () => ({ type: CLEAR_PHONE_STATUS });
+
+//Login Twitter
+export const loginTwitter = () => ({ type: LOGIN_TWITTER });
 
 // Login User
 

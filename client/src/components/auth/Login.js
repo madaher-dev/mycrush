@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { setAlert } from '../../actions/alertActions';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { loginUser, clearErrors, checkFB } from '../../actions/userActions';
+import {
+  loginUser,
+  clearErrors,
+  checkFB,
+  loginTwitter
+} from '../../actions/userActions';
 import { Redirect, Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Formik, Form, Field } from 'formik';
@@ -49,6 +54,7 @@ const useStyles = makeStyles(theme => ({
 
 const Login = ({
   loginUser,
+  loginTwitter,
   isAuthenticated,
   error,
   clearErrors,
@@ -64,10 +70,10 @@ const Login = ({
   const twitterOnFailed = response => {
     console.log('fail:', response);
   };
-  const [twitterAuth, loginTwitter] = React.useState(false);
+  // const [twitterAuth, loginTwitter] = React.useState(false);
   const twitterOnSuccess = response => {
     // history.push('/welcome');
-    loginTwitter(true);
+    loginTwitter();
     console.log('success:', response);
   };
   useEffect(() => {
@@ -76,8 +82,8 @@ const Login = ({
       clearErrors();
     }
   }, [error, setAlert, clearErrors]);
-  console.log(twitterAuth);
-  if (isAuthenticated || twitterAuth) {
+  //console.log(twitterAuth);
+  if (isAuthenticated) {
     return <Redirect to="/welcome" />;
   } else if (user && !user.email_confirmed) {
     return <Redirect to="/notconfirmed" />;
@@ -250,7 +256,8 @@ Login.propTypes = {
   error: PropTypes.string,
   setAlert: PropTypes.func.isRequired,
   user: PropTypes.object,
-  checkFB: PropTypes.func.isRequired
+  checkFB: PropTypes.func.isRequired,
+  loginTwitter: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -261,6 +268,7 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   loginUser,
+  loginTwitter,
   clearErrors,
   setAlert,
   checkFB

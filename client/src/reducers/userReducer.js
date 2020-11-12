@@ -38,7 +38,8 @@ import {
   CONNECT_PHONE_FAIL,
   PHONE_VALIDATED,
   PHONE_VALIDATE_FAIL,
-  CLEAR_PHONE_STATUS
+  CLEAR_PHONE_STATUS,
+  LOGIN_TWITTER
 } from '../actions/Types';
 
 const initialState = {
@@ -73,7 +74,13 @@ export default (state = initialState, action) => {
         phoneConnected: false,
         phoneValidated: false
       };
+    case LOGIN_TWITTER:
+      return {
+        ...state,
 
+        isAuthenticated: true,
+        loading: false
+      };
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS: //Will Login Unconfirmed email
       return {
