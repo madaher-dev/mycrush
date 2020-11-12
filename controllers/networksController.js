@@ -467,7 +467,8 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
           twitterAccessToken: req.body.oauth_token,
           twitterTokenSecret: req.body.oauth_token_secret,
           name: req.body.name,
-          photo: req.body.profile_image_url_https
+          photo: req.body.profile_image_url_https,
+          createdAt: Date.now()
         }
       },
 
@@ -486,7 +487,8 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
           name: req.body.name,
           photo: req.body.profile_image_url_https,
           twitterAccessToken: req.body.oauth_token,
-          twitterTokenSecret: req.body.oauth_token_secret
+          twitterTokenSecret: req.body.oauth_token_secret,
+          createdAt: Date.now()
         }
       },
 

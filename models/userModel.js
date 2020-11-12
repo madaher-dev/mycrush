@@ -28,7 +28,10 @@ const userSchema = new mongoose.Schema({
     type: String
   },
   facebook: String,
-  twitter: String,
+  twitter: {
+    type: String,
+    index: { unique: true, sparse: true }
+  },
   twitterID: String,
   twitterAccessToken: {
     type: String,
