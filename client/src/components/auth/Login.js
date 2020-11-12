@@ -20,6 +20,7 @@ import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props
 import Avatar from '@material-ui/core/Avatar';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterLogin from 'react-twitter-auth';
+import TwitterIcon from '@material-ui/icons/Twitter';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -49,6 +50,33 @@ const useStyles = makeStyles(theme => ({
   fbButton: {
     backgroundColor: '#4267B2',
     width: '100%'
+  },
+  twButton: {
+    width: '100%',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    marginTop: 10,
+    backgroundColor: '#1DA1F2',
+    transition: 'ease',
+    '&:hover': {
+      backgroundColor: '#AAB8C2'
+    },
+
+    '&:disabled': {
+      cursor: 'default',
+      opacity: 1
+    },
+    color: 'white',
+    borderRadius: 5,
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    boxShadow: 'lightgray'
+  },
+  twIcon: {
+    padding: 3
   }
 }));
 
@@ -241,7 +269,12 @@ const Login = ({
               onFailure={twitterOnFailed}
               onSuccess={twitterOnSuccess}
               requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/reverse"
-            />
+              className={classes.twButton}
+              showIcon={false}
+            >
+              <TwitterIcon className={classes.twIcon} />
+              <span> Login with Twitter</span>
+            </TwitterLogin>
           </Grid>
         </Grid>
       </Grid>

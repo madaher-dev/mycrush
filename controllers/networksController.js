@@ -267,7 +267,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
   var oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
-  const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Test&include_email=true&include_entities=false&skip_status=true`;
+  //const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Test&include_email=true&include_entities=false&skip_status=true`;
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
   const oauth_token = req.query.oauth_token;
@@ -289,7 +289,6 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     oauth_token
   );
 
-  //here
   var data = { oauth_verifier: req.query.oauth_verifier };
   var config = {
     method: 'post',
@@ -342,6 +341,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     req.body.screen_name = result.screen_name;
     req.body.profile_image_url_https = result.profile_image_url_https;
 
+    console.log('Moving out');
     next();
     // res.send(JSON.parse(parsedBody));
   } catch (err) {

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   registerUser,
+  checkUser,
   clearErrors,
   setLoading,
   checkFB
@@ -22,6 +23,8 @@ import Box from '@material-ui/core/Box';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FacebookIcon from '@material-ui/icons/Facebook';
+import TwitterLogin from 'react-twitter-auth';
+import TwitterIcon from '@material-ui/icons/Twitter';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -41,7 +44,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   social: {
-    padding: 10
+    padding: 5
   },
   avatar: {
     // backgroundColor: red[500]
@@ -52,11 +55,39 @@ const useStyles = makeStyles(theme => ({
   fbButton: {
     backgroundColor: '#4267B2',
     width: '100%'
+  },
+  twButton: {
+    width: '100%',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    // marginTop: 10,
+    backgroundColor: '#1DA1F2',
+    transition: 'ease',
+    '&:hover': {
+      backgroundColor: '#AAB8C2'
+    },
+
+    '&:disabled': {
+      cursor: 'default',
+      opacity: 1
+    },
+    color: 'white',
+    borderRadius: 5,
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    boxShadow: 'lightgray'
+  },
+  twIcon: {
+    padding: 3
   }
 }));
 
 const Register = ({
   registerUser,
+  checkUser,
   isAuthenticated,
   error,
   clearErrors,
@@ -77,6 +108,14 @@ const Register = ({
     }
   }, [error, setAlert, clearErrors]);
 
+  const twitterOnFailed = response => {
+    console.log('fail:', response);
+  };
+
+  const twitterOnSuccess = response => {
+    if (response.ok) checkUser();
+  };
+
   if (isAuthenticated) {
     return <Redirect to="/welcome" />;
   } else if (user) {
@@ -94,7 +133,7 @@ const Register = ({
           item
           container
           xs={12}
-          sm={4}
+          sm={5}
           className={classes.main}
           alignItems="center"
           justify="center"
@@ -239,10 +278,23 @@ const Register = ({
                   className={classes.fbButton}
                   startIcon={<FacebookIcon />}
                 >
-                  Login with Facebook
+                  Signup with Facebook
                 </Button>
               )}
             />
+          </Grid>
+          <Grid item xs={12} sm={8} className={classes.social}>
+            <TwitterLogin
+              loginUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter"
+              onFailure={twitterOnFailed}
+              onSuccess={twitterOnSuccess}
+              requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/reverse"
+              className={classes.twButton}
+              showIcon={false}
+            >
+              <TwitterIcon className={classes.twIcon} />
+              <span> Signup with Twitter</span>
+            </TwitterLogin>
           </Grid>
           <Backdrop className={classes.backdrop} open={loading}>
             <CircularProgress color="primary" />
@@ -260,7 +312,8 @@ Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  checkFB: PropTypes.func.isRequired
+  checkFB: PropTypes.func.isRequired,
+  checkUser: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -272,6 +325,7 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   registerUser,
+  checkUser,
   clearErrors,
   setAlert,
   setLoading,

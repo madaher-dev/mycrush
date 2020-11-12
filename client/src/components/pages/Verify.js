@@ -116,8 +116,9 @@ const useStyles = makeStyles(theme => ({
   instaButton: {
     fontWeight: 'bold',
     textTransform: 'uppercase',
-    display: 'flex',
-    alignItems: 'center',
+    //display: 'flex',
+    //alignItems: 'end',
+    //justifyContent: 'center',
     backgroundColor: '#E1306C',
     width: '100%',
     color: 'white',
