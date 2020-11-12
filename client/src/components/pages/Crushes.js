@@ -34,6 +34,7 @@ import { Redirect } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Hooray from './Hooray';
 import MuiPhoneNumber from 'material-ui-phone-number';
+import { checkUser } from '../../actions/userActions';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -91,7 +92,8 @@ const Crushes = ({
   current,
   crushesLoaded,
   closeAddCrush,
-  add
+  add,
+  checkUser
 }) => {
   const classes = useStyles();
   useEffect(() => {
@@ -130,6 +132,7 @@ const Crushes = ({
   // Close Hooray Match Popup
   const handleClose = () => {
     setOpen(false);
+    checkUser();
     return <Redirect to="/matches" />;
   };
 
@@ -419,7 +422,8 @@ Crushes.propTypes = {
   crushesLoaded: PropTypes.bool.isRequired,
   addAction: PropTypes.bool,
   closeAddCrush: PropTypes.func.isRequired,
-  add: PropTypes.bool
+  add: PropTypes.bool,
+  checkUser: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -438,5 +442,6 @@ export default connect(mapStateToProps, {
   clearErrors,
   setAlert,
   setLoading,
-  closeAddCrush
+  closeAddCrush,
+  checkUser
 })(Crushes);

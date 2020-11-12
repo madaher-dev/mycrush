@@ -9,7 +9,8 @@ import {
   SET_CRUSH_LOADING,
   MATCH_FOUND,
   SET_ADD,
-  CLOSE_ADD
+  CLOSE_ADD,
+  USER_LOADED
 } from '../actions/Types';
 
 const initialState = {
@@ -40,6 +41,12 @@ export default (state = initialState, action) => {
         match: true,
         loading: false,
         addOpen: false
+      };
+    case USER_LOADED:
+      return {
+        ...state,
+        match: false,
+        current: null
       };
     case GET_CRUSHES:
       return {

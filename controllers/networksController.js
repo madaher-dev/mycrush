@@ -208,7 +208,7 @@ exports.connectPhone = catchAsync(async (req, res, next) => {
 });
 
 exports.confirmPhone = catchAsync(async (req, res, next) => {
-  console.log(req.params.token);
+  // console.log(req.params.token);
   const user = await User.findOneAndUpdate(
     { 'phones.token': req.params.token },
     {
@@ -391,8 +391,6 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     var params = new URLSearchParams(response.data);
     var token = params.get('oauth_token');
 
-    console.log(token);
-
     var jsonStr =
       '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
     res.send(JSON.parse(jsonStr));
@@ -428,16 +426,12 @@ const signing = async (signature_string, consumer_secret, token) => {
   let hmac;
   let secret;
   if (typeof signature_string !== 'undefined' && signature_string.length > 0) {
-    console.log('String OK');
     if (typeof consumer_secret !== 'undefined' && consumer_secret.length > 0) {
-      console.log('Secret Ok');
       if (!token) {
         secret = encodeURIComponent(consumer_secret) + '&';
-        console.log('No TOken');
       } else {
         secret =
           encodeURIComponent(consumer_secret) + '&' + encodeURIComponent(token);
-        console.log('Token OK');
       }
 
       var shaObj = new jsSHA('SHA-1', 'TEXT', {
@@ -507,7 +501,6 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
 });
 
 const createSendToken = (user, statusCode, req, res) => {
-  console.log('Signing Token');
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
