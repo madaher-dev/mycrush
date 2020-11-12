@@ -22,7 +22,8 @@ exports.signup = catchAsync(async (req, res, next) => {
           email: `${req.body.id}@facebook.com`,
           photo: req.body.picture.data.url,
           facebook: req.body.link,
-          fbAccessToken: req.body.accessToken
+          fbAccessToken: req.body.accessToken,
+          createdAt: Date.now()
         }
       },
       { upsert: true, new: true }
@@ -32,13 +33,16 @@ exports.signup = catchAsync(async (req, res, next) => {
       { email: req.body.email },
       {
         $set: {
-          name: req.body.name,
-          email: req.body.email,
           facebookID: req.body.id,
           email_confirmed: true,
           photo: req.body.picture.data.url,
           facebook: req.body.link,
           fbAccessToken: req.body.accessToken
+        },
+        $setOnInsert: {
+          createdAt: Date.now(),
+          name: req.body.name,
+          email: req.body.email
         }
       },
       { upsert: true, new: true }

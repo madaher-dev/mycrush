@@ -271,7 +271,10 @@ const Login = ({
               requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/reverse"
               className={classes.twButton}
               showIcon={false}
-            />
+            >
+              <TwitterIcon className={classes.twIcon} />
+              <span> Login with Twitter</span>
+            </TwitterLogin>
           </Grid>
         </Grid>
       </Grid>
