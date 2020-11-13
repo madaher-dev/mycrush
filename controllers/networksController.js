@@ -559,7 +559,9 @@ exports.disconnectTwitter = catchAsync(async (req, res, next) => {
 exports.connectTwitter = catchAsync(async (req, res, next) => {
   if (!req.user.photo) req.user.photo = req.body.profile_image_url_https;
   let user;
+  console.log('hello');
   if (req.user.email === req.body.email) {
+    console.log('entered here');
     user = await User.findByIdAndUpdate(
       req.user._id,
       {
@@ -572,6 +574,7 @@ exports.connectTwitter = catchAsync(async (req, res, next) => {
       { new: true }
     );
   } else {
+    console.log('entered there');
     user = await User.findOneAndUpdate(
       { _id: req.user._id, 'otherEmails.email': { $ne: req.body.email } },
       {
