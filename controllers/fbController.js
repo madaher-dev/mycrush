@@ -63,7 +63,8 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   // if (x > y) labelSelf(newUser);
   console.log('yoohoo');
-  createSendToken(newUser, 201, req, res);
+  if (connectedUser) createSendToken(connectedUser, 201, req, res);
+  else createSendToken(newUser, 201, req, res);
 });
 
 exports.disconnect = catchAsync(async (req, res, next) => {
