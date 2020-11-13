@@ -284,14 +284,14 @@ export const checkFB = response =>
 
 // Connect FB
 
-export const connectFB = (response, id) =>
-  factory.post(response, `/api/v1/users/fb/${id}`, 'FB_LOADED', 'FB_FAILED');
+export const connectFB = response =>
+  factory.post(response, `/api/v1/users/fb/connect`, 'FB_LOADED', 'FB_FAILED');
 
 // Disconnect FB
 
-export const disconnectFB = id =>
+export const disconnectFB = () =>
   factory.get(
-    `/api/v1/users/fb/${id}`,
+    `/api/v1/users/fb/disconnect`,
     'FB_DISCONNECTED',
     'FB_DISCONNECT_FAIL'
   );

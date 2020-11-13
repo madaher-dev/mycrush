@@ -21,7 +21,8 @@ import {
   connectInstagram,
   setLoading,
   disconnectInsta,
-  clearPhoneStatus
+  clearPhoneStatus,
+  checkUser
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -53,6 +54,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import MuiPhoneNumber from 'material-ui-phone-number';
 import PhoneIcon from '@material-ui/icons/Phone';
+import TwitterLogin from 'react-twitter-auth';
+import TwitterIcon from '@material-ui/icons/Twitter';
 
 const useStyles = makeStyles(theme => ({
   main: {
@@ -141,12 +144,40 @@ const useStyles = makeStyles(theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff'
+  },
+  twButton: {
+    width: '100%',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    marginTop: 10,
+    backgroundColor: '#1DA1F2',
+    transition: 'ease',
+    '&:hover': {
+      backgroundColor: '#AAB8C2'
+    },
+
+    '&:disabled': {
+      cursor: 'default',
+      opacity: 1
+    },
+    color: 'white',
+    borderRadius: 5,
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    boxShadow: 'lightgray'
+  },
+  twIcon: {
+    padding: 3
   }
 }));
 
 const Verify = ({
   user,
   connectEmail,
+  checkUser,
   clearErrors,
   setAlert,
   error,
@@ -259,13 +290,22 @@ const Verify = ({
   };
 
   // FB connect - disconnect
-  const handleDisconnectFB = id => {
-    disconnectFB(id);
+  const handleDisconnectFB = () => {
+    disconnectFB();
   };
 
   const responseFacebook = async response => {
     handleMenuClose();
-    connectFB(response, user._id);
+    connectFB(response);
+  };
+  // Twitter connect - disconnect
+
+  const twitterOnFailed = response => {
+    console.log('fail:', response);
+  };
+
+  const twitterOnSuccess = response => {
+    if (response.ok) checkUser();
   };
 
   //Instagram - Connect
@@ -378,6 +418,22 @@ const Verify = ({
             <InstagramIcon className={classes.instaIcon} />
             <span className={classes.instaText}> Connect Instagram</span>
           </InstagramLogin>
+        </MenuItem>
+      )}
+
+      {!user.twitter && (
+        <MenuItem>
+          <TwitterLogin
+            loginUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/connect"
+            onFailure={twitterOnFailed}
+            onSuccess={twitterOnSuccess}
+            requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/reverse"
+            className={classes.twButton}
+            showIcon={false}
+          >
+            <TwitterIcon className={classes.twIcon} />
+            <span> Connect Twitter</span>
+          </TwitterLogin>
         </MenuItem>
       )}
     </Menu>
@@ -526,7 +582,7 @@ const Verify = ({
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleDisconnectFB(user.facebookID)}
+                      onClick={() => handleDisconnectFB()}
                     >
                       <CancelIcon color="secondary" />
                     </IconButton>
@@ -706,7 +762,8 @@ Verify.propTypes = {
   validatePhone: PropTypes.func.isRequired,
   phoneConnected: PropTypes.bool,
   phoneValidated: PropTypes.bool,
-  clearPhoneStatus: PropTypes.func.isRequired
+  clearPhoneStatus: PropTypes.func.isRequired,
+  checkUser: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -730,5 +787,6 @@ export default connect(mapStateToProps, {
   connectInstagram,
   setLoading,
   disconnectInsta,
-  clearPhoneStatus
+  clearPhoneStatus,
+  checkUser
 })(Verify);

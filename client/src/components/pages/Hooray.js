@@ -99,7 +99,13 @@ const Hooray = ({ match1 }) => {
       <Grid item>
         <TwitterIcon className={classes.twitter} />
       </Grid>
-      <Grid item>{match1 ? match1.sourceId.twitter : <Fragment />}</Grid>
+      <Grid item>
+        {match1 ? (
+          <Fragment>@{match1.sourceId.twitter} </Fragment>
+        ) : (
+          <Fragment />
+        )}
+      </Grid>
     </Grid>
   );
   const insta = (

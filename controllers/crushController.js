@@ -7,6 +7,7 @@ const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 const sendEmail = require('../utils/email');
 const sendSMS = require('../utils/twilio');
+const tweet = require('../utils/twitter');
 
 //CRUD
 exports.getAllCrushes = catchAsync(async (req, res, next) => {
@@ -132,7 +133,7 @@ exports.checkUserExists = catchAsync(async (req, res, next) => {
     ]
   });
 
-  console.log(userFound);
+  //console.log(userFound);
   if (userFound) {
     req.userFound = userFound;
 
@@ -295,12 +296,16 @@ const sendCommunication = type =>
         constructEmail('new-crush', req.userFoundEmail);
       } else if (req.crush.email) {
         constructEmail('new-crush', req.crush.email);
-      } else if (!req.userFound && req.body.phone) {
+      }
+      if (!req.userFound && req.body.phone) {
         sendSMS({
           number: req.body.phone,
           message: sms
         });
       }
+      // if (req.body.twitter) {
+      //   tweet(req.body.twitter);
+      // }
     } else if (type === 'new-match') {
       constructEmail('new-match', req.userFoundEmail, next);
     }

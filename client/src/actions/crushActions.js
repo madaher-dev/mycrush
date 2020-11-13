@@ -25,6 +25,13 @@ export const getCrushes = () => async dispatch => {
 
 // Add crush
 export const addCrush = crush => async dispatch => {
+  //Removing @ from twitter
+  if (crush.twitter) {
+    if (crush.twitter.substring(0, 1) === '@') {
+      crush.twitter = crush.twitter.substring(1);
+    }
+  }
+
   const config = {
     headers: {
       'Content-Type': 'application/json'

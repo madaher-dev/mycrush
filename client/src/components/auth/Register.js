@@ -285,10 +285,10 @@ const Register = ({
           </Grid>
           <Grid item xs={12} sm={8} className={classes.social}>
             <TwitterLogin
-              loginUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter2"
+              loginUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter"
               onFailure={twitterOnFailed}
               onSuccess={twitterOnSuccess}
-              requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter2/reverse"
+              requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/reverse"
               className={classes.twButton}
               showIcon={false}
             >

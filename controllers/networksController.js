@@ -341,7 +341,6 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     req.body.screen_name = result.screen_name;
     req.body.profile_image_url_https = result.profile_image_url_https;
 
-    console.log('Moving out');
     next();
     // res.send(JSON.parse(parsedBody));
   } catch (err) {
@@ -393,149 +392,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
 
     var jsonStr =
       '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
-    console.log(JSON.parse(jsonStr));
-    res.send(JSON.parse(jsonStr));
-  } catch (err) {
-    console.log(err.response.data);
-    next();
-  }
-});
-
-exports.twitterAuth2 = catchAsync(async (req, res, next) => {
-  var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
-  const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
-  nonceObj.update(Math.round(new Date().getTime() / 1000.0));
-  var oauth_nonce = nonceObj.getHash('HEX');
-  const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
-  const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
-  //const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Test&include_email=true&include_entities=false&skip_status=true`;
-  const oauth_consumer_key = process.env.ADMIN_TWITTER_API_KEY;
-  const oauth_consumer_secret = process.env.ADMIN_TWITTER_API_SECRET;
-  const oauth_token = req.query.oauth_token;
-
-  var requiredParameters = {
-    oauth_consumer_key,
-    oauth_nonce,
-    oauth_signature_method: 'HMAC-SHA1',
-    oauth_timestamp,
-    oauth_token,
-    oauth_version: '1.0'
-  };
-
-  const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
-
-  const signed = await signing(
-    sorted_string,
-    oauth_consumer_secret,
-    oauth_token
-  );
-
-  var data = { oauth_verifier: req.query.oauth_verifier };
-  var config = {
-    method: 'post',
-    url: endpoint,
-    headers: {
-      Authorization: `OAuth oauth_consumer_key=${process.env.ADMIN_TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data
-  };
-
-  try {
-    // const response = await client2.post(endpoint, params2);
-    const response = await axios(config);
-
-    // var params = new URLSearchParams(response.data);
-    // var token = params.get('oauth_token');
-
-    const bodyString =
-      '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
-    const parsedBody = JSON.parse(bodyString);
-
-    // oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
-
-    // nonceObj.update(Math.round(new Date().getTime() / 1000.0));
-    // oauth_nonce = nonceObj.getHash('HEX');
-
-    // requiredParameters.oauth_token = parsedBody.oauth_token;
-    // requiredParameters.oauth_timestamp = oauth_timestamp;
-    // requiredParameters.oauth_nonce = oauth_nonce;
-
-    // const params1 = {
-    //   Name: 'Test',
-    //   include_email: true
-    // };
-    // var client = new Twitter({
-    //   consumer_key: process.env.TWITTER_API_KEY,
-    //   consumer_secret: process.env.TWITTER_API_SECRET,
-    //   access_token_key: parsedBody.oauth_token,
-    //   access_token_secret: parsedBody.oauth_token_secret
-    // });
-
-    // const result = await client.get(endpoint2, params1);
-    console.log('token:', parsedBody.oauth_token);
-    console.log('secret:', parsedBody.oauth_token_secret);
-    // req.body.oauth_token = parsedBody.oauth_token;
-    // req.body.oauth_token_secret = parsedBody.oauth_token_secret;
-    // req.body.user_id = parsedBody.user_id;
-    // req.body.email = result.email;
-    // req.body.name = result.name;
-    // req.body.screen_name = result.screen_name;
-    // req.body.profile_image_url_https = result.profile_image_url_https;
-
-    console.log('Moving out');
-    next();
-    // res.send(JSON.parse(parsedBody));
-  } catch (err) {
-    console.log(err);
-    next();
-  }
-});
-
-exports.twitterAuthReverse2 = catchAsync(async (req, res, next) => {
-  const callBackUL = encodeURIComponent(
-    'https://mycrushapp.herokuapp.com/welcome'
-  );
-  var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
-  const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
-  nonceObj.update(Math.round(new Date().getTime() / 1000.0));
-  const oauth_nonce = nonceObj.getHash('HEX');
-  const endpoint = 'https://api.twitter.com/oauth/request_token';
-  const oauth_consumer_key = process.env.ADMIN_TWITTER_API_KEY;
-  const oauth_consumer_secret = process.env.ADMIN_TWITTER_API_SECRET;
-
-  var requiredParameters = {
-    oauth_callback: callBackUL,
-    oauth_consumer_key,
-    oauth_nonce,
-    oauth_signature_method: 'HMAC-SHA1',
-    oauth_timestamp,
-    oauth_version: '1.0'
-  };
-
-  const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
-
-  const signed = await signing(sorted_string, oauth_consumer_secret);
-
-  var data = {};
-  var config = {
-    method: 'post',
-    url: endpoint,
-    headers: {
-      Authorization: `OAuth oauth_consumer_key=${process.env.ADMIN_TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_version="1.0",oauth_callback=${callBackUL}`,
-      'Content-Type': 'application/json'
-    },
-    data: data
-  };
-  try {
-    const response = await axios(config);
-
-    // var params = new URLSearchParams(response.data);
-    // var token = params.get('oauth_token');
-
-    var jsonStr =
-      '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
-    console.log(JSON.parse(jsonStr));
+    // console.log(JSON.parse(jsonStr));
     res.send(JSON.parse(jsonStr));
   } catch (err) {
     console.log(err.response.data);
@@ -676,3 +533,66 @@ const signToken = id => {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
+
+exports.disconnectTwitter = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $unset: { twitter: 1 },
+
+      twitterID: null,
+      twitterAccessToken: null,
+      twitterTokenSecret: null
+    },
+    { new: true }
+  );
+
+  // Label self in all matching crushes - can be removed for reset password actions
+  //UnlabelSelf(user);
+
+  res.status('200').json({
+    status: 'success',
+    user
+  });
+});
+
+exports.connectTwitter = catchAsync(async (req, res, next) => {
+  if (!req.user.photo) req.user.photo = req.body.profile_image_url_https;
+
+  if (req.user.email === req.body.email) {
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        photo: req.user.photo,
+        twitterID: req.body.user_id,
+        twitter: req.body.screen_name,
+        twitterAccessToken: req.body.oauth_token,
+        twitterTokenSecret: req.body.oauth_token_secret
+      },
+      { new: true }
+    );
+  } else {
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id, 'otherEmails.email': { $ne: req.body.email } },
+      {
+        $set: {
+          photo: req.user.photo,
+          twitterID: req.body.user_id,
+          twitter: req.body.screen_name,
+          twitterAccessToken: req.body.oauth_token,
+          twitterTokenSecret: req.body.oauth_token_secret
+        }
+      },
+      { new: true }
+    );
+    user.otherEmails.push({ email: req.body.email, confirmed: true });
+    user.save();
+  }
+  // Label self in all matching crushes - can be removed for reset password actions
+  labelSelf(user);
+  // newUser.password = undefined;
+  res.status('200').json({
+    status: 'success',
+    user
+  });
+});

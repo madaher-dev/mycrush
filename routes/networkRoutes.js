@@ -15,13 +15,17 @@ router.post(
 );
 router.post('/twitter/reverse', networksController.twitterAuthReverse);
 
-router.post('/twitter2', networksController.twitterAuth2);
-router.post('/twitter2/reverse', networksController.twitterAuthReverse2);
-
 router.get('/confirm/:token', networksController.confirmNetwork);
 
 //Protect all routes after this middleware
 router.use(authController.protect);
+
+router.post(
+  '/twitter/connect',
+  networksController.twitterAuth,
+  networksController.connectTwitter
+);
+router.get('/twitter/disconnect', networksController.disconnectTwitter);
 
 router.patch('/connectEmail', networksController.connectEmail);
 router.patch(

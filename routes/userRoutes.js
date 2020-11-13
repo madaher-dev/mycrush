@@ -21,11 +21,12 @@ router.post('/resendEmail', authController.resendEmail);
 router.post('/fb', fbController.signup);
 router.post('/insta', authController.protect, fbController.insta);
 router.get('/instaDisc', authController.protect, fbController.instaDisconnect);
-router.post('/fb/:id', fbController.connect);
-router.get('/fb/:id', fbController.disconnect);
 
 //Protect all routes after this middleware
 router.use(authController.protect);
+
+router.post('/fb/connect', fbController.connect);
+router.get('/fb/disconnect', fbController.disconnect);
 
 router.get(
   '/notifications',

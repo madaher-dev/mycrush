@@ -61,8 +61,8 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.disconnect = catchAsync(async (req, res, next) => {
-  const user = await User.findOneAndUpdate(
-    { facebookID: req.params.id },
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
     {
       $unset: { facebookID: 1 },
 
@@ -83,15 +83,17 @@ exports.disconnect = catchAsync(async (req, res, next) => {
 
 exports.connect = catchAsync(async (req, res, next) => {
   //check if facebook emails same
-  const checkuser = await User.findById(req.params.id);
-  if (checkuser.email === req.body.email) {
+  //const checkuser = await User.findById(req.params.id);
+  if (req.user.email === req.body.email) {
     const user = await User.findByIdAndUpdate(
-      req.params.id,
+      req.user._id,
       {
-        photo: req.body.picture.data.url,
-        facebookID: req.body.id,
-        facebook: req.body.link,
-        fbAccessToken: req.body.accessToken
+        $set: {
+          photo: req.body.picture.data.url,
+          facebookID: req.body.id,
+          facebook: req.body.link,
+          fbAccessToken: req.body.accessToken
+        }
       },
       { new: true }
     );
@@ -105,7 +107,7 @@ exports.connect = catchAsync(async (req, res, next) => {
     });
   } else {
     const user = await User.findOneAndUpdate(
-      { _id: req.params.id, 'otherEmails.email': { $ne: req.body.email } },
+      { _id: req.user._id, 'otherEmails.email': { $ne: req.body.email } },
       {
         $set: {
           photo: req.body.picture.data.url,

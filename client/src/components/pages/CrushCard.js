@@ -146,7 +146,7 @@ const CrushCard = ({ deleteCrush, crush }) => {
       <Grid item>
         <TwitterIcon className={classes.twitter} />
       </Grid>
-      <Grid item>{crush.twitter}</Grid>
+      <Grid item>@{crush.twitter}</Grid>
     </Grid>
   );
   const insta = (
