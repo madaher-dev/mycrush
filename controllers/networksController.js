@@ -340,7 +340,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     req.body.name = result.name;
     req.body.screen_name = result.screen_name;
     req.body.profile_image_url_https = result.profile_image_url_https;
-
+    console.log('leaving OAuth...');
     next();
     // res.send(JSON.parse(parsedBody));
   } catch (err) {
@@ -558,9 +558,9 @@ exports.disconnectTwitter = catchAsync(async (req, res, next) => {
 
 exports.connectTwitter = catchAsync(async (req, res, next) => {
   if (!req.user.photo) req.user.photo = req.body.profile_image_url_https;
-
+  let user;
   if (req.user.email === req.body.email) {
-    const user = await User.findByIdAndUpdate(
+    user = await User.findByIdAndUpdate(
       req.user._id,
       {
         photo: req.user.photo,
@@ -572,7 +572,7 @@ exports.connectTwitter = catchAsync(async (req, res, next) => {
       { new: true }
     );
   } else {
-    const user = await User.findOneAndUpdate(
+    user = await User.findOneAndUpdate(
       { _id: req.user._id, 'otherEmails.email': { $ne: req.body.email } },
       {
         $set: {
@@ -588,6 +588,7 @@ exports.connectTwitter = catchAsync(async (req, res, next) => {
     user.otherEmails.push({ email: req.body.email, confirmed: true });
     user.save();
   }
+  console.log('user:', user);
   // Label self in all matching crushes - can be removed for reset password actions
   labelSelf(user);
   // newUser.password = undefined;
