@@ -302,7 +302,6 @@ const Verify = ({
 
   const twitterOnFailed = response => {
     handleMenuClose();
-    console.log(response.toString());
     const errorString =
       '{' +
       response
