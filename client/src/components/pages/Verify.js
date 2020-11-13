@@ -301,10 +301,22 @@ const Verify = ({
   // Twitter connect - disconnect
 
   const twitterOnFailed = response => {
-    console.log('fail:', response);
+    handleMenuClose();
+    console.log(response.toString());
+    const errorString =
+      '{' +
+      response
+        .toString()
+        .replace(/Error/g, '"error"')
+        .replace(/: /g, ': "') +
+      '"}';
+
+    setAlert(JSON.parse(errorString).error, 'error');
+    clearErrors();
   };
 
   const twitterOnSuccess = response => {
+    handleMenuClose();
     if (response.ok) checkUser();
   };
 
