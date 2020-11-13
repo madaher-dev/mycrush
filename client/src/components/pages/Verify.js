@@ -301,7 +301,6 @@ const Verify = ({
   // Twitter connect - disconnect
 
   const twitterOnFailed = response => {
-    console.log(response);
     handleMenuClose();
     const errorString =
       '{' +
@@ -317,8 +316,15 @@ const Verify = ({
 
   const twitterOnSuccess = response => {
     handleMenuClose();
-    console.log(response);
+
     if (response.ok) checkUser();
+    else if (response.status == 400) {
+      setAlert(
+        'This twitter account is already connected to another user!',
+        'error'
+      );
+      clearErrors();
+    }
   };
 
   //Instagram - Connect
