@@ -13,6 +13,9 @@ router.post(
   networksController.twitterAuth,
   networksController.signupTwitter
 );
+
+router.post('/twitter2', networksController.twitterAuth2);
+
 router.post('/twitter/reverse', networksController.twitterAuthReverse);
 
 router.get('/confirm/:token', networksController.confirmNetwork);
@@ -25,8 +28,6 @@ router.post(
   networksController.twitterAuth,
   networksController.connectTwitter
 );
-
-router.post('/twitter/connect2', networksController.twitterAuth2);
 
 router.get('/twitter/disconnect', networksController.disconnectTwitter);
 
