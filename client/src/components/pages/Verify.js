@@ -408,6 +408,7 @@ const Verify = ({
           //handleClickOpenConnectPhone={() => handleClickOpenConnectPhone()}
           // responseFacebook={() => responseFacebook()}
           // responseInstagram={() => responseInstagram()}
+          history={history}
           anchor={anchorEl}
         />
       )}

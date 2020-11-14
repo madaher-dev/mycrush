@@ -122,7 +122,7 @@ const NetworksMenu = ({
   setLoading
 }) => {
   const classes = useStyles();
-
+  console.log(history);
   // Networks Menu
 
   const handleMenuClose = () => {
