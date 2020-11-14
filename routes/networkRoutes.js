@@ -14,7 +14,7 @@ router.post(
   networksController.signupTwitter
 );
 
-router.post('/twitter2', networksController.twitterAuth2);
+//router.post('/twitter2', networksController.twitterAuth2);
 
 router.post('/twitter/reverse', networksController.twitterAuthReverse);
 

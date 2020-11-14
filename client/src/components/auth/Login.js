@@ -265,7 +265,7 @@ const Login = ({
           </Grid>
           <Grid item xs={12} sm={8}>
             <TwitterLogin
-              loginUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter2"
+              loginUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter"
               onFailure={twitterOnFailed}
               onSuccess={twitterOnSuccess}
               requestTokenUrl="https://mycrushapp.herokuapp.com/api/v1/networks/twitter/reverse"

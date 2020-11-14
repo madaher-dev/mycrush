@@ -303,9 +303,9 @@ const sendCommunication = type =>
           message: sms
         });
       }
-      // if (req.body.twitter) {
-      //   tweet(req.body.twitter);
-      // }
+      if (req.body.twitter) {
+        tweet(req.body.twitter);
+      }
     } else if (type === 'new-match') {
       constructEmail('new-match', req.userFoundEmail, next);
     }
