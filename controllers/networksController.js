@@ -449,8 +449,8 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   const oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = 'https://api.twitter.com/oauth/request_token';
-  const oauth_consumer_key = process.env.TWITTER_API_KEY;
-  const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
+  const oauth_consumer_key = process.env.ADMIN_TWITTER_API_KEY;
+  const oauth_consumer_secret = process.env.ADMIN_TWITTER_API_SECRET;
 
   var requiredParameters = {
     oauth_callback: callBackUL,
