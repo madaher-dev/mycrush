@@ -83,6 +83,9 @@ const useStyles = makeStyles(theme => ({
   fbavatar: {
     backgroundColor: '#4267B2'
   },
+  twavatar: {
+    backgroundColor: '#1DA1F2'
+  },
   instavatar: {
     backgroundColor: '#C13584'
   },
@@ -625,7 +628,7 @@ const Verify = ({
                 target="_new"
               >
                 <ListItemAvatar>
-                  <Avatar className={classes.fbavatar}>
+                  <Avatar className={classes.twavatar}>
                     <TwitterIcon />
                   </Avatar>
                 </ListItemAvatar>
@@ -635,7 +638,7 @@ const Verify = ({
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleDisconnectFB()}
+                      onClick={() => handleDisconnectTwitter()}
                     >
                       <CancelIcon color="secondary" />
                     </IconButton>
