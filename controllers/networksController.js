@@ -449,8 +449,10 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
   if (req.body.status === 'not_authorized')
     return next(new AppError('Unuthorized twitter user!', 401));
 
+  const connectedUser = await User.findOne({ twitterID: req.body.user_id });
+
   let newUser;
-  if (!req.body.email) {
+  if (!req.body.email && !connectedUser) {
     newUser = await User.findOneAndUpdate(
       { twitterID: req.body.user_id },
       {
@@ -473,7 +475,8 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
 
       { upsert: true, new: true }
     );
-  } else {
+    labelSelf(newUser);
+  } else if (req.body.email && !connectedUser) {
     newUser = await User.findOneAndUpdate(
       { email: req.body.email },
       {
@@ -493,17 +496,19 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
 
       { upsert: true, new: true }
     );
+    labelSelf(newUser);
   }
 
-  console.log('created at:', newUser.createdAt);
-  let date = new Date();
+  // console.log('created at:', newUser.createdAt);
+  // let date = new Date();
 
-  const y = date.getTime();
-  const x = newUser.createdAt.getTime() + 100000;
+  // const y = date.getTime();
+  // const x = newUser.createdAt.getTime() + 100000;
 
-  if (x > y) labelSelf(newUser);
+  // if (x > y) labelSelf(newUser);
 
-  createSendToken(newUser, 201, req, res);
+  if (connectedUser) createSendToken(connectedUser, 201, req, res);
+  else createSendToken(newUser, 201, req, res);
 });
 
 const createSendToken = (user, statusCode, req, res) => {

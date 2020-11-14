@@ -22,6 +22,8 @@ import {
   EMAIL_DISCONNECT_FAIL,
   FB_DISCONNECTED,
   FB_DISCONNECT_FAIL,
+  TW_DISCONNECTED,
+  TW_DISCONNECT_FAIL,
   SET_MOBILE_MENU,
   CLOSE_MOBILE_MENU,
   GET_NOTIFICATIONS,
@@ -84,6 +86,7 @@ export default (state = initialState, action) => {
       };
     case FB_LOADED:
     case FB_DISCONNECTED:
+    case TW_DISCONNECTED:
     case INSTA_DISCONNECTED:
     case INSTA_LOADED:
       return {
@@ -116,6 +119,7 @@ export default (state = initialState, action) => {
     case FB_FAILED:
     case INSTA_FAILED:
     case FB_DISCONNECT_FAIL:
+    case TW_DISCONNECT_FAIL:
     case INSTA_DISCONNECT_FAIL:
     case PHONE_VALIDATE_FAIL:
     case CONNECT_PHONE_FAIL:

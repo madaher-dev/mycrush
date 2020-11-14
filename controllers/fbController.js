@@ -3,7 +3,6 @@ const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const { labelSelf } = require('./authController');
 const AppError = require('./../utils/appError');
-const { findOneAndUpdate, findOne } = require('./../models/userModel');
 
 exports.signup = catchAsync(async (req, res, next) => {
   if (req.body.status === 'not_authorized')
@@ -12,7 +11,6 @@ exports.signup = catchAsync(async (req, res, next) => {
   const connectedUser = await User.findOne({ facebookID: req.body.id });
   let newUser;
   if (!req.body.email && !connectedUser) {
-    console.log('am here');
     newUser = await User.findOneAndUpdate(
       { facebookID: req.body.id },
       {
@@ -33,7 +31,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     );
     labelSelf(newUser);
   } else if (req.body.email && !connectedUser) {
-    console.log('am there');
     newUser = await User.findOneAndUpdate(
       { email: req.body.email },
       {
@@ -62,7 +59,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // const x = newUser.createdAt.getTime() + 100000;
 
   // if (x > y) labelSelf(newUser);
-  console.log('yoohoo');
+
   if (connectedUser) createSendToken(connectedUser, 201, req, res);
   else createSendToken(newUser, 201, req, res);
 });

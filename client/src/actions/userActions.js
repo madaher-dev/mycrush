@@ -335,3 +335,10 @@ export const disconnectInsta = () =>
     'INSTA_DISCONNECTED',
     'INSTA_DISCONNECT_FAIL'
   );
+
+export const disconnectTwitter = () =>
+  factory.get(
+    `/api/v1/networks/twitter/disconnect`,
+    'TW_DISCONNECTED',
+    'TW_DISCONNECT_FAIL'
+  );

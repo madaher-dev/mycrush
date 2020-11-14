@@ -22,7 +22,8 @@ import {
   setLoading,
   disconnectInsta,
   clearPhoneStatus,
-  checkUser
+  checkUser,
+  disconnectTwitter
 } from '../../actions/userActions';
 import { setAlert } from '../../actions/alertActions';
 import List from '@material-ui/core/List';
@@ -119,9 +120,9 @@ const useStyles = makeStyles(theme => ({
   instaButton: {
     fontWeight: 'bold',
     textTransform: 'uppercase',
-    //display: 'flex',
-    //alignItems: 'end',
-    //justifyContent: 'center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: '#E1306C',
     width: '100%',
     color: 'white',
@@ -150,9 +151,9 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'bold',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     border: 'none',
-    marginTop: 10,
+    //marginTop: 10,
     backgroundColor: '#1DA1F2',
     transition: 'ease',
     '&:hover': {
@@ -170,7 +171,7 @@ const useStyles = makeStyles(theme => ({
     boxShadow: 'lightgray'
   },
   twIcon: {
-    padding: 3
+    padding: 5
   }
 }));
 
@@ -195,6 +196,7 @@ const Verify = ({
   phoneConnected,
   phoneValidated,
   clearPhoneStatus,
+  disconnectTwitter,
   history
 }) => {
   const classes = useStyles();
@@ -327,6 +329,11 @@ const Verify = ({
     }
   };
 
+  const handleDisconnectTwitter = () => {
+    setLoading();
+    disconnectTwitter();
+  };
+
   //Instagram - Connect
   const responseInstagram = async response => {
     //   if (!instaAdded) {
@@ -417,7 +424,7 @@ const Verify = ({
                 className={classes.fbButton}
                 startIcon={<FacebookIcon />}
               >
-                Login with Facebook
+                Connect Facebook
               </Button>
             )}
           />
@@ -432,6 +439,7 @@ const Verify = ({
             scope="user_profile"
             onFailure={responseInstagram}
             cssClass={classes.instaButton}
+
             // buttonText="Connect Instagram"
           >
             <InstagramIcon className={classes.instaIcon} />
@@ -596,6 +604,32 @@ const Verify = ({
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={'Your Facebook Profile Page'} />
+                <ListItemSecondaryAction>
+                  <Tooltip title="Disconnect" aria-label="disc">
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={() => handleDisconnectFB()}
+                    >
+                      <CancelIcon color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                </ListItemSecondaryAction>
+              </ListItem>
+            )}
+            {user.twitter && (
+              <ListItem
+                button
+                component="a"
+                href={`https://www.twitter.com/${user.twitter}`}
+                target="_new"
+              >
+                <ListItemAvatar>
+                  <Avatar className={classes.fbavatar}>
+                    <TwitterIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={user.twitter} />
                 <ListItemSecondaryAction>
                   <Tooltip title="Disconnect" aria-label="disc">
                     <IconButton
@@ -782,7 +816,8 @@ Verify.propTypes = {
   phoneConnected: PropTypes.bool,
   phoneValidated: PropTypes.bool,
   clearPhoneStatus: PropTypes.func.isRequired,
-  checkUser: PropTypes.func.isRequired
+  checkUser: PropTypes.func.isRequired,
+  disconnectTwitter: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -807,5 +842,6 @@ export default connect(mapStateToProps, {
   setLoading,
   disconnectInsta,
   clearPhoneStatus,
-  checkUser
+  checkUser,
+  disconnectTwitter
 })(Verify);
