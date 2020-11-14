@@ -470,7 +470,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     method: 'post',
     url: endpoint,
     headers: {
-      Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_version="1.0",oauth_callback=${callBackUL}`,
+      Authorization: `OAuth oauth_consumer_key=${process.env.ADMIN_TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_version="1.0",oauth_callback=${callBackUL}`,
       'Content-Type': 'application/json'
     },
     data: data
