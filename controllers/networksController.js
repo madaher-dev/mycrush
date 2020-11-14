@@ -383,7 +383,7 @@ exports.twitterAuth2 = catchAsync(async (req, res, next) => {
     method: 'post',
     url: endpoint,
     headers: {
-      Authorization: `OAuth oauth_consumer_key=${process.env.TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
+      Authorization: `OAuth oauth_consumer_key=${oauth_consumer_key},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_token=${oauth_token},oauth_version="1.0"`,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     data
@@ -409,26 +409,6 @@ exports.twitterAuth2 = catchAsync(async (req, res, next) => {
     requiredParameters.oauth_timestamp = oauth_timestamp;
     requiredParameters.oauth_nonce = oauth_nonce;
 
-    const params1 = {
-      Name: 'Test',
-      include_email: true
-    };
-    var client = new Twitter({
-      consumer_key: process.env.TWITTER_API_KEY,
-      consumer_secret: process.env.TWITTER_API_SECRET,
-      access_token_key: parsedBody.oauth_token,
-      access_token_secret: parsedBody.oauth_token_secret
-    });
-
-    const result = await client.get(endpoint2, params1);
-
-    req.body.oauth_token = parsedBody.oauth_token;
-    req.body.oauth_token_secret = parsedBody.oauth_token_secret;
-    req.body.user_id = parsedBody.user_id;
-    req.body.email = result.email;
-    req.body.name = result.name;
-    req.body.screen_name = result.screen_name;
-    req.body.profile_image_url_https = result.profile_image_url_https;
     console.log('Token:', parsedBody.oauth_token);
     console.log('Secret:', parsedBody.oauth_token_secret);
     console.log('leaving OAuth...');
@@ -470,7 +450,7 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     method: 'post',
     url: endpoint,
     headers: {
-      Authorization: `OAuth oauth_consumer_key=${process.env.ADMIN_TWITTER_API_KEY},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_version="1.0",oauth_callback=${callBackUL}`,
+      Authorization: `OAuth oauth_consumer_key=${oauth_consumer_key},oauth_nonce=${oauth_nonce},oauth_signature=${signed},oauth_signature_method="HMAC-SHA1",oauth_timestamp=${oauth_timestamp},oauth_version="1.0",oauth_callback=${callBackUL}`,
       'Content-Type': 'application/json'
     },
     data: data
