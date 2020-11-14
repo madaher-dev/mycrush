@@ -101,7 +101,7 @@ const Footer = ({ add, setAddCrush }) => {
     <AppBar position="fixed" color="primary" className={classes.appBar}>
       <Toolbar>
         <Typography>
-          MyCrush Copyright &copy;{Moment(Date.now()).format('YYYY')} v0.2.0
+          MyCrush Copyright &copy;{Moment(Date.now()).format('YYYY')} v0.3.0
         </Typography>
         {fabs.map((fab, index) => (
           <Zoom

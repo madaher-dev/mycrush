@@ -25,6 +25,9 @@ router.post(
   networksController.twitterAuth,
   networksController.connectTwitter
 );
+
+router.post('/twitter/connect2', networksController.twitterAuth2);
+
 router.get('/twitter/disconnect', networksController.disconnectTwitter);
 
 router.patch('/connectEmail', networksController.connectEmail);
