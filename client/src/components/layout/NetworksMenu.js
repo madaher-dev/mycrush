@@ -122,8 +122,6 @@ const NetworksMenu = ({
   setLoading
 }) => {
   const classes = useStyles();
-  console.log(history);
-  // Networks Menu
 
   const handleMenuClose = () => {
     setMenuOpen(false);
@@ -169,6 +167,7 @@ const NetworksMenu = ({
 
   const responseFacebook = async response => {
     setMenuOpen(false);
+    setLoading();
     connectFB(response);
   };
 

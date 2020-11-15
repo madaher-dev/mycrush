@@ -14,7 +14,8 @@ import { setAlert } from '../../actions/alertActions';
 import {
   validatePhone,
   connectPhone,
-  clearPhoneStatus
+  clearPhoneStatus,
+  setLoading
 } from '../../actions/userActions';
 
 const ConnectPhone = ({
@@ -24,7 +25,8 @@ const ConnectPhone = ({
   phoneValidated,
   connectPhone,
   clearPhoneStatus,
-  openPhone
+  openPhone,
+  setLoading
 }) => {
   //Phone Connect
 
@@ -52,6 +54,7 @@ const ConnectPhone = ({
 
   const handleSubmitConnectPhone = async () => {
     OpenConnectPhone(false);
+    setLoading();
     await connectPhone(phone);
     setValidatePhone(true);
   };
@@ -61,6 +64,7 @@ const ConnectPhone = ({
   };
 
   const handleValidatePhone = async () => {
+    setLoading();
     await validatePhone(token);
     setValidatePhone(false);
   };
@@ -136,7 +140,8 @@ ConnectPhone.propTypes = {
   connectPhone: PropTypes.func.isRequired,
   clearPhoneStatus: PropTypes.func.isRequired,
   validatePhone: PropTypes.func.isRequired,
-  OpenConnectPhone: PropTypes.func.isRequired
+  OpenConnectPhone: PropTypes.func.isRequired,
+  setLoading: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -149,5 +154,6 @@ export default connect(mapStateToProps, {
   connectPhone,
   clearPhoneStatus,
   validatePhone,
-  OpenConnectPhone
+  OpenConnectPhone,
+  setLoading
 })(ConnectPhone);

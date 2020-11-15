@@ -9,7 +9,6 @@ import {
   disconnectEmail,
   disconnectPhone,
   disconnectFB,
-  connectInstagram,
   setLoading,
   disconnectInsta,
   checkUser,
@@ -106,7 +105,6 @@ const Verify = ({
   disconnectPhone,
   disconnectFB,
   location,
-  connectInstagram,
   setLoading,
   loading,
   disconnectInsta,
@@ -143,15 +141,18 @@ const Verify = ({
   }, [error, setAlert, clearErrors]);
 
   const handleDisconnectEmail = id => {
+    setLoading();
     disconnectEmail(id);
   };
 
   const handleDisconnectPhone = phoneID => {
+    setLoading();
     disconnectPhone(phoneID);
   };
 
   // FB connect - disconnect
   const handleDisconnectFB = () => {
+    setLoading();
     disconnectFB();
   };
 
@@ -400,18 +401,11 @@ const Verify = ({
       </Backdrop>
       <div className={classes.anchor} ref={divRef} />
 
-      {user && (
-        <NetworksMenu
-          //user={user}
-          //footer={location.addOpen}
-          // handleClickOpenConnectEmail={() => handleClickOpenConnectEmail()}
-          //handleClickOpenConnectPhone={() => handleClickOpenConnectPhone()}
-          // responseFacebook={() => responseFacebook()}
-          // responseInstagram={() => responseInstagram()}
-          history={history}
-          anchor={anchorEl}
-        />
-      )}
+      <NetworksMenu
+        // responseInstagram={() => responseInstagram()}
+        history={history}
+        anchor={anchorEl}
+      />
     </Grid>
   );
 };
@@ -422,8 +416,7 @@ Verify.propTypes = {
   clearErrors: PropTypes.func.isRequired,
   setAlert: PropTypes.func.isRequired,
   disconnectEmail: PropTypes.func.isRequired,
-  disconnectFB: PropTypes.func.isRequired,
-  connectInstagram: PropTypes.func.isRequired,
+  disconnectFB: PropTypes.func.isRequired,\
   loading: PropTypes.bool,
   setLoading: PropTypes.func.isRequired,
   disconnectInsta: PropTypes.func.isRequired,
@@ -449,7 +442,6 @@ export default connect(mapStateToProps, {
   disconnectEmail,
   disconnectPhone,
   disconnectFB,
-  connectInstagram,
   setLoading,
   disconnectInsta,
   checkUser,

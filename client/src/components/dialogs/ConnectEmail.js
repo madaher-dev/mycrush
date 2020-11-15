@@ -9,9 +9,14 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import { Button } from '@material-ui/core';
 import { OpenConnectEmail } from '../../actions/navigationActions';
-import { connectEmail } from '../../actions/userActions';
+import { connectEmail, setLoading } from '../../actions/userActions';
 
-const ConnectEmail = ({ OpenConnectEmail, openEmail, connectEmail }) => {
+const ConnectEmail = ({
+  OpenConnectEmail,
+  openEmail,
+  connectEmail,
+  setLoading
+}) => {
   const [email, setEmail] = React.useState('');
 
   const onChange = e => {
@@ -24,6 +29,7 @@ const ConnectEmail = ({ OpenConnectEmail, openEmail, connectEmail }) => {
 
   const handleSubmitConnectEmail = () => {
     OpenConnectEmail(false);
+    setLoading();
     connectEmail(email);
   };
 
@@ -64,6 +70,7 @@ const ConnectEmail = ({ OpenConnectEmail, openEmail, connectEmail }) => {
 ConnectEmail.propTypes = {
   OpenConnectEmail: PropTypes.func.isRequired,
   connectEmail: PropTypes.func.isRequired,
+  setLoading: PropTypes.func.isRequired,
   openEmail: PropTypes.bool
 };
 
@@ -73,5 +80,6 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   OpenConnectEmail,
-  connectEmail
+  connectEmail,
+  setLoading
 })(ConnectEmail);
