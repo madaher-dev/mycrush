@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   main: {
     paddingTop: 20,
 
-    paddingBottom: 100,
+    paddingBottom: 50,
     alignItems: 'stretch',
     width: '100%'
   }
