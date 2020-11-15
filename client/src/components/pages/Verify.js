@@ -416,7 +416,7 @@ Verify.propTypes = {
   clearErrors: PropTypes.func.isRequired,
   setAlert: PropTypes.func.isRequired,
   disconnectEmail: PropTypes.func.isRequired,
-  disconnectFB: PropTypes.func.isRequired,\
+  disconnectFB: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   setLoading: PropTypes.func.isRequired,
   disconnectInsta: PropTypes.func.isRequired,
