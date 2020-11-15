@@ -1,7 +1,8 @@
 import {
   NETWORKS_MENU,
   CONNECT_EMAIL_DIALOG,
-  CONNECT_PHONE_DIALOG
+  CONNECT_PHONE_DIALOG,
+  SET_NAV_LOADING
 } from '../actions/Types';
 
 // Open/Close Networks Menu
@@ -27,3 +28,6 @@ export const OpenConnectPhone = open => dispatch => {
     payload: { open }
   });
 };
+
+// Set Loading
+export const setLoading = () => ({ type: SET_NAV_LOADING });

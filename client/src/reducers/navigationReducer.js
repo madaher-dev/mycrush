@@ -1,13 +1,15 @@
 import {
   NETWORKS_MENU,
   CONNECT_EMAIL_DIALOG,
-  CONNECT_PHONE_DIALOG
+  CONNECT_PHONE_DIALOG,
+  SET_NAV_LOADING
 } from '../actions/Types';
 
 const initialState = {
   openMenu: false,
   openEmail: false,
-  openPhone: false
+  openPhone: false,
+  loading: false
 };
 
 export default (state = initialState, action) => {
@@ -28,6 +30,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         openPhone: action.payload.open
+      };
+    case SET_NAV_LOADING:
+      return {
+        ...state,
+        loading: true
       };
 
     default:

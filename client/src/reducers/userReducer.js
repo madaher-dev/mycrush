@@ -106,7 +106,8 @@ export default (state = initialState, action) => {
         phoneConnected: true,
         phoneValidated: false,
         points: action.payload.data.user.points,
-        newNotifications: action.payload.data.user.notifications
+        newNotifications: action.payload.data.user.notifications,
+        loading: false
       };
     case PHONE_VALIDATED:
       return {
@@ -248,7 +249,6 @@ export default (state = initialState, action) => {
       };
     case MATCH_FOUND:
       return {
-        ...state,
         ...state,
         points: state.points - 1,
         loading: false

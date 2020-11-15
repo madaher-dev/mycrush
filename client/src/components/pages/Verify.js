@@ -82,11 +82,6 @@ const useStyles = makeStyles(theme => ({
   countryList: {
     ...theme.typography.body1
   },
-
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff'
-  },
   anchor: {
     position: 'fixed',
     top: 'auto',
@@ -106,7 +101,6 @@ const Verify = ({
   disconnectFB,
   location,
   setLoading,
-  loading,
   disconnectInsta,
   disconnectTwitter,
   history,
@@ -396,9 +390,7 @@ const Verify = ({
           </List>
         </Grid>
       </Grid>
-      <Backdrop className={classes.backdrop} open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+
       <div className={classes.anchor} ref={divRef} />
 
       <NetworksMenu
@@ -432,7 +424,6 @@ Verify.propTypes = {
 const mapStateToProps = state => ({
   user: state.users.user,
   error: state.users.error,
-  loading: state.users.loading,
   open: state.navigation.openMenu
 });
 
