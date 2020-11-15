@@ -7,6 +7,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import NetworksBox from './NetworksBox';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -85,6 +86,9 @@ const Welcome = ({ crushes, crushesLoaded, user }) => {
         ) : (
           <Fragment />
         )}
+        <Grid item xs={12} sm={4}>
+          <NetworksBox />
+        </Grid>
         <Grid item xs={12} sm={4}>
           <CrushesBox />
         </Grid>

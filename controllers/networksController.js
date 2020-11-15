@@ -1,21 +1,96 @@
-const User = require('../models/userModel');
-const factory = require('./handlerFactory');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+/* eslint-disable no-console */
+/* eslint-disable camelcase */
 const crypto = require('crypto');
-const sendEmail = require('./../utils/email');
-const sendSMS = require('./../utils/twilio');
+const axios = require('axios');
+const JSSHA = require('jssha');
+const jwt = require('jsonwebtoken');
+const Twitter = require('twitter');
+const User = require('../models/userModel');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+const sendEmail = require('../utils/email');
+const sendSMS = require('../utils/twilio');
 // const OAuth = require('oauth');
 // const { promisify } = require('util');
-var axios = require('axios');
-const jsSHA = require('jssha/sha1');
 //var passport = require('passport');
 //var Strategy = require('passport-twitter').Strategy;
 
-const jwt = require('jsonwebtoken');
 const { labelSelf } = require('./authController');
 
-var Twitter = require('twitter');
+const sortString = async (requiredParameters, endpoint, type) => {
+  // eslint-disable-next-line camelcase
+  let base_signature_string = `${type}&${encodeURIComponent(endpoint)}&`;
+  const requiredParameterKeys = Object.keys(requiredParameters);
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < requiredParameterKeys.length; i++) {
+    if (i === requiredParameterKeys.length - 1) {
+      // eslint-disable-next-line camelcase
+      base_signature_string += encodeURIComponent(
+        `${requiredParameterKeys[i]}=${
+          requiredParameters[requiredParameterKeys[i]]
+        }`
+      );
+    } else {
+      base_signature_string += encodeURIComponent(
+        `${requiredParameterKeys[i]}=${
+          requiredParameters[requiredParameterKeys[i]]
+        }&`
+      );
+    }
+  }
+  return base_signature_string;
+};
+
+const signing = async (signature_string, consumer_secret, token) => {
+  let hmac;
+  let secret;
+  if (typeof signature_string !== 'undefined' && signature_string.length > 0) {
+    if (typeof consumer_secret !== 'undefined' && consumer_secret.length > 0) {
+      if (!token) {
+        secret = `${encodeURIComponent(consumer_secret)}&`;
+      } else {
+        secret = `${encodeURIComponent(consumer_secret)}&${encodeURIComponent(
+          token
+        )}`;
+      }
+
+      const shaObj = new JSSHA('SHA-1', 'TEXT', {
+        hmacKey: { value: secret, format: 'TEXT' }
+      });
+      shaObj.update(signature_string);
+
+      hmac = encodeURIComponent(shaObj.getHash('B64'));
+    }
+  }
+  return hmac;
+};
+const signToken = id => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN
+  });
+};
+
+const createSendToken = (user, statusCode, req, res) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  };
+  if (process.env.SECURE_TOKEN === 'true') cookieOptions.secure = true;
+  else cookieOptions.secure = false;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  // Remove password from output
+  user.password = undefined;
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    user
+  });
+};
 
 exports.privateNetwork = catchAsync(async (req, res, next) => {
   if (req.user.type === 'admin' || req.user.type === 'support') next();
@@ -39,13 +114,13 @@ exports.privateNetwork = catchAsync(async (req, res, next) => {
 exports.connectEmail = catchAsync(async (req, res, next) => {
   const newEmail = req.body.email;
   function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   }
   const valid = validateEmail(newEmail);
   if (newEmail === req.user.email)
     return next(new AppError('Email already connected.', 400));
-  else if (valid) {
+  if (valid) {
     const user = await User.findOneAndUpdate(
       { _id: req.user.id, 'otherEmails.email': { $ne: newEmail } },
       {
@@ -59,15 +134,16 @@ exports.connectEmail = catchAsync(async (req, res, next) => {
     if (user) {
       const confirmToken = crypto.randomBytes(32).toString('hex');
 
-      function updateToken(emails, token) {
-        for (var i in user.otherEmails) {
-          if (user.otherEmails[i].email == emails) {
+      const updateToken = async (emails, token) => {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const i in user.otherEmails) {
+          if (user.otherEmails[i].email === emails) {
             user.otherEmails[i].token = token;
             break; //Stop this loop, we found it!
           }
         }
-      }
-      updateToken(newEmail, confirmToken);
+      };
+      await updateToken(newEmail, confirmToken);
       await user.save({ validateBeforeSave: false });
 
       // 3) Send it to user's email
@@ -79,16 +155,16 @@ exports.connectEmail = catchAsync(async (req, res, next) => {
         `${confirmtURL}.\n` +
         'If you did not connect this email on MyCrush please ignore this email!';
 
-      const html_message =
+      const htmlMessage =
         `<p> Please click on the following link, or paste this into your browser to confirm your email on :\n\n` +
         `<a href="${confirmtURL}">${confirmtURL}</a>\n` +
         `If you did not connect this email on MyCrush please ignore this email!</p>`;
 
-      await sendEmail({
+      sendEmail({
         email: newEmail,
         subject: 'Confirm your Email',
         message,
-        html_message
+        htmlMessage
       });
 
       res.status(201).json({
@@ -137,14 +213,13 @@ exports.confirmNetwork = catchAsync(async (req, res, next) => {
 
   if (!user) {
     return next(new AppError('Invalid token or email does not exist!', 401));
-  } else {
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user
-      }
-    });
   }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
 });
 
 exports.connectPhone = catchAsync(async (req, res, next) => {
@@ -164,15 +239,16 @@ exports.connectPhone = catchAsync(async (req, res, next) => {
   if (user) {
     const confirmToken = Math.floor(100000 + Math.random() * 900000);
 
-    function updateToken(phone, token) {
-      for (var i in user.phones) {
-        if (user.phones[i].number == phone) {
+    const updateToken = async (phone, token) => {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const i in user.phones) {
+        if (user.phones[i].number === phone) {
           user.phones[i].token = token;
           break; //Stop this loop, we found it!
         }
       }
-    }
-    updateToken(newPhone, confirmToken);
+    };
+    await updateToken(newPhone, confirmToken);
     await user.save({ validateBeforeSave: false });
     // 3) Send it to user's phone
 
@@ -192,7 +268,7 @@ exports.connectPhone = catchAsync(async (req, res, next) => {
       });
       return next(new AppError('SMS Sending failed!', 400));
     }
-    user.points = user.points - 1;
+    user.points -= 1;
     await user.save();
     //Remove token before sending to front end
     updateToken(newPhone, undefined);
@@ -222,14 +298,13 @@ exports.confirmPhone = catchAsync(async (req, res, next) => {
 
   if (!user) {
     return next(new AppError('Invalid Validation Code!', 401));
-  } else {
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user
-      }
-    });
   }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
 });
 
 exports.disconnectPhone = catchAsync(async (req, res, next) => {
@@ -261,18 +336,23 @@ exports.checkPoints = (req, res, next) => {
 };
 
 exports.twitterAuth = catchAsync(async (req, res, next) => {
-  var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
-  const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
+  // eslint-disable-next-line camelcase
+  let oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
+  const nonceObj = new JSSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
-  var oauth_nonce = nonceObj.getHash('HEX');
+  // eslint-disable-next-line camelcase
+  let oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = `https://api.twitter.com/oauth/access_token?oauth_verifier=${req.query.oauth_verifier}`;
   const endpoint2 = `https://api.twitter.com/1.1/account/verify_credentials.json`;
   //const endpoint2_full = `https://api.twitter.com/1.1/account/verify_credentials.json?Name=Test&include_email=true&include_entities=false&skip_status=true`;
+  // eslint-disable-next-line camelcase
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
+  // eslint-disable-next-line camelcase
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
-  const oauth_token = req.query.oauth_token;
+  // eslint-disable-next-line camelcase
+  const { oauth_token } = req.query;
 
-  var requiredParameters = {
+  const requiredParameters = {
     oauth_consumer_key,
     oauth_nonce,
     oauth_signature_method: 'HMAC-SHA1',
@@ -281,6 +361,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     oauth_version: '1.0'
   };
 
+  // eslint-disable-next-line camelcase
   const sorted_string = await sortString(requiredParameters, endpoint, 'POST');
 
   const signed = await signing(
@@ -289,8 +370,8 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     oauth_token
   );
 
-  var data = { oauth_verifier: req.query.oauth_verifier };
-  var config = {
+  const data = { oauth_verifier: req.query.oauth_verifier };
+  const config = {
     method: 'post',
     url: endpoint,
     headers: {
@@ -307,8 +388,9 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
     // var params = new URLSearchParams(response.data);
     // var token = params.get('oauth_token');
 
-    const bodyString =
-      '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
+    const bodyString = `{ "${response.data
+      .replace(/&/g, '", "')
+      .replace(/=/g, '": "')}"}`;
     const parsedBody = JSON.parse(bodyString);
 
     oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
@@ -324,7 +406,7 @@ exports.twitterAuth = catchAsync(async (req, res, next) => {
       Name: 'Test',
       include_email: true
     };
-    var client = new Twitter({
+    const client = new Twitter({
       consumer_key: process.env.TWITTER_API_KEY,
       consumer_secret: process.env.TWITTER_API_SECRET,
       access_token_key: parsedBody.oauth_token,
@@ -424,15 +506,15 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
   const callBackUL = encodeURIComponent(
     'https://mycrushapp.herokuapp.com/welcome'
   );
-  var oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
-  const nonceObj = new jsSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
+  const oauth_timestamp = Math.round(new Date().getTime() / 1000.0);
+  const nonceObj = new JSSHA('SHA-1', 'TEXT', { encoding: 'UTF8' });
   nonceObj.update(Math.round(new Date().getTime() / 1000.0));
   const oauth_nonce = nonceObj.getHash('HEX');
   const endpoint = 'https://api.twitter.com/oauth/request_token';
   const oauth_consumer_key = process.env.TWITTER_API_KEY;
   const oauth_consumer_secret = process.env.TWITTER_API_SECRET;
 
-  var requiredParameters = {
+  const requiredParameters = {
     oauth_callback: callBackUL,
     oauth_consumer_key,
     oauth_nonce,
@@ -445,8 +527,8 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
 
   const signed = await signing(sorted_string, oauth_consumer_secret);
 
-  var data = {};
-  var config = {
+  const data = {};
+  const config = {
     method: 'post',
     url: endpoint,
     headers: {
@@ -461,8 +543,9 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     // var params = new URLSearchParams(response.data);
     // var token = params.get('oauth_token');
 
-    var jsonStr =
-      '{ "' + response.data.replace(/&/g, '", "').replace(/=/g, '": "') + '"}';
+    const jsonStr = `{ "${response.data
+      .replace(/&/g, '", "')
+      .replace(/=/g, '": "')}"}`;
     // console.log(JSON.parse(jsonStr));
     res.send(JSON.parse(jsonStr));
   } catch (err) {
@@ -470,51 +553,6 @@ exports.twitterAuthReverse = catchAsync(async (req, res, next) => {
     next();
   }
 });
-
-const sortString = async (requiredParameters, endpoint, type) => {
-  var base_signature_string = `${type}&` + encodeURIComponent(endpoint) + '&';
-  var requiredParameterKeys = Object.keys(requiredParameters);
-  for (var i = 0; i < requiredParameterKeys.length; i++) {
-    if (i == requiredParameterKeys.length - 1) {
-      base_signature_string += encodeURIComponent(
-        requiredParameterKeys[i] +
-          '=' +
-          requiredParameters[requiredParameterKeys[i]]
-      );
-    } else {
-      base_signature_string += encodeURIComponent(
-        requiredParameterKeys[i] +
-          '=' +
-          requiredParameters[requiredParameterKeys[i]] +
-          '&'
-      );
-    }
-  }
-  return base_signature_string;
-};
-
-const signing = async (signature_string, consumer_secret, token) => {
-  let hmac;
-  let secret;
-  if (typeof signature_string !== 'undefined' && signature_string.length > 0) {
-    if (typeof consumer_secret !== 'undefined' && consumer_secret.length > 0) {
-      if (!token) {
-        secret = encodeURIComponent(consumer_secret) + '&';
-      } else {
-        secret =
-          encodeURIComponent(consumer_secret) + '&' + encodeURIComponent(token);
-      }
-
-      var shaObj = new jsSHA('SHA-1', 'TEXT', {
-        hmacKey: { value: secret, format: 'TEXT' }
-      });
-      shaObj.update(signature_string);
-
-      hmac = encodeURIComponent(shaObj.getHash('B64'));
-    }
-  }
-  return hmac;
-};
 
 exports.signupTwitter = catchAsync(async (req, res, next) => {
   if (req.body.status === 'not_authorized')
@@ -581,34 +619,6 @@ exports.signupTwitter = catchAsync(async (req, res, next) => {
   if (connectedUser) createSendToken(connectedUser, 201, req, res);
   else createSendToken(newUser, 201, req, res);
 });
-
-const createSendToken = (user, statusCode, req, res) => {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true
-  };
-  if (process.env.SECURE_TOKEN === 'true') cookieOptions.secure = true;
-  else cookieOptions.secure = false;
-
-  res.cookie('jwt', token, cookieOptions);
-
-  // Remove password from output
-  user.password = undefined;
-  res.status(statusCode).json({
-    status: 'success',
-    token,
-    user
-  });
-};
-
-const signToken = id => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN
-  });
-};
 
 exports.disconnectTwitter = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(

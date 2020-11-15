@@ -119,11 +119,13 @@ const Verify = ({
   }, [setAnchorEl]);
 
   useEffect(() => {
-    if (location.addOpen && !open) {
-      setMenuOpen(true);
-      location.addOpen = false;
+    if (location) {
+      if (location.addOpen && !open) {
+        setMenuOpen(true);
+        location.addOpen = false;
+      }
     }
-  }, [setMenuOpen, location.addOpen, open]);
+  }, [setMenuOpen, location, open]);
 
   // Error Handler
 

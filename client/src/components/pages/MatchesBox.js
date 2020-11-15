@@ -67,7 +67,7 @@ const MatchesBox = ({
         <CircularProgress />
       ) : matches && matches.length > 0 ? (
         <Card className={classes.root}>
-          <CardContent className={classes.content}>
+          <CardContent>
             <Typography
               className={classes.title}
               color="textSecondary"
